@@ -27,6 +27,9 @@ export default function BasicMenu(props) {
             return value !== props.props.toString();
         });
         localStorage.setItem("names", JSON.stringify(storedNames));
+        props.set(props.rows.filter(function(value, index, arr){
+            return value.id !== props.props;
+        }))
     };
 
     return (

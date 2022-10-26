@@ -84,7 +84,7 @@ const MyGrid = (props) => {
     const renderDeleteButton = (params) => {
         return (
             <strong>
-                <BasicMenu props={params.row.id} rows={tableData}/>
+                <BasicMenu props={params.row.id} rows={tableData} set={setTableData}/>
             </strong>
         )
     }
@@ -106,7 +106,6 @@ const MyGrid = (props) => {
 
     useEffect(() => {
             const promises = fetchWhat()
-            console.log(promises)
             var storedNames = JSON.parse(localStorage.getItem("names"));
             var tmpAr = [];
                 Promise.all(promises).then((response) => {
@@ -121,7 +120,6 @@ const MyGrid = (props) => {
 
         }, []
     )
-    console.log(tableData);
     return (
         <div style={{height: 400, width: '100%'}}>
             <DataGrid
@@ -142,7 +140,7 @@ class ShotTable extends React.Component {
 
     render() {
         return (
-            <FormControl fullWidth fullHeight sx={{height: '100%', width: '100%'}}>
+            <FormControl fullWidth sx={{height: '100%', width: '100%'}}>
                 <Box sx={{
                     backgroundColor: '#ffffff',
                     paddingLeft: 5,

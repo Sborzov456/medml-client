@@ -81,14 +81,14 @@ class ResultsPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            originalImage: "https://osborne-ind.ru/wp-content/uploads/2020/02/oLoJNGZAyU8.jpg",
-            segmentedImage: "https://osborne-ind.ru/wp-content/uploads/2020/02/oLoJNGZAyU8.jpg",
-            boxImage: "https://osborne-ind.ru/wp-content/uploads/2020/02/oLoJNGZAyU8.jpg",
-            uziDevice: null,
-            projectionType: null,
-            patientCard: null,
+            originalImage: "",
+            segmentedImage: "",
+            boxImage: "",
+            uziDevice: 1,
+            projectionType: "long",
+            patientCard: 1,
             uziDate: null,
-            tiradsType: null,
+            tiradsType: 1,
             predictedTypes: [],
             shortResult: false,
             uziWidth: 0,
@@ -104,9 +104,9 @@ class ResultsPage extends React.Component {
             patients: [],
             patientPolicy: null,
             startData: null,
-            patientLastName: null,
-            patientFirstName: null,
-            patientFathersName: null,
+            patientLastName: "",
+            patientFirstName: "",
+            patientFathersName: "",
             imageChoosen: false,
             linkEditingImage: "",
             brightness: 0,
@@ -189,9 +189,9 @@ class ResultsPage extends React.Component {
                     uziLength: response.data.info.nodule_length,
                     uziWidth: response.data.info.nodule_widht,
                     uziDepth: response.data.info.nodule_height,
-                    originalImage: (response.data.images.original.image === null) ? "https://osborne-ind.ru/wp-content/uploads/2020/02/oLoJNGZAyU8.jpg" : response.data.images.original.image,
-                    segmentedImage: (response.data.images.segmentation.image === null) ? "https://osborne-ind.ru/wp-content/uploads/2020/02/oLoJNGZAyU8.jpg": response.data.images.segmentation.image,
-                    boxImage: (response.data.images.box.image === null) ? "https://osborne-ind.ru/wp-content/uploads/2020/02/oLoJNGZAyU8.jpg" : response.data.images.box.image,
+                    originalImage: response.data.images.original.image,
+                    segmentedImage: response.data.images.segmentation.image,
+                    boxImage: response.data.images.box.image,
                     imageParams: {
                         'original': [response.data.images.original.brightness, response.data.images.original.sharpness, response.data.images.original.contrast],
                         'segmented': [response.data.images.segmentation.brightness, response.data.images.segmentation.sharpness, response.data.images.segmentation.contrast],
@@ -204,7 +204,6 @@ class ResultsPage extends React.Component {
     }
 
     handlePatientList = () => {
-
         axios.get("http://localhost:8000/api/v2/patient/list/?format=json")
             .then((response) => this.setState({patients: response.data.results}))
     };
@@ -298,7 +297,7 @@ class ResultsPage extends React.Component {
     render() {
         const styles = getStyles();
         return (
-            <FormControl fullWidth fullHeight sx={{height: '100%', width: '100%'}}>
+            <FormControl sx={{height: '100%', width: '100%'}}>
                 <Box sx={{
                     backgroundColor: '#ffffff',
                     paddingLeft: 15,
@@ -439,7 +438,6 @@ class ResultsPage extends React.Component {
                                                 <FormControl variant={'outlined'} fullWidth>
                                                     <TextFieldResult
                                                         InputLabelProps={{shrink: true}}
-                                                        labelId="device"
                                                         select
                                                         value={this.state.uziDevice}
                                                         label="Аппарат"
@@ -474,7 +472,6 @@ class ResultsPage extends React.Component {
                                             <Box sx={{width: 300, borderRadius: 3, boxShadow: 1}}>
                                                 <FormControl variant={'outlined'} fullWidth>
                                                     <TextFieldResult
-                                                        labelId="device"
                                                         InputLabelProps={{shrink: true}}
                                                         value={this.state.projectionType}
                                                         label="Тип проекции"
@@ -493,7 +490,6 @@ class ResultsPage extends React.Component {
                                             <Box sx={{width: 300, borderRadius: 3, boxShadow: 1}}>
                                                 <FormControl variant={'outlined'} fullWidth>
                                                     <TextFieldResult
-                                                        labelId="device"
                                                         value={this.state.tiradsType}
                                                         label="Тип узла по EU TI-RADS"
                                                         onChange={this.handleChooseTirads}
@@ -533,7 +529,6 @@ class ResultsPage extends React.Component {
                                                             <Box sx={{width: 100, borderRadius: 3, boxShadow: 1}}>
                                                                 <FormControl variant={'outlined'} fullWidth>
                                                                     <TextFieldResult
-                                                                        labelId="device"
                                                                         value={this.state.uziWidth}
                                                                         label="Ширина"
                                                                         onChange={this.handleChooseWidth}
@@ -548,7 +543,6 @@ class ResultsPage extends React.Component {
                                                             <Box sx={{width: 100, borderRadius: 3, boxShadow: 1}}>
                                                                 <FormControl variant={'outlined'} fullWidth>
                                                                     <TextFieldResult
-                                                                        labelId="device"
                                                                         value={this.state.uziLength}
                                                                         label="Длина"
                                                                         onChange={this.handleChooseLength}
@@ -563,7 +557,6 @@ class ResultsPage extends React.Component {
                                                             <Box sx={{width: 100, borderRadius: 3, boxShadow: 1}}>
                                                                 <FormControl variant={'outlined'} fullWidth>
                                                                     <TextFieldResult
-                                                                        labelId="device"
                                                                         value={this.state.uziDepth}
                                                                         label="Толщина"
                                                                         onChange={this.handleChooseDepth}
@@ -597,7 +590,7 @@ class ResultsPage extends React.Component {
                                                             h4: {color: '#5e6379', fontSize: 20, fontFamily: "Roboto"},
                                                             h6: {color: '#4FB3EAFF', fontSize: 20, fontFamily: "Roboto"}
                                                         }}/>
-                                                        <h4>Объём:<h6>{this.state.uziVolume}</h6></h4>
+                                                        <h4>Объём: {this.state.uziVolume}</h4>
 
                                                     </Grid>
                                                 </Grid>
