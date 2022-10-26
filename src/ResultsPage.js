@@ -1,6 +1,6 @@
 import * as React from 'react';
 import '@fontsource/poppins/700.css'
-
+import ImageComponent from "./ImageComponent";
 import GlobalStyles from '@mui/material/GlobalStyles';
 import {
     Autocomplete,
@@ -20,40 +20,45 @@ import {styled} from "@mui/material";
 import Grid from '@mui/material/Grid';
 import {TextFieldWrapper} from "./UploadPage";
 import {DatePicker} from "@mui/x-date-pickers";
-import {AdapterDayjs}  from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 
 import axios from "axios";
 
 import Image from 'mui-image';
-import { useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
+import ConvasComponent from "./ConvasComponent";
+import {Checkbox} from "@mui/material";
 
 const theme = createTheme()
 export const TextFieldResult = styled(TextField)`
   fieldset {
     border-radius: 10px;
-    border-color: #FFFFFF;
-    
-  },
-  '& label': marginLeft: "100%",
-`;
+    border-color: #4FB3EAFF;
+    border-width: 2px;
 
+  }
+
+,
+'& label': marginLeft: "100%",
+`;
 
 
 const getStyles = () => ({
     clickableCard: {
         style: {
             height: 'auto',
-            width: '100%',
+            width: 'auto',
             margin: '0px',
             padding: '0px'
         }
     },
     cardStyle: {
         style: {
-            width:400,
-            height:300,
-            boxShadow:5
+            width: 'auto',
+            height: 'auto',
+            boxShadow: 50,
+            shadowBlur:20
         },
         containerStyle: {
             height: '100%',
@@ -63,21 +68,22 @@ const getStyles = () => ({
     },
 });
 const ResultsPageInterface = () => {
-        const {number} = useParams();
-        return (
+    const {number} = useParams();
+    return (
 
-                <ResultsPage props={number}></ResultsPage>
+        <ResultsPage props={number}></ResultsPage>
 
-        )
+    )
 }
 
-class ResultsPage extends React.Component{
+
+class ResultsPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            originalImage: "",
-            segmentedImage: "",
-            boxImage: "",
+            originalImage: "https://osborne-ind.ru/wp-content/uploads/2020/02/oLoJNGZAyU8.jpg",
+            segmentedImage: "https://osborne-ind.ru/wp-content/uploads/2020/02/oLoJNGZAyU8.jpg",
+            boxImage: "https://osborne-ind.ru/wp-content/uploads/2020/02/oLoJNGZAyU8.jpg",
             uziDevice: null,
             projectionType: null,
             patientCard: null,
@@ -106,13 +112,30 @@ class ResultsPage extends React.Component{
             brightness: 0,
             sharpness: 0,
             contrast: 0,
-            imageParams: {'original': [0,0,0], 'segmented': [0,0,0], 'box': [0,0,0]},
+            imageParams: {'original': [0, 0, 0], 'segmented': [0, 0, 0], 'box': [0, 0, 0]},
         };
         this.handlePatientList();
         this.handleStartPage();
 
 
     }
+
+    handleResponse = () => {
+        this.handleExport()
+        var storedNames = JSON.parse(localStorage.getItem("names"));
+        if (storedNames === null) {
+            storedNames = []
+        }
+        var tmp = null;
+        for (tmp of storedNames){
+            if (tmp === this.props.props){
+                return;
+            }
+        }
+        storedNames.push(this.props.props)
+        console.log(storedNames)
+        localStorage.setItem("names", JSON.stringify(storedNames));
+    };
     handleClickImageOr = () => {
         this.setState({
             imageChoosen: !this.state.imageChoosen,
@@ -142,15 +165,15 @@ class ResultsPage extends React.Component{
         })
     }
     handleStartPage = () => {
-        axios.get("http://localhost:8000/api/v2/uzi/"+this.props.props+"/?format=json")
+        axios.get("http://localhost:8000/api/v2/uzi/" + this.props.props + "/?format=json")
             .then((response) => {
-                this.setState({ startData: response.data.info})
+                this.setState({startData: response.data.info})
                 var tmpTirads = [];
-                tmpTirads.push(response.data.info.nodule_1+' - 1',
-                    response.data.info.nodule_2+' - 2',
-                    response.data.info.nodule_3+' - 3',
-                    response.data.info.nodule_4+' - 4',
-                    response.data.info.nodule_5+' - 5');
+                tmpTirads.push(response.data.info.nodule_1 + ' - 1',
+                    response.data.info.nodule_2 + ' - 2',
+                    response.data.info.nodule_3 + ' - 3',
+                    response.data.info.nodule_4 + ' - 4',
+                    response.data.info.nodule_5 + ' - 5');
                 tmpTirads.sort()
                 tmpTirads.reverse()
                 this.setState({
@@ -160,28 +183,40 @@ class ResultsPage extends React.Component{
                     patientLastName: response.data.info.patient.last_name,
                     patientFirstName: response.data.info.patient.first_name,
                     patientFathersName: response.data.info.patient.fathers_name,
-                    uziDevice: response.data.info.uzi_device_name === 'GE Voluson E8'? 1: 2,
+                    uziDevice: response.data.info.uzi_device_name === 'GE Voluson E8' ? 1 : 2,
                     projectionType: response.data.info.projection_type,
                     longResult: response.data.info.diagnosis,
                     uziLength: response.data.info.nodule_length,
                     uziWidth: response.data.info.nodule_widht,
                     uziDepth: response.data.info.nodule_height,
-                    originalImage: response.data.images.original.image,
-                    segmentedImage: response.data.images.segmentation.image,
-                    boxImage: response.data.images.box.image,
-                    imageParams: {'original': [response.data.images.original.brightness,response.data.images.original.sharpness,response.data.images.original.contrast],
-                        'segmented': [response.data.images.segmentation.brightness,response.data.images.segmentation.sharpness,response.data.images.segmentation.contrast],
-                        'box': [response.data.images.box.brightness,response.data.images.box.sharpness,response.data.images.box.contrast]}
+                    originalImage: (response.data.images.original.image === null) ? "https://osborne-ind.ru/wp-content/uploads/2020/02/oLoJNGZAyU8.jpg" : response.data.images.original.image,
+                    segmentedImage: (response.data.images.segmentation.image === null) ? "https://osborne-ind.ru/wp-content/uploads/2020/02/oLoJNGZAyU8.jpg": response.data.images.segmentation.image,
+                    boxImage: (response.data.images.box.image === null) ? "https://osborne-ind.ru/wp-content/uploads/2020/02/oLoJNGZAyU8.jpg" : response.data.images.box.image,
+                    imageParams: {
+                        'original': [response.data.images.original.brightness, response.data.images.original.sharpness, response.data.images.original.contrast],
+                        'segmented': [response.data.images.segmentation.brightness, response.data.images.segmentation.sharpness, response.data.images.segmentation.contrast],
+                        'box': [response.data.images.box.brightness, response.data.images.box.sharpness, response.data.images.box.contrast]
+                    }
 
-                                    })
-                });
+                })
+            });
 
     }
 
     handlePatientList = () => {
 
         axios.get("http://localhost:8000/api/v2/patient/list/?format=json")
-            .then((response) => this.setState({ patients: response.data.results}))
+            .then((response) => this.setState({patients: response.data.results}))
+    };
+    handleExport = () => {
+        const imageform = new FormData();
+        imageform.append("image", this.state.segmentedImage)
+        const nodule = new FormData();
+        nodule.append("nodule_type", this.state.projectionType)
+        const formData = new FormData();
+        formData.append("segmentation_image", imageform)
+        formData.append("group", nodule)
+        axios.put("http://localhost:8000/api/v2/uzi/update/seg_group/"+this.props.props, formData)
     };
 
     handleChooseDate = (event) => {
@@ -222,7 +257,7 @@ class ResultsPage extends React.Component{
         });
     };
     handleChooseVolume = () => {
-        var num = 0.479* this.state.uziWidth*this.state.uziLength*this.state.uziDepth
+        var num = 0.479 * this.state.uziWidth * this.state.uziLength * this.state.uziDepth
         this.setState({
             uziVolume: num,
         });
@@ -260,52 +295,85 @@ class ResultsPage extends React.Component{
     };
 
 
-
-
     render() {
         const styles = getStyles();
         return (
-            <FormControl fullWidth fullHeight sx={{height: '100%', width:'100%'}}>
-                <Box sx={{backgroundColor: '#ffffff', paddingLeft: 15,paddingTop: 3,paddingBottom: 10,borderTopLeftRadius:130, elevation:10, boxShadow: 4, '&:hover': {
+            <FormControl fullWidth fullHeight sx={{height: '100%', width: '100%'}}>
+                <Box sx={{
+                    backgroundColor: '#ffffff',
+                    paddingLeft: 15,
+                    paddingTop: 5,
+                    paddingBottom: 10,
+                    borderTopLeftRadius: 130,
+                    elevation: 10,
+                    boxShadow: 2,
+                    '&:hover': {
                         backgroundColor: "#ffffff",
-                    },}} color={theme.palette.secondary.contrastText} >
-                    <Grid container direction={'column'} spacing={4} alignContent={'center'} justifyContent={'center'}>
-                        <Grid item >
+                    },
+                }} color={theme.palette.secondary.contrastText}>
+                    <Grid direction={'column'} spacing={4} alignContent={'center'} justifyContent={'center'}>
+                        <Grid item>
                             <Grid container direction={'row'} spacing={2}>
-                                <Grid item >
-                            <GlobalStyles styles={{ h2: { color: 'dimgray', fontSize: 25, fontFamily: "Roboto" }, h5: { color: 'dimgray', fontSize: 10, fontFamily: "Roboto" } }} />
-                            <h2>Определенный тип узла: </h2>
+                                <Grid item>
+                                    <GlobalStyles styles={{
+                                        h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},
+                                        h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
+                                    }}/>
+                                    <h2>Определенный тип узла: </h2>
                                 </Grid>
-                                <Grid item >
+                                <Grid item>
                                     <h2 style={{color: '#4FB3EAFF'}}>{this.state.predictedTypes[0]}</h2>
                                 </Grid>
-                                <Grid item >
-                                    <GlobalStyles styles={{ h2: { color: 'dimgray', fontSize: 25, fontFamily: "Roboto" }, h5: { color: 'dimgray', fontSize: 10, fontFamily: "Roboto" } }} />
+                                <Grid item>
+                                    <GlobalStyles styles={{
+                                        h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},
+                                        h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
+                                    }}/>
                                     <h2 color={'#417bbe'}>{this.state.predictedTypes[1]} </h2>
                                 </Grid>
-                                <Grid item >
-                                    <GlobalStyles styles={{ h2: { color: 'dimgray', fontSize: 25, fontFamily: "Roboto" }, h5: { color: 'dimgray', fontSize: 10, fontFamily: "Roboto" } }} />
+                                <Grid item>
+                                    <GlobalStyles styles={{
+                                        h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},
+                                        h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
+                                    }}/>
                                     <h2>{this.state.predictedTypes[2]} </h2>
                                 </Grid>
                                 <Grid item>
-                                    <Box sx={{width:300}}></Box>
-
+                                    <Box sx={{width: 300}}></Box>
                                 </Grid>
                                 <Grid item>
-                                    <Box sx={{ width: 300, borderRadius:3, boxShadow:4}}>
-                                        <FormControl variant={'outlined'} fullWidth  >
+                                    <Box sx={{width: 350, borderRadius: 3, boxShadow: 1}}>
+                                        <FormControl variant={'outlined'} fullWidth>
                                             <Autocomplete
                                                 id="country-select-demo"
-                                                sx={{ width: 300 }}
+                                                sx={{width: 350}}
                                                 options={this.state.patients}
                                                 autoHighlight
                                                 onChange={this.handleChoosePatient}
                                                 style={{whiteSpace: 'normal'}}
-                                                value={{ last_name: this.state.patientLastName, first_name: this.state.patientFirstName, fathers_name: this.state.patientFathersName, personal_policy: this.state.patientPolicy }}
-                                                getOptionLabel={(option) => option.last_name+' '+option.first_name+' '+option.fathers_name+' '+option.personal_policy}
+                                                value={{
+                                                    last_name: this.state.patientLastName,
+                                                    first_name: this.state.patientFirstName,
+                                                    fathers_name: this.state.patientFathersName,
+                                                    personal_policy: this.state.patientPolicy
+                                                }}
+                                                getOptionLabel={(option) => option.last_name + ' ' + option.first_name + ' ' + option.fathers_name + ' ' + option.personal_policy}
                                                 renderOption={(props, option) => (
-                                                    <Box  component="li" {...props}>
-                                                        <GlobalStyles styles={{ h6: { color: 'dimgray', fontSize: 15, fontFamily: "Roboto", fontWeight: "lighter" },h3: { color: 'dimgray', fontSize: 15, fontFamily: "Roboto", fontWeight: "medium" }  }} />
+                                                    <Box component="li" {...props}>
+                                                        <GlobalStyles styles={{
+                                                            h6: {
+                                                                color: 'dimgray',
+                                                                fontSize: 15,
+                                                                fontFamily: "Roboto",
+                                                                fontWeight: "lighter"
+                                                            },
+                                                            h3: {
+                                                                color: 'dimgray',
+                                                                fontSize: 15,
+                                                                fontFamily: "Roboto",
+                                                                fontWeight: "medium"
+                                                            }
+                                                        }}/>
                                                         <h3>{option.last_name} {option.first_name} {option.fathers_name}</h3>
                                                         <h6>{option.personal_policy}</h6>
                                                     </Box>
@@ -325,75 +393,57 @@ class ResultsPage extends React.Component{
                                         </FormControl>
                                     </Box>
                                 </Grid>
-                                </Grid>
+                            </Grid>
                         </Grid>
-                        <Grid item fullWidth alignItems={'ceneter'} justifyContent={'center'}>
+                        <Grid item fullWidth alignItems={'ceneter'} justifyContent={'center'} sx={{paddingTop:5}}>
                             <Grid container direction={'row'} spacing={8}>
-                                <Grid item >
-                                    <Button
-                                        style={{
-                                            ...styles.clickableCard.style,
-                                            ...this.props.style
-                                        }}
-                                        onClick={this.handleClickImageOr}
-                                    >
+                                <Grid item>
                                         <Card
                                             className={this.props.className}
                                             style={styles.cardStyle.style}
+                                            sx={{boxShadow:3}}
                                             containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>
-                                            <Image src={this.state.originalImage}  sx={{ display: { sm: 'none', lg: 'inline' }}} />
+                                            {/*<Image src={this.state.originalImage}*/}
+                                            {/*       sx={{display: {sm: 'none', lg: 'inline'}}}/>*/}
+                                            <ImageComponent img={this.state.originalImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>
                                         </Card>
-                                    </Button>
                                 </Grid>
-                                <Grid item >
-                                    <Button
-                                        style={{
-                                            ...styles.clickableCard.style,
-                                            ...this.props.style
-                                        }}
-                                        onClick={this.handleClickImageS}
-                                    >
+                                <Grid item>
                                         <Card
                                             className={this.props.className}
                                             style={styles.cardStyle.style}
+                                            sx={{boxShadow:3}}
                                             containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>
-                                            <Image src={this.state.segmentedImage}  sx={{ display: { sm: 'none', lg: 'inline' }}} />
+                                            <ImageComponent img={this.state.segmentedImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>
                                         </Card>
-                                    </Button>
                                 </Grid>
-                                <Grid item >
-                                    <Button
-                                        style={{
-                                            ...styles.clickableCard.style,
-                                            ...this.props.style
-                                        }}
-                                        onClick={this.handleClickImageB}
-                                    >
+                                <Grid item>
                                         <Card
                                             className={this.props.className}
                                             style={styles.cardStyle.style}
+                                            sx={{boxShadow:3}}
                                             containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>
-                                            <Image src={this.state.boxImage}  sx={{ display: { sm: 'none', lg: 'inline' }}} />
+                                            <ImageComponent img={this.state.boxImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>
                                         </Card>
-                                    </Button>
                                 </Grid>
 
                             </Grid>
                         </Grid>
                         <Grid item fullWidth alignItems={''} justifyContent={'center'}>
+                            <Box sx={{height: 15}}/>
                             <Grid container direction={'row'} spacing={2}>
                                 <Grid item>
                                     <Grid container direction={'column'} spacing={2}>
-                                        <Grid item >
-                                            <Box sx={{ width: 300, borderRadius:3, boxShadow:4}}>
-                                                <FormControl variant={'outlined'} fullWidth  >
+                                        <Grid item>
+                                            <Box sx={{width: 300, borderRadius: 3, boxShadow: 1}}>
+                                                <FormControl variant={'outlined'} fullWidth>
                                                     <TextFieldResult
-                                                        InputLabelProps={{ shrink: true }}
+                                                        InputLabelProps={{shrink: true}}
                                                         labelId="device"
                                                         select
                                                         value={this.state.uziDevice}
                                                         label="Аппарат"
-                                                        onChange= {this.handleChooseDevice}
+                                                        onChange={this.handleChooseDevice}
                                                         variant='outlined'
                                                         SelectProps={{defaultValue: this.state.uziDevice}}
                                                     >
@@ -403,32 +453,34 @@ class ResultsPage extends React.Component{
                                                 </FormControl>
                                             </Box>
                                         </Grid>
-                                        <Grid item >
-                                            <Box sx={{ width: 300, borderRadius:3, boxShadow:4}}>
-                                                <FormControl variant={'outlined'} fullWidth  >
+                                        <Grid item>
+                                            <Box sx={{width: 300, borderRadius: 3, boxShadow: 1}}>
+                                                <FormControl variant={'outlined'} fullWidth>
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <DatePicker
                                                             label="Дата приема"
                                                             value={this.state.uziDate}
                                                             onChange={(newValue) => {
-                                                                this.setState({uziDate: newValue});}}
-                                                            renderInput={(params) => <TextFieldResult {...params} InputLabelProps={{ shrink: true }} />}
+                                                                this.setState({uziDate: newValue});
+                                                            }}
+                                                            renderInput={(params) => <TextFieldResult {...params}
+                                                                                                      InputLabelProps={{shrink: true}}/>}
                                                         />
                                                     </LocalizationProvider>
                                                 </FormControl>
                                             </Box>
                                         </Grid>
-                                        <Grid item >
-                                            <Box sx={{ width: 300, borderRadius:3, boxShadow:4}}>
-                                                <FormControl variant={'outlined'} fullWidth  >
+                                        <Grid item>
+                                            <Box sx={{width: 300, borderRadius: 3, boxShadow: 1}}>
+                                                <FormControl variant={'outlined'} fullWidth>
                                                     <TextFieldResult
                                                         labelId="device"
-                                                        InputLabelProps={{ shrink: true }}
+                                                        InputLabelProps={{shrink: true}}
                                                         value={this.state.projectionType}
                                                         label="Тип проекции"
-                                                        onChange= {this.handleChooseProjection}
+                                                        onChange={this.handleChooseProjection}
                                                         variant='outlined'
-                                                        defaultValue = {this.state.projectionType}
+                                                        defaultValue={this.state.projectionType}
                                                         select
                                                     >
                                                         <MenuItem value={'long'}>Поперечная</MenuItem>
@@ -437,18 +489,18 @@ class ResultsPage extends React.Component{
                                                 </FormControl>
                                             </Box>
                                         </Grid>
-                                        <Grid item >
-                                            <Box sx={{ width: 300, borderRadius:3, boxShadow:4}}>
-                                                <FormControl variant={'outlined'} fullWidth  >
+                                        <Grid item>
+                                            <Box sx={{width: 300, borderRadius: 3, boxShadow: 1}}>
+                                                <FormControl variant={'outlined'} fullWidth>
                                                     <TextFieldResult
                                                         labelId="device"
                                                         value={this.state.tiradsType}
                                                         label="Тип узла по EU TI-RADS"
-                                                        onChange= {this.handleChooseTirads}
+                                                        onChange={this.handleChooseTirads}
                                                         variant='outlined'
-                                                        defaultValue = {1}
+                                                        defaultValue={1}
                                                         select
-                                                        InputLabelProps={{ shrink: true }}
+                                                        InputLabelProps={{shrink: true}}
                                                     >
                                                         <MenuItem value={'1'}>1</MenuItem>
                                                         <MenuItem value={'2'}>2</MenuItem>
@@ -459,125 +511,154 @@ class ResultsPage extends React.Component{
                                                 </FormControl>
                                             </Box>
                                         </Grid>
-                                        <Grid item >
+                                        <Grid item>
                                             <FormGroup>
-                                                <h2 style={{fontSize:15, fontWeight:'normal'}}>Обнаружено новообразование</h2>
-                                                <FormControlLabel control={<Switch name={'Обнаружено новообразование'} onChange={this.handleChooseShortResult} value={this.state.shortResult}/>} />
+                                                <h2 style={{fontSize: 15, fontWeight: 'normal'}}>Обнаружено
+                                                    новообразование</h2>
+                                                <FormControlLabel control={<Checkbox sx={{color: '#4fb3ea', '&.Mui-checked': {
+                                                        color: '#4fb3ea',}}} name={'Обнаружено новообразование'}
+                                                                                   onChange={this.handleChooseShortResult}
+                                                                                   value={this.state.shortResult}/>}/>
                                             </FormGroup>
                                         </Grid>
                                     </Grid>
                                 </Grid>
                                 <Grid item>
-                                    <Grid container direction={'column'} spacing={2}>
+                                    <Grid container direction={'column'} spacing={1}>
                                         <Grid item>
-                                            <Grid container direction={'row'} spacing={4} >
+                                            <Grid container direction={'row'} spacing={4}>
                                                 <Grid item>
                                                     <Grid container direction={'column'} spacing={2}>
-                                                        <Grid item >
-                                                            <Box sx={{ width: 100, borderRadius:3, boxShadow:4}}>
-                                                                <FormControl variant={'outlined'} fullWidth  >
+                                                        <Grid item>
+                                                            <Box sx={{width: 100, borderRadius: 3, boxShadow: 1}}>
+                                                                <FormControl variant={'outlined'} fullWidth>
                                                                     <TextFieldResult
                                                                         labelId="device"
                                                                         value={this.state.uziWidth}
                                                                         label="Ширина"
-                                                                        onChange= {this.handleChooseWidth}
+                                                                        onChange={this.handleChooseWidth}
                                                                         variant='outlined'
-                                                                        InputLabelProps={{ shrink: true }}
+                                                                        InputLabelProps={{shrink: true}}
                                                                     >
                                                                     </TextFieldResult>
                                                                 </FormControl>
                                                             </Box>
                                                         </Grid>
-                                                        <Grid item >
-                                                            <Box sx={{ width: 100, borderRadius:3, boxShadow:4}}>
-                                                                <FormControl variant={'outlined'} fullWidth  >
+                                                        <Grid item>
+                                                            <Box sx={{width: 100, borderRadius: 3, boxShadow: 1}}>
+                                                                <FormControl variant={'outlined'} fullWidth>
                                                                     <TextFieldResult
                                                                         labelId="device"
                                                                         value={this.state.uziLength}
                                                                         label="Длина"
-                                                                        onChange= {this.handleChooseLength}
+                                                                        onChange={this.handleChooseLength}
                                                                         variant='outlined'
-                                                                        InputLabelProps={{ shrink: true }}
+                                                                        InputLabelProps={{shrink: true}}
                                                                     >
                                                                     </TextFieldResult>
                                                                 </FormControl>
                                                             </Box>
                                                         </Grid>
-                                                        <Grid item >
-                                                            <Box sx={{ width: 100, borderRadius:3, boxShadow:4}}>
-                                                                <FormControl variant={'outlined'} fullWidth  >
+                                                        <Grid item>
+                                                            <Box sx={{width: 100, borderRadius: 3, boxShadow: 1}}>
+                                                                <FormControl variant={'outlined'} fullWidth>
                                                                     <TextFieldResult
                                                                         labelId="device"
                                                                         value={this.state.uziDepth}
-                                                                        label="Глубина"
-                                                                        onChange= {this.handleChooseDepth}
+                                                                        label="Толщина"
+                                                                        onChange={this.handleChooseDepth}
                                                                         variant='outlined'
-                                                                        InputLabelProps={{ shrink: true }}
+                                                                        InputLabelProps={{shrink: true}}
                                                                     >
                                                                     </TextFieldResult>
                                                                 </FormControl>
                                                             </Box>
                                                         </Grid>
-                                                </Grid>
                                                     </Grid>
-                                                <Grid item >
-                                                    <Button onClick={this.handleChooseVolume} sx= {{backgroundColor:'#4fb3ea', '&:focus':{backgroundColor: '#4fb3ea'}, '&:hover': {
-                                                            backgroundColor: '#2c608a'}, fontFamily: 'Roboto'}} variant={'contained'}>
-                                                        Вычислить объём
-                                                    </Button>
-                                                    <GlobalStyles styles={{ h2: { color: 'dimgray', fontSize: 25, fontFamily: "Roboto" }, h4: { color: '#5e6379', fontSize: 20, fontFamily: "Roboto" } }} />
-                                                    <h4>Объём:</h4>
-                                                    <GlobalStyles styles={{ h2: { color: 'dimgray', fontSize: 25, fontFamily: "Roboto" }, h6: { color: '#4FB3EAFF', fontSize: 20, fontFamily: "Roboto" } }}/>
-                                                    <h6>{this.state.uziVolume}</h6>
                                                 </Grid>
-                                            </Grid>
-                                        </Grid>
+                                                <Grid item>
+                                                    <Grid container direction={'column'} spacing={0}>
+                                                        <Button onClick={this.handleChooseVolume} sx={{
+                                                            backgroundColor: '#4fb3ea',
+                                                            '&:focus': {backgroundColor: '#4fb3ea'},
+                                                            '&:hover': {
+                                                                backgroundColor: '#2c608a'
+                                                            },
+                                                            fontFamily: 'Roboto'
+                                                        }} variant={'contained'}>
+                                                            Вычислить объём
+                                                        </Button>
+                                                        <GlobalStyles styles={{
+                                                            h2: {
+                                                                color: 'dimgray',
+                                                                fontSize: 25,
+                                                                fontFamily: "Roboto"
+                                                            },
+                                                            h4: {color: '#5e6379', fontSize: 20, fontFamily: "Roboto"},
+                                                            h6: {color: '#4FB3EAFF', fontSize: 20, fontFamily: "Roboto"}
+                                                        }}/>
+                                                        <h4>Объём:<h6>{this.state.uziVolume}</h6></h4>
 
-                                        <Grid item >
-                                            <Box sx={{ width: 400, height:150, borderRadius:3, boxShadow:4}}>
-                                                <FormControl variant={'outlined'} fullWidth>
-                                                    <TextFieldResult
-                                                        multiline
-                                                        value={this.state.longResult}
-                                                        label="Эхографические признаки"
-                                                        onChange= {this.handleChooseLongResult}
-                                                        variant='outlined'
-                                                        inputProps={{
-                                                                style: {
-                                                                    height: 117,
-                                                                    width: 398,
-                                                                    borderRadius:3
-                                                                }}}
-                                                        InputLabelProps={{ shrink: true }}
-                                                    >
-                                                    </TextFieldResult>
-                                                </FormControl>
-                                            </Box>
-                                        </Grid>
-                                        <Grid item>
-                                            <Grid container direction={'column'} spacing={2} alignItems={'center'}>
-                                                <Grid item> <Box alignContent={'bottom'} justify={'center'} sx={{paddingLeft:20}}><Button sx= {{backgroundColor:'#4fb3ea', '&:focus':{backgroundColor: '#4fb3ea'}, '&:hover': {
-                                                        backgroundColor: '#2c608a'}, fontFamily: 'Roboto'}} variant={'contained'}>
-                                                    Сохранить результат пациенту
-                                                </Button>
-                                                </Box>
+                                                    </Grid>
                                                 </Grid>
-                                                <Grid item >
-                                                    <Box alignContent={'bottom'} justify={'center'} sx={{paddingLeft:20}}><Button sx= {{backgroundColor:'#3083a9', '&:focus':{backgroundColor: '#3083a9'}, '&:hover': {
-                                                            backgroundColor: '#2c608a'}, fontFamily: 'Roboto'}} variant={'contained'}>
-                                                        Добавить результат на ресурс
-                                                    </Button>
+                                                <Grid item>
+                                                    <Box display={'flex'} sx={{width: 300, borderRadius: 3, boxShadow: 1}}>
+                                                        <FormControl variant={'outlined'} fullWidth>
+                                                            <TextFieldResult
+                                                                multiline
+                                                                value={this.state.longResult}
+                                                                label="Эхографические признаки"
+                                                                onChange={this.handleChooseLongResult}
+                                                                variant='outlined'
+                                                                inputProps={{
+                                                                    style: {
+                                                                        width: 398,
+                                                                        borderRadius: 3
+                                                                    }
+                                                                }}
+                                                                InputLabelProps={{shrink: true}}
+                                                            >
+                                                            </TextFieldResult>
+                                                        </FormControl>
                                                     </Box>
                                                 </Grid>
+                                                <Grid item>
+                                                    <Grid container direction={'column'} spacing={2} alignItems={'center'}>
+                                                        <Grid item> <Box alignContent={'bottom'} justify={'center'}
+                                                                         ><Button sx={{
+                                                            backgroundColor: '#4fb3ea',
+                                                            '&:focus': {backgroundColor: '#4fb3ea'},
+                                                            '&:hover': {
+                                                                backgroundColor: '#2c608a'
+                                                            },
+                                                            fontFamily: 'Roboto'
+                                                        }} variant={'contained'} onClick={this.handleResponse}>
+                                                            Сохранить результат
+                                                        </Button>
+                                                        </Box>
+                                                        </Grid>
+                                                        <Grid item>
+                                                            <Box component={Link} to={`mask/`} alignContent={'bottom'}
+                                                                 justify={'center'} ><Button sx={{
+                                                                backgroundColor: '#3083a9',
+                                                                '&:focus': {backgroundColor: '#3083a9'},
+                                                                '&:hover': {
+                                                                    backgroundColor: '#2c608a'
+                                                                },
+                                                                fontFamily: 'Roboto'
+                                                            }} variant={'contained'}>
+                                                                Добавить результат на ресурс
+                                                            </Button>
+                                                            </Box>
+                                                        </Grid>
 
 
+                                                    </Grid>
+
+                                                </Grid>
                                             </Grid>
-
                                         </Grid>
-                                    </Grid>
-                                </Grid>
-                                <Grid item>
-                                    <Grid container direction={'column'} flex>
+
 
                                     </Grid>
                                 </Grid>
@@ -593,4 +674,5 @@ class ResultsPage extends React.Component{
 
     }
 }
+
 export default ResultsPageInterface;
