@@ -24,7 +24,7 @@ const TiffImageComponent = (props) =>{
         var imgArray =[];
     useEffect(() =>{
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', props.img);
+        xhr.open('GET', props.url+ props.img);
         xhr.responseType = 'arraybuffer';
         xhr.onload = e => {
             const ifds = UTIF.decode(e.target.response);

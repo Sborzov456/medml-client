@@ -30,7 +30,7 @@ const CustomSlider = styled(Slider)(() => ({
 )
 
 const ImageComponent = (props) => {
-    const [image] = useImage(props.img, 'anonymous', 'origin')
+    const [image] = useImage(props.url+props.img, 'anonymous', 'origin')
     const [tool, setTool] = React.useState('pen');
     const [width, setWidth] = React.useState(30);
     const [lines, setLines] = React.useState([]);
