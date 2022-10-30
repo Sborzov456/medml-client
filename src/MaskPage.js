@@ -47,7 +47,7 @@ class MaskPage extends React.Component {
         this.handleStartPage()
     }
     handleStartPage = () => {
-        axios.get("http://localhost:8000/api/v2/uzi/"+this.props.props+"/?format=json")
+        axios.get(this.props.url+"/api/v2/uzi/"+this.props.props+"/?format=json")
             .then((response) => {
                 this.setState({ startData: response.data.info})
                 this.setState({
@@ -72,7 +72,7 @@ class MaskPage extends React.Component {
                     },}} >
             <Grid container={true} direction={'row'} justify = "center">
                 <Grid item>
-                    <ConvasComponent img={this.state.originalImage} number={this.props.props} type={this.state.projectionType} />
+                    <ConvasComponent img={this.state.originalImage} number={this.props.props} type={this.state.projectionType} url={this.props.url}/>
                 </Grid>
                 <Grid item>
                     <Box sx={{ width: 300, borderRadius:3}} >

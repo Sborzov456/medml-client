@@ -69,23 +69,17 @@ const ConvasComponent = (props) => {
     }
 
     const handleExport = () => {
-        const imageform = new FormData();
         imageRef.current.destroy();
         const cropped = stageRef.current.size({
             width: image.width,
             height: image.height
-        })
-        // const uri = cropped.toDataURL();
-        // downloadURI(uri, "stage.png")
-        const img = stageRef.current.toImage();
-        imageform.append("image", layerRef.current.toImage({mimeType: "image/png"}))
-        const nodule = new FormData();
-        nodule.append("nodule_type", type)
+        }
+        )
         const formData = new FormData();
-        formData.append("segmentation_image", imageform)
-        formData.append("group", nodule)
-
-        axios.put("http://localhost:8000/api/v2/uzi/update/seg_group/"+number, formData)
+        const image = new File(layerRef.current.toImage({mimeType: "image/png"}), 'uploadfile.png')
+        formData.append("segmentation_image.image", image);
+        formData.append("group.nodule_type", this.state.tiradsType);
+        axios.put(props.url+"/api/v2/uzi/update/seg_group/"+number, formData)
     };
     const handleClear = () => {
         layerRef.current.removeChildren();

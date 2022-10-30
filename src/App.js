@@ -31,7 +31,7 @@ import ShotTable from "./ShotTable";
 
 
 
-function App() {
+function App(props) {
     const [state, setState] = React.useState({
         top: false,
         left: false,
@@ -107,10 +107,10 @@ function App() {
             <Box sx={{height:40}}/>
             <Routes>
                 {/*<Route exact path="results/:number" element={<ResultsPageInterface />} />*/}
-                <Route exact path="results" element={<ShotTable />}/>
-                <Route exact path="result/:number2/mask" element={<MaskPageInterface />}/>
-                <Route exact path="result/:number"  element={<ResultsPageInterface />} />}/>
-                <Route exact path="/" element={<UploadPage />}/>
+                <Route exact path="results" element={<ShotTable url={props.url}/>}/>
+                <Route exact path="result/:number2/mask" element={<MaskPageInterface url={props.url}/>}/>
+                <Route exact path="result/:number"  element={<ResultsPageInterface url={props.url}/>} />}/>
+                <Route exact path="/" element={<UploadPage url={props.url}/>}/>
             </Routes>
     </div>
 

@@ -1,82 +1,69 @@
-import {Stage, Layer, Line, Image} from 'react-konva';
 import * as React from "react";
-import {Box, FormControl, FormControlLabel, IconButton, Slider, styled, TextField} from "@mui/material";
-import {Icon} from "@iconify/react";
-import ImageGallery from 'react-image-gallery';
-
-import useImage from "use-image";
-
-import Grid from "@mui/material/Grid";
-import axios from "axios";
+import UTIF from 'utif';
+import {Image, Layer, Shape, Stage} from "react-konva";
+import {Box, FormControl, IconButton, Slider} from "@mui/material";
 import GlobalStyles from "@mui/material/GlobalStyles";
-import RadioGroup from "@mui/material/RadioGroup";
-import Radio from "@mui/material/Radio";
+import {Icon} from "@iconify/react";
+import {useEffect, useState} from "react";
 import Konva from "konva";
-import {Link} from "react-router-dom";
-import {useEffect} from "react";
+import ImageGallery from 'react-image-gallery';
+function downloadURI(uri, name) {
+    var link = document.createElement('a');
+    link.download = name;
+    link.href = uri;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+const TiffImageComponent = (props) =>{
+        const [image, setImage] = useState(null)
+        const layerRef = React.useRef(null);
+        const stageRef = React.useRef(null);
+        const [orBr, setOrBr] = React.useState(0)
+        const [orSat, setOrSat] = React.useState(0)
+        var imgArray =[];
+    useEffect(() =>{
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', props.img);
+        xhr.responseType = 'arraybuffer';
+        xhr.onload = e => {
+            const ifds = UTIF.decode(e.target.response);
+            const firstPageOfTif = ifds[0];
+            UTIF.decodeImage(e.target.response, ifds[0], ifds);
+            // for (let tmp in ifds) {
+            //     const rgba = UTIF.toRGBA8(tmp);
+            //     const imageWidth = firstPageOfTif.width;
+            //     const imageHeight = firstPageOfTif.height;
+            //     const cnv = document.createElement('canvas');
+            //     cnv.width = imageWidth;
+            //     cnv.height = imageHeight;
+            //     const ctx = cnv.getContext('2d');
+            //     const imageData = ctx.createImageData(imageWidth, imageHeight);
+            //     for (let i = 0; i < rgba.length; i++) {
+            //         imageData.data[i] = rgba[i];
+            //     }
+            //     cnv.toBlob((blob) => { imgArray.push({'original': URL.createObjectURL(blob)})})
+            // }
+            // console.log(imgArray)
 
-const CustomSlider = styled(Slider)(() => ({
-            '& .MuiSlider-thumb': {
-                height: 27,
-                width: 27,
-                backgroundColor: '#fff',
-                border: '1px solid currentColor',
-                '&:hover': {
-                    boxShadow: '0 0 0 8px rgba(58, 133, 137, 0.16)',
-                },
+            const rgba = UTIF.toRGBA8(ifds[0]);
+            const imageWidth = firstPageOfTif.width;
+            const imageHeight = firstPageOfTif.height;
+            const cnv = document.createElement('canvas');
+            cnv.width = imageWidth;
+            cnv.height = imageHeight;
+
+            const ctx = cnv.getContext('2d');
+            const imageData = ctx.createImageData(imageWidth, imageHeight);
+            for (let i = 0; i < rgba.length; i++) {
+                imageData.data[i] = rgba[i];
             }
-        }
-    )
-)
-
-const ImageComponent = (props) => {
-    const [image] = useImage(props.img, 'anonymous', 'origin')
-    const [tool, setTool] = React.useState('pen');
-    const [width, setWidth] = React.useState(30);
-    const [lines, setLines] = React.useState([]);
-    const isDrawing = React.useRef(false);
-    const layerRef = React.useRef(null);
-    const stageRef = React.useRef(null);
-    const [number, setNumber] = React.useState(props.number);
-    const [srcImage] = React.useState(props.img)
-    const [type, setType] = React.useState(props.type)
-    const [imgChoosen, setChosen] = React.useState(props.choosen)
-    const [orBr, setOrBr] = React.useState(0)
-    const [orSh, setOrSh] = React.useState(0)
-    const [orSat, setOrSat] = React.useState(0)
-    const handleMouseDown = (e) => {
-        isDrawing.current = true;
-        const pos = e.target.getStage().getPointerPosition();
-        setLines([...lines, {tool, points: [pos.x, pos.y]}]);
-    };
-
-    const handleMouseMove = (e) => {
-        if (!isDrawing.current) {
-            return;
-        }
-        const stage = e.target.getStage();
-        const point = stage.getPointerPosition();
-        let lastLine = lines[lines.length - 1];
-
-        lastLine.points = lastLine.points.concat([point.x, point.y]);
+            ctx.putImageData(imageData, 0, 0);
+            setImage(cnv)
+        };
+        xhr.send();}, [])
 
 
-        lines.splice(lines.length - 1, 1, lastLine);
-        setLines(lines.concat());
-    };
-
-    const handleMouseUp = () => {
-        isDrawing.current = false;
-    };
-
-    function downloadURI(uri, name) {
-        var link = document.createElement('a');
-        link.download = name;
-        link.href = uri;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
 
     const handleExport = () => {
         const tmpStage = new Konva.Stage({container: 'stage'});
@@ -88,7 +75,7 @@ const ImageComponent = (props) => {
             height: image.naturalHeight
         })
         const uri = cropped.toDataURL();
-        downloadURI(uri, "stage.png")
+        downloadURI(props.img, "stage.tif")
         tmpStage.size({
             width: 0,
             height: 0
@@ -108,8 +95,8 @@ const ImageComponent = (props) => {
         layerRef.current.contrast(orSat)
         layerRef.current.brightness(orBr / 100)
     }
-    return (
-        <div>
+        return (
+            <div>
             <Box container direction={'column'}>
                 <GlobalStyles styles={{
                     h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},
@@ -122,13 +109,14 @@ const ImageComponent = (props) => {
                 }}>
                     <Icon icon="fluent:save-20-filled"/>
                 </IconButton>
-                 <Stage
+                {/*<ImageGallery items={imgArray}></ImageGallery>*/}
+                <Stage
                     width={400}
                     height={300}
                     ref={stageRef}
                 >
                     <Layer>
-                        <Image ref={layerRef} width={400} height={300} mimeType={"image/png"} image={image}></Image>
+                        <Image ref={layerRef} width={400} height={300} image={image}></Image>
                     </Layer>
                 </Stage>
                 <Box sx={{width: 300, paddingTop: 1}} display={'flex'} alignContent={'center'}>
@@ -169,8 +157,9 @@ const ImageComponent = (props) => {
                     </Box>
                 </Box>
             </Box>
-            <div id={'stage'}></div>
-        </div>
-    )
-};
-export default ImageComponent;
+        <div id={'stage'}></div>
+    </div>
+        );
+}
+
+export default TiffImageComponent;

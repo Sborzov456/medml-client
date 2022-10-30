@@ -28,8 +28,8 @@ export const TextFieldWrapper = styled(TextField)`
 
 
 class UploadPage extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             originalImage: "",
             uziDevice: null,
@@ -93,7 +93,7 @@ class UploadPage extends React.Component {
         });
     };
     handlePatientList = () => {
-        axios.get("http://localhost:8000/api/v2/patient/list/?format=json")
+        axios.get(this.props.url+"/api/v2/patient/list/?format=json")
             .then((response) => this.setState({patients: response.data.results}))
     };
 
@@ -105,7 +105,7 @@ class UploadPage extends React.Component {
         formData.append("patient_card", this.state.patientCard);
 
         formData.append("original_image", this.state.imageFile);
-        const response = axios.post("http://localhost:8000/api/v2/uzi/create/", formData)
+        const response = axios.post(this.props.url+"/api/v2/uzi/create/", formData)
         const data = response.then((response) => this.setState({
             resultid: response.data.image_group_id,
         }))

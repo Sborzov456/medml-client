@@ -97,7 +97,7 @@ const MyGrid = (props) => {
         }
         storedNames.reverse()
         const data = storedNames.map(async (tmp) => {
-                const res = await fetch("http://localhost:8000/api/v2/uzi/" + tmp + "/?format=json")
+                const res = await fetch(props.url+"/api/v2/uzi/" + tmp + "/?format=json")
                 return res.json()
             }
         )
@@ -134,8 +134,8 @@ const MyGrid = (props) => {
 }
 
 class ShotTable extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
     }
 
     render() {
@@ -176,7 +176,7 @@ class ShotTable extends React.Component {
                     paddingBottom: 10,
 
                 }} display={'flex'}>
-                    <MyGrid/>
+                    <MyGrid url={this.props.url}/>
                 </Box>
             </FormControl>
         )

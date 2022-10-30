@@ -29,6 +29,7 @@ import Image from 'mui-image';
 import {Link, useParams} from "react-router-dom";
 import ConvasComponent from "./ConvasComponent";
 import {Checkbox} from "@mui/material";
+import TiffImageComponent from "./TiffImageComponent";
 
 const theme = createTheme()
 export const TextFieldResult = styled(TextField)`
@@ -67,11 +68,11 @@ const getStyles = () => ({
         }
     },
 });
-const ResultsPageInterface = () => {
+const ResultsPageInterface = (props) => {
     const {number} = useParams();
     return (
 
-        <ResultsPage props={number}></ResultsPage>
+        <ResultsPage props={number} url={props.url}></ResultsPage>
 
     )
 }
@@ -165,7 +166,7 @@ class ResultsPage extends React.Component {
         })
     }
     handleStartPage = () => {
-        axios.get("http://localhost:8000/api/v2/uzi/" + this.props.props + "/?format=json")
+        axios.get(this.props.url+"/api/v2/uzi/" + this.props.props + "/?format=json")
             .then((response) => {
                 this.setState({startData: response.data.info})
                 var tmpTirads = [];
@@ -204,18 +205,22 @@ class ResultsPage extends React.Component {
     }
 
     handlePatientList = () => {
-        axios.get("http://localhost:8000/api/v2/patient/list/?format=json")
+        axios.get(this.props.url+"/api/v2/patient/list/?format=json")
             .then((response) => this.setState({patients: response.data.results}))
     };
     handleExport = () => {
-        const imageform = new FormData();
-        imageform.append("image", this.state.segmentedImage)
-        const nodule = new FormData();
-        nodule.append("nodule_type", this.state.projectionType)
-        const formData = new FormData();
-        formData.append("segmentation_image", imageform)
-        formData.append("group", nodule)
-        axios.put("http://localhost:8000/api/v2/uzi/update/seg_group/"+this.props.props, formData)
+        axios.get(this.props.url+this.state.segmentedImage, {responseType: 'blob'}).then( res => {
+            //const imageform = new FormData();
+            //imageform.append("image", this.state.segmentedImage)
+            //const nodule = new FormData();
+            //nodule.append("nodule_type", this.state.projectionType)
+            const formData = new FormData();
+            const image = new File([res.data], 'uploadfile.png')
+            formData.append("segmentation_image.image", image);
+            formData.append("group.nodule_type", this.state.tiradsType);
+            axios.put(this.props.url+"/api/v2/uzi/update/seg_group/" + this.props.props, formData)
+        }
+    )
     };
 
     handleChooseDate = (event) => {
@@ -404,7 +409,8 @@ class ResultsPage extends React.Component {
                                             containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>
                                             {/*<Image src={this.state.originalImage}*/}
                                             {/*       sx={{display: {sm: 'none', lg: 'inline'}}}/>*/}
-                                            <ImageComponent img={this.state.originalImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>
+                                            {(this.state.originalImage.split('.')[1] === 'tiff' || this.state.originalImage.split('.')[1] === 'tif') && <TiffImageComponent url={this.props.url} img={this.state.originalImage}/>}
+                                            {this.state.originalImage.split('.')[1] === 'png' && <ImageComponent url={this.props.url} img={this.state.originalImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>}
                                         </Card>
                                 </Grid>
                                 <Grid item>
@@ -413,7 +419,8 @@ class ResultsPage extends React.Component {
                                             style={styles.cardStyle.style}
                                             sx={{boxShadow:3}}
                                             containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>
-                                            <ImageComponent img={this.state.segmentedImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>
+                                            {(this.state.originalImage.split('.')[1] === 'tiff' || this.state.originalImage.split('.')[1] === 'tif') &&<TiffImageComponent url={this.props.url} img={this.state.segmentedImage}/>}
+                                            {this.state.originalImage.split('.')[1] === 'png' &&<ImageComponent url={this.props.url} img={this.state.segmentedImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>}
                                         </Card>
                                 </Grid>
                                 <Grid item>
@@ -422,7 +429,8 @@ class ResultsPage extends React.Component {
                                             style={styles.cardStyle.style}
                                             sx={{boxShadow:3}}
                                             containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>
-                                            <ImageComponent img={this.state.boxImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>
+                                            {(this.state.originalImage.split('.')[1] === 'tiff' || this.state.originalImage.split('.')[1] === 'tif') && <TiffImageComponent url={this.props.url} img={this.state.boxImage}/>}
+                                            {this.state.originalImage.split('.')[1] === 'png' &&<ImageComponent url={this.props.url} img={this.state.boxImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>}
                                         </Card>
                                 </Grid>
 
