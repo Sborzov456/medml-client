@@ -10,10 +10,10 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import GlobalStyles from "@mui/material/GlobalStyles";
 
-const MaskPageInterface = () => {
+const MaskPageInterface = (props) => {
     const {number2} = useParams();
     return (
-        <MaskPage props={number2}></MaskPage>
+        <MaskPage props={number2} url={props.url}></MaskPage>
     )
 }
 
@@ -24,8 +24,6 @@ class MaskPage extends React.Component {
         super(props);
         this.state = {
             originalImage: '',
-            segmentedImage:"",
-            boxImage:"",
             uziDevice: null,
             projectionType: null,
             patientCard: null,
@@ -51,7 +49,7 @@ class MaskPage extends React.Component {
             .then((response) => {
                 this.setState({ startData: response.data.info})
                 this.setState({
-                    originalImage: response.data.images.original.image,
+                    originalImage: this.props.url+response.data.images.original.image,
                 })
             });
 

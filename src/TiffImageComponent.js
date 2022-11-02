@@ -8,7 +8,11 @@ import {useEffect, useState} from "react";
 import Konva from "konva";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import Canvas2image from "canvas-to-png";
-
+import { Navigation, EffectFade, Scrollbar } from 'swiper';
+import 'swiper/css/navigation';
+import 'swiper/css/effect-fade';
+import 'swiper/css'
+import styles from './Swiper.module.scss'
 function downloadURI(uri, name) {
     var link = document.createElement('a');
     link.download = name;
@@ -26,7 +30,7 @@ const TiffImageComponent = (props) =>{
         const [imgArray, setArray] =useState([]);
     useEffect(() =>{
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', props.img);
+        xhr.open('GET',props.url + props.img);
         xhr.responseType = 'arraybuffer';
         xhr.onload = e => {
             const ifds = UTIF.decode(e.target.response);
@@ -71,21 +75,24 @@ const TiffImageComponent = (props) =>{
 
     console.log(imgArray)
     const handleExport = () => {
-        const tmpStage = new Konva.Stage({container: 'stage'});
-        const tmpLayer = new Konva.Layer();
-        tmpLayer.add(new Konva.Image({image: image}))
-        tmpStage.add(tmpLayer)
-        const cropped = tmpStage.size({
-            width: image.naturalWidth,
-            height: image.naturalHeight
-        })
-        const uri = cropped.toDataURL();
-        downloadURI(props.img, "stage.tif")
-        tmpStage.size({
-            width: 0,
-            height: 0
-        })
-    };
+            fetch(props.url+props.img, {
+                method: "GET",
+                headers: {}
+            })
+                .then(response => {
+                    response.arrayBuffer().then(function(buffer) {
+                        const url = window.URL.createObjectURL(new Blob([buffer]));
+                        const link = document.createElement("a");
+                        link.href = url;
+                        link.setAttribute("download", "image.tiff"); //or any other extension
+                        document.body.appendChild(link);
+                        link.click();
+                    });
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        };
     const handleChangeBr = (event) => {
         setOrBr(event.target.value);
         layerRef.current.cache();
@@ -114,20 +121,18 @@ const TiffImageComponent = (props) =>{
                 }}>
                     <Icon icon="fluent:save-20-filled"/>
                 </IconButton>
-                <Swiper>
-                    {imgArray.map((item) =>
-                        <SwiperSlide>{item}</SwiperSlide>
+                <Swiper
+                    // install Swiper modules
+                    modules={[Navigation, EffectFade]}
+                    navigation
+                    effect={'slide'}
+                    speed={800}
+                    slidesPerView={1}
+                    className={styles.myswiper}
+                >
+                    { imgArray.map((item) => <SwiperSlide className={styles.swiperslide}>{item}</SwiperSlide>
                     )}
                 </Swiper>
-                {/*<Stage*/}
-                {/*    width={400}*/}
-                {/*    height={300}*/}
-                {/*    ref={stageRef}*/}
-                {/*>*/}
-                {/*    <Layer>*/}
-                {/*        <Image ref={layerRef} width={400} height={300} image={image}></Image>*/}
-                {/*    </Layer>*/}
-                {/*</Stage>*/}
                 <Box sx={{width: 300, paddingTop: 1}} display={'flex'} alignContent={'center'}>
                     <h2 style={{fontSize: 12, fontWeight: 'normal', paddingRight: 59, paddingLeft: 30}}>Яркость</h2>
                     <FormControl variant={'outlined'}>

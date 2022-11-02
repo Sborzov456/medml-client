@@ -5,14 +5,11 @@ import {Icon} from "@iconify/react";
 
 import useImage from "use-image";
 
-import Grid from "@mui/material/Grid";
-import axios from "axios";
+
 import GlobalStyles from "@mui/material/GlobalStyles";
-import RadioGroup from "@mui/material/RadioGroup";
-import Radio from "@mui/material/Radio";
+
 import Konva from "konva";
-import {Link} from "react-router-dom";
-import {useEffect} from "react";
+
 
 const CustomSlider = styled(Slider)(() => ({
             '& .MuiSlider-thumb': {

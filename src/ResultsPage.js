@@ -24,10 +24,7 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 
 import axios from "axios";
-
-import Image from 'mui-image';
 import {Link, useParams} from "react-router-dom";
-import ConvasComponent from "./ConvasComponent";
 import {Checkbox} from "@mui/material";
 import TiffImageComponent from "./TiffImageComponent";
 
@@ -49,21 +46,21 @@ const getStyles = () => ({
     clickableCard: {
         style: {
             height: 'auto',
-            width: 'auto',
+            width: '400',
             margin: '0px',
             padding: '0px'
         }
     },
     cardStyle: {
         style: {
-            width: 'auto',
+            width: '400',
             height: 'auto',
             boxShadow: 50,
             shadowBlur:20
         },
         containerStyle: {
+            width:400,
             height: '100%',
-            display: 'flex',
             flexDirection: 'column'
         }
     },
@@ -193,11 +190,7 @@ class ResultsPage extends React.Component {
                     originalImage: response.data.images.original.image,
                     segmentedImage: response.data.images.segmentation.image,
                     boxImage: response.data.images.box.image,
-                    imageParams: {
-                        'original': [response.data.images.original.brightness, response.data.images.original.sharpness, response.data.images.original.contrast],
-                        'segmented': [response.data.images.segmentation.brightness, response.data.images.segmentation.sharpness, response.data.images.segmentation.contrast],
-                        'box': [response.data.images.box.brightness, response.data.images.box.sharpness, response.data.images.box.contrast]
-                    }
+                    tiradsType: response.data.info.nodule_type,
 
                 })
             });
@@ -210,10 +203,6 @@ class ResultsPage extends React.Component {
     };
     handleExport = () => {
         axios.get(this.props.url+this.state.segmentedImage, {responseType: 'blob'}).then( res => {
-            //const imageform = new FormData();
-            //imageform.append("image", this.state.segmentedImage)
-            //const nodule = new FormData();
-            //nodule.append("nodule_type", this.state.projectionType)
             const formData = new FormData();
             const image = new File([res.data], 'uploadfile.png')
             formData.append("segmentation_image.image", image);
@@ -400,15 +389,13 @@ class ResultsPage extends React.Component {
                             </Grid>
                         </Grid>
                         <Grid item fullWidth alignItems={'ceneter'} justifyContent={'center'} sx={{paddingTop:5}}>
-                            <Grid container direction={'row'} spacing={8}>
+                            <Grid container direction={'row'} spacing={6}>
                                 <Grid item>
                                         <Card
                                             className={this.props.className}
                                             style={styles.cardStyle.style}
-                                            sx={{boxShadow:3}}
+                                            sx={{boxShadow:3, width:400}}
                                             containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>
-                                            {/*<Image src={this.state.originalImage}*/}
-                                            {/*       sx={{display: {sm: 'none', lg: 'inline'}}}/>*/}
                                             {(this.state.originalImage.split('.')[1] === 'tiff' || this.state.originalImage.split('.')[1] === 'tif') && <TiffImageComponent url={this.props.url} img={this.state.originalImage}/>}
                                             {this.state.originalImage.split('.')[1] === 'png' && <ImageComponent url={this.props.url} img={this.state.originalImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>}
                                         </Card>
@@ -417,7 +404,7 @@ class ResultsPage extends React.Component {
                                         <Card
                                             className={this.props.className}
                                             style={styles.cardStyle.style}
-                                            sx={{boxShadow:3}}
+                                            sx={{boxShadow:3, width:400}}
                                             containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>
                                             {(this.state.originalImage.split('.')[1] === 'tiff' || this.state.originalImage.split('.')[1] === 'tif') &&<TiffImageComponent url={this.props.url} img={this.state.segmentedImage}/>}
                                             {this.state.originalImage.split('.')[1] === 'png' &&<ImageComponent url={this.props.url} img={this.state.segmentedImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>}
@@ -427,7 +414,7 @@ class ResultsPage extends React.Component {
                                         <Card
                                             className={this.props.className}
                                             style={styles.cardStyle.style}
-                                            sx={{boxShadow:3}}
+                                            sx={{boxShadow:3, width:400}}
                                             containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>
                                             {(this.state.originalImage.split('.')[1] === 'tiff' || this.state.originalImage.split('.')[1] === 'tif') && <TiffImageComponent url={this.props.url} img={this.state.boxImage}/>}
                                             {this.state.originalImage.split('.')[1] === 'png' &&<ImageComponent url={this.props.url} img={this.state.boxImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>}
@@ -639,8 +626,8 @@ class ResultsPage extends React.Component {
                                                         </Box>
                                                         </Grid>
                                                         <Grid item>
-                                                            <Box component={Link} to={`mask/`} alignContent={'bottom'}
-                                                                 justify={'center'} ><Button sx={{
+                                                            <Box  alignContent={'bottom'}
+                                                                 justify={'center'} ><Button component={Link} to={`mask/`} disabled={(this.state.originalImage.split('.')[1] === 'tiff' || this.state.originalImage.split('.')[1] === 'tif')} sx={{
                                                                 backgroundColor: '#3083a9',
                                                                 '&:focus': {backgroundColor: '#3083a9'},
                                                                 '&:hover': {

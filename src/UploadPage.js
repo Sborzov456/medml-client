@@ -40,7 +40,7 @@ class UploadPage extends React.Component {
             deviceChosen: false,
             projectionChosen: false,
             patientChosen: false,
-            typeText: "Выберите файл в формате .png",
+            typeText: "Выберите файл в формате .png или .tiff",
             imageFile: null,
             patients: [],
             patientPolicy: null,
@@ -93,7 +93,7 @@ class UploadPage extends React.Component {
         });
     };
     handlePatientList = () => {
-        axios.get(this.props.url+"/api/v2/patient/list/?format=json")
+        axios.get(this.props.url + "/api/v2/patient/list/?format=json")
             .then((response) => this.setState({patients: response.data.results}))
     };
 
@@ -105,11 +105,29 @@ class UploadPage extends React.Component {
         formData.append("patient_card", this.state.patientCard);
 
         formData.append("original_image", this.state.imageFile);
-        const response = axios.post(this.props.url+"/api/v2/uzi/create/", formData)
-        const data = response.then((response) => this.setState({
-            resultid: response.data.image_group_id,
-        }))
-        this.handleWhat();
+        const response = axios.post(this.props.url + "/api/v2/uzi/create/", formData)
+        const data = response.then((response) => {
+            this.setState({
+                resultid: response.data.image_group_id,
+            })
+
+            var storedNames = JSON.parse(localStorage.getItem("names"));
+            if (storedNames === null) {
+                storedNames = []
+            }
+            for (let tmp of storedNames) {
+                if (tmp === response.data.image_group_id) {
+                    return;
+                }
+            }
+            if (response.data.image_group_id !== 0){
+                storedNames.push(response.data.image_group_id)
+            console.log(storedNames)
+            localStorage.setItem("names", JSON.stringify(storedNames))
+            this.handleWhat();
+        }
+
+        })
     };
 
     handleWhat = () => {
@@ -136,7 +154,7 @@ class UploadPage extends React.Component {
                     },
                 }} color={theme.palette.secondary.contrastText}>
                     <Grid container direction={'row'} spacing={0}>
-                        <Grid item xl={6} md={6} sm={12} xs={12}>
+                        <Grid item xl={2} md={4} sm={4} xs={4}>
                             <GlobalStyles styles={{
                                 h1: {color: 'dimgray', fontSize: 40, fontFamily: "Roboto"},
                                 h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}

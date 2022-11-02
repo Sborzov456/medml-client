@@ -2,7 +2,6 @@ import {Stage, Layer, Line, Image} from 'react-konva';
 import * as React from "react";
 import {Box, FormControl, FormControlLabel, IconButton, Slider} from "@mui/material";
 import {Icon} from "@iconify/react";
-import toImage from 'konva'
 
 import useImage from "use-image";
 
@@ -75,11 +74,14 @@ const ConvasComponent = (props) => {
             height: image.height
         }
         )
-        const formData = new FormData();
-        const image = new File(layerRef.current.toImage({mimeType: "image/png"}), 'uploadfile.png')
-        formData.append("segmentation_image.image", image);
-        formData.append("group.nodule_type", this.state.tiradsType);
-        axios.put(props.url+"/api/v2/uzi/update/seg_group/"+number, formData)
+        axios.get(this.props.url+this.state.segmentedImage, {responseType: 'blob'}).then( res => {
+            const formData = new FormData();
+            const image = new File([res.data], 'uploadfile.png')
+            formData.append("segmentation_image.image", cropped.toImage());
+            formData.append("group.nodule_type", this.state.tiradsType);
+            axios.put(this.props.url+"/api/v2/uzi/update/seg_group/" + this.props.props, formData)
+        }
+        )
     };
     const handleClear = () => {
         layerRef.current.removeChildren();
