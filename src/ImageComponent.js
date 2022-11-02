@@ -2,7 +2,6 @@ import {Stage, Layer, Line, Image} from 'react-konva';
 import * as React from "react";
 import {Box, FormControl, FormControlLabel, IconButton, Slider, styled, TextField} from "@mui/material";
 import {Icon} from "@iconify/react";
-import ImageGallery from 'react-image-gallery';
 
 import useImage from "use-image";
 

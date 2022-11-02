@@ -8,13 +8,10 @@ import {Box} from "@mui/material";
 
 import axios from "axios";
 
-import Image from 'mui-image';
 import {Link, useParams} from "react-router-dom";
 import GlobalStyles from "@mui/material/GlobalStyles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import {useEffect, useState} from "react";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import SimpleListMenu from "./MenuButton";
 import BasicMenu from "./MenuButton";
 
 function createData(id, patientName, patientPolicy, uziDate, tiradsType, uziVolume, uziDevice, projectionType) {
