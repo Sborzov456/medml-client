@@ -6,7 +6,9 @@ import GlobalStyles from "@mui/material/GlobalStyles";
 import {Icon} from "@iconify/react";
 import {useEffect, useState} from "react";
 import Konva from "konva";
-import ImageGallery from 'react-image-gallery';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import Canvas2image from "canvas-to-png";
+
 function downloadURI(uri, name) {
     var link = document.createElement('a');
     link.download = name;
@@ -21,50 +23,53 @@ const TiffImageComponent = (props) =>{
         const stageRef = React.useRef(null);
         const [orBr, setOrBr] = React.useState(0)
         const [orSat, setOrSat] = React.useState(0)
-        var imgArray =[];
+        const [imgArray, setArray] =useState([]);
     useEffect(() =>{
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', props.url+ props.img);
+        xhr.open('GET', props.img);
         xhr.responseType = 'arraybuffer';
         xhr.onload = e => {
             const ifds = UTIF.decode(e.target.response);
             const firstPageOfTif = ifds[0];
-            UTIF.decodeImage(e.target.response, ifds[0], ifds);
-            // for (let tmp in ifds) {
-            //     const rgba = UTIF.toRGBA8(tmp);
-            //     const imageWidth = firstPageOfTif.width;
-            //     const imageHeight = firstPageOfTif.height;
-            //     const cnv = document.createElement('canvas');
-            //     cnv.width = imageWidth;
-            //     cnv.height = imageHeight;
-            //     const ctx = cnv.getContext('2d');
-            //     const imageData = ctx.createImageData(imageWidth, imageHeight);
-            //     for (let i = 0; i < rgba.length; i++) {
-            //         imageData.data[i] = rgba[i];
-            //     }
-            //     cnv.toBlob((blob) => { imgArray.push({'original': URL.createObjectURL(blob)})})
-            // }
-            // console.log(imgArray)
-
-            const rgba = UTIF.toRGBA8(ifds[0]);
-            const imageWidth = firstPageOfTif.width;
-            const imageHeight = firstPageOfTif.height;
-            const cnv = document.createElement('canvas');
-            cnv.width = imageWidth;
-            cnv.height = imageHeight;
-
-            const ctx = cnv.getContext('2d');
-            const imageData = ctx.createImageData(imageWidth, imageHeight);
-            for (let i = 0; i < rgba.length; i++) {
-                imageData.data[i] = rgba[i];
+            const tmp_ar = [];
+            var index = 0;
+            for (let tmp of ifds) {
+                UTIF.decodeImage(e.target.response, ifds[index], ifds);
+                const rgba = UTIF.toRGBA8(tmp);
+                const imageWidth = firstPageOfTif.width;
+                const imageHeight = firstPageOfTif.height;
+                const cnv = document.createElement('canvas');
+                cnv.width = imageWidth;
+                cnv.height = imageHeight;
+                const ctx = cnv.getContext('2d');
+                const imageData = ctx.createImageData(imageWidth, imageHeight);
+                for (let i = 0; i < rgba.length; i++) {
+                    imageData.data[i] = rgba[i];
+                }
+                ctx.putImageData(imageData, 0, 0);
+                const cur = Canvas2image.convertToPNG(cnv, 400, 300)
+                tmp_ar.push(<img src={cur.src} alt={""}/>)
+                index += 1;
             }
-            ctx.putImageData(imageData, 0, 0);
-            setImage(cnv)
+            setArray(tmp_ar);
+            // const rgba = UTIF.toRGBA8(ifds[0]);
+            // const imageWidth = firstPageOfTif.width;
+            // const imageHeight = firstPageOfTif.height;
+            // const cnv = document.createElement('canvas');
+            // cnv.width = imageWidth;
+            // cnv.height = imageHeight;
+            // const ctx = cnv.getContext('2d');
+            // const imageData = ctx.createImageData(imageWidth, imageHeight);
+            // for (let i = 0; i < rgba.length; i++) {
+            //     imageData.data[i] = rgba[i];
+            // }
+            // ctx.putImageData(imageData, 0, 0);
+            // setImage(cnv)
         };
-        xhr.send();}, [])
+        xhr.send();})
 
 
-
+    console.log(imgArray)
     const handleExport = () => {
         const tmpStage = new Konva.Stage({container: 'stage'});
         const tmpLayer = new Konva.Layer();
@@ -109,16 +114,20 @@ const TiffImageComponent = (props) =>{
                 }}>
                     <Icon icon="fluent:save-20-filled"/>
                 </IconButton>
-                {/*<ImageGallery items={imgArray}></ImageGallery>*/}
-                <Stage
-                    width={400}
-                    height={300}
-                    ref={stageRef}
-                >
-                    <Layer>
-                        <Image ref={layerRef} width={400} height={300} image={image}></Image>
-                    </Layer>
-                </Stage>
+                <Swiper>
+                    {imgArray.map((item) =>
+                        <SwiperSlide>{item}</SwiperSlide>
+                    )}
+                </Swiper>
+                {/*<Stage*/}
+                {/*    width={400}*/}
+                {/*    height={300}*/}
+                {/*    ref={stageRef}*/}
+                {/*>*/}
+                {/*    <Layer>*/}
+                {/*        <Image ref={layerRef} width={400} height={300} image={image}></Image>*/}
+                {/*    </Layer>*/}
+                {/*</Stage>*/}
                 <Box sx={{width: 300, paddingTop: 1}} display={'flex'} alignContent={'center'}>
                     <h2 style={{fontSize: 12, fontWeight: 'normal', paddingRight: 59, paddingLeft: 30}}>Яркость</h2>
                     <FormControl variant={'outlined'}>
