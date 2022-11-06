@@ -8,7 +8,6 @@ import {Swiper, SwiperSlide} from 'swiper/react';
 import Canvas2image from "canvas-to-png";
 import SwiperCore, {Navigation, EffectFade, Scrollbar, Pagination} from 'swiper';
 import 'swiper/css/navigation';
-import 'swiper/css/effect-fade';
 import 'swiper/css'
 import styles from './Swiper.module.scss'
 
@@ -86,7 +85,7 @@ const TiffImageComponent = (props) => {
                 Сохранить
             </Button>
             <Swiper
-                modules={[Navigation, EffectFade, Scrollbar, Pagination]}
+                modules={[Navigation, Scrollbar, Pagination]}
                 pagination={{
                     el: '.swiper-pagintion', type: 'fraction', renderFraction: function (swiper, current, total) {
                         return current + '/' + (total - 1);
