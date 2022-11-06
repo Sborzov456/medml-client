@@ -1,6 +1,6 @@
 import {Stage, Layer, Line, Image} from 'react-konva';
 import * as React from "react";
-import {Box, FormControl, FormControlLabel, IconButton, Slider} from "@mui/material";
+import {Box, Button, FormControl, FormControlLabel, IconButton, Slide, Slider} from "@mui/material";
 import {Icon} from "@iconify/react";
 
 import useImage from "use-image";
@@ -11,6 +11,14 @@ import GlobalStyles from "@mui/material/GlobalStyles";
 import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
 import {Link} from "react-router-dom";
+import Konva from "konva";
+import CloseIcon from "@mui/icons-material/Close";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const ConvasComponent = (props) => {
     const [image] = useImage(props.img, 'anonymous', 'origin')
@@ -20,10 +28,11 @@ const ConvasComponent = (props) => {
     const isDrawing = React.useRef(false);
     const layerRef = React.useRef(null);
     const stageRef = React.useRef(null);
-    const imageRef = React.useRef();
-    const [number, setNumber] = React.useState(props.number);
-    const [srcImage] = React.useState(props.img);
-    const [type, setType] = React.useState(props.type);
+    const imageRef = React.useRef(null);
+    const backGr = React.useRef(null);
+    const [type, setType] = React.useState(null);
+    const [er, setEr] = React.useState(false)
+    const [success, setSuc] = React.useState(false)
 
     const handleMouseDown = (e) => {
         isDrawing.current = true;
@@ -58,30 +67,33 @@ const ConvasComponent = (props) => {
         setWidth(newValue);
     };
 
-    function downloadURI(uri, name) {
-        var link = document.createElement('a');
-        link.download = name;
-        link.href = uri;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
+
 
     const handleExport = () => {
-        imageRef.current.destroy();
+        imageRef.current.cache()
+        imageRef.current.filters([Konva.Filters.Brighten]);
+        imageRef.current.brightness(-1)
         const cropped = stageRef.current.size({
             width: image.width,
             height: image.height
         }
         )
-        axios.get(this.props.url+this.state.segmentedImage, {responseType: 'blob'}).then( res => {
+
+        cropped.toBlob().then((response) => {
+            console.log(response)
             const formData = new FormData();
-            const image = new File([res.data], 'uploadfile.png')
-            formData.append("segmentation_image.image", cropped.toImage());
-            formData.append("group.nodule_type", this.state.tiradsType);
-            axios.put(this.props.url+"/api/v2/uzi/update/seg_group/" + this.props.props, formData)
-        }
-        )
+            const imageF = new File([response], 'uploadfile.png')
+            formData.append("segmentation_image.image", imageF);
+            formData.append("group.nodule_type", type);
+            axios.put(props.url+"/api/v2/uzi/update/seg_group/" + props.number, formData).then(() => setSuc(true)).catch(() => {
+                setEr(true)
+                imageRef.current.cache()
+                imageRef.current.filters([Konva.Filters.Brighten]);
+                imageRef.current.brightness(0)
+                }
+            )
+        })
+
     };
     const handleClear = () => {
         layerRef.current.removeChildren();
@@ -89,8 +101,42 @@ const ConvasComponent = (props) => {
     const handleChooseTirads = (e) => {
         setType(e.target.value);
     };
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setEr(false)
+        setSuc(false)
+    };
     return (
         <div>
+            <Snackbar color={'#00d995'} sx={{ width:'auto', color: 'secondary', "& .MuiSnackbarContent-root": { backgroundColor: "#00d995" }}} open={success}  onClose={handleClose} message={'Данные сохранены!'}
+                      TransitionComponent={Slide}
+                      autoHideDuration={6000}
+                      action={
+                           <IconButton
+                               aria-label="close"
+                               onClick={handleClose}
+                           >
+                               <CloseIcon/>
+                           </IconButton>}>
+                <Alert severity="success" sx={{width:'100%',backgroundColor: '#00d995', marginBlock: 0}} action={
+                    <Button component={Link} to={`/`} sx={{lineHeight: 1.43, marginBlock: 0, fontStyle: {color: '#ffffff'}}} onClick={handleClose}>Вернуться на главную страницу</Button>
+                } onClose={handleClose}>Данные сохранены!</Alert>
+            </Snackbar>
+            <Snackbar  open={er} autoHideDuration={6000} onClose={handleClose}
+                       TransitionComponent={Slide}
+                       action={
+                           <IconButton
+                               aria-label="close"
+                               color="inherit"
+                               onClick={handleClose}
+                           >
+                               <CloseIcon/>
+                           </IconButton>}>
+                <Alert severity="error" sx={{width:'100%',backgroundColor: '#d9007b'}} onClose={handleClose}>Данные не загружены. Проверьте введен ли тип узла и нарисована ли маска.</Alert>
+            </Snackbar>
             <Grid container direction={'row'}>
                 <IconButton style={{maxWidth: '60px', maxHeight: '60px'}} onClick={handleChoice} value='pen' sx={{
                     '& svg': {
@@ -114,7 +160,7 @@ const ConvasComponent = (props) => {
                 }}>
                     <Icon icon="mdi:clear"/>
                 </IconButton>
-                <IconButton component={Link} to={`/`} style={{maxWidth: '60px', maxHeight: '60px'}} onClick={handleExport} sx={{
+                <IconButton  style={{maxWidth: '60px', maxHeight: '60px'}} onClick={handleExport} sx={{
                     '& svg': {
                         fontSize: 50
                     }
@@ -154,13 +200,13 @@ const ConvasComponent = (props) => {
                         label="Тип узла по EU TI-RADS"
                         onChange={handleChooseTirads}
                         variant='outlined'
-                        defaultValue={1}
+                        defaultValue={"1"}
                     >
-                        <FormControlLabel value={1} control={<Radio style={{color: '#4FB3EAFF'}}/>} label="1"/>
-                        <FormControlLabel value={2} control={<Radio style={{color: '#4FB3EAFF'}}/>} label="2"/>
-                        <FormControlLabel value={3} control={<Radio style={{color: '#4FB3EAFF'}}/>} label="3"/>
-                        <FormControlLabel value={4} control={<Radio style={{color: '#4FB3EAFF'}}/>} label="4"/>
-                        <FormControlLabel value={5} control={<Radio style={{color: '#4FB3EAFF'}}/>} label="5"/>
+                        <FormControlLabel value={"1"} control={<Radio style={{color: '#4FB3EAFF'}}/>} label="1"/>
+                        <FormControlLabel value={"2"} control={<Radio style={{color: '#4FB3EAFF'}}/>} label="2"/>
+                        <FormControlLabel value={"3"} control={<Radio style={{color: '#4FB3EAFF'}}/>} label="3"/>
+                        <FormControlLabel value={"4"} control={<Radio style={{color: '#4FB3EAFF'}}/>} label="4"/>
+                        <FormControlLabel value={"5"} control={<Radio style={{color: '#4FB3EAFF'}}/>} label="5"/>
                     </RadioGroup>
                 </FormControl>
             </Box>
@@ -172,10 +218,12 @@ const ConvasComponent = (props) => {
                 onMouseup={handleMouseUp}
                 ref={stageRef}
             >
+                <Layer ref={backGr}></Layer>
                 <Layer ref={imageRef}>
                     <Image mimeType={"image/png"} image={image}></Image>
                 </Layer>
                 <Layer
+
                     ref={layerRef}>
                     {lines.map((line, i) => (
                         <Line

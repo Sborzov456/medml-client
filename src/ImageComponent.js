@@ -1,6 +1,6 @@
-import {Stage, Layer, Line, Image} from 'react-konva';
+import {Stage, Layer, Image} from 'react-konva';
 import * as React from "react";
-import {Box, FormControl, FormControlLabel, IconButton, Slider, styled, TextField} from "@mui/material";
+import {Box, FormControl, IconButton, Slider} from "@mui/material";
 import {Icon} from "@iconify/react";
 
 import useImage from "use-image";
@@ -11,59 +11,13 @@ import GlobalStyles from "@mui/material/GlobalStyles";
 import Konva from "konva";
 
 
-const CustomSlider = styled(Slider)(() => ({
-            '& .MuiSlider-thumb': {
-                height: 27,
-                width: 27,
-                backgroundColor: '#fff',
-                border: '1px solid currentColor',
-                '&:hover': {
-                    boxShadow: '0 0 0 8px rgba(58, 133, 137, 0.16)',
-                },
-            }
-        }
-    )
-)
 
 const ImageComponent = (props) => {
     const [image] = useImage(props.url+props.img, 'anonymous', 'origin')
-    const [tool, setTool] = React.useState('pen');
-    const [width, setWidth] = React.useState(30);
-    const [lines, setLines] = React.useState([]);
-    const isDrawing = React.useRef(false);
     const layerRef = React.useRef(null);
     const stageRef = React.useRef(null);
-    const [number, setNumber] = React.useState(props.number);
-    const [srcImage] = React.useState(props.img)
-    const [type, setType] = React.useState(props.type)
-    const [imgChoosen, setChosen] = React.useState(props.choosen)
     const [orBr, setOrBr] = React.useState(0)
-    const [orSh, setOrSh] = React.useState(0)
     const [orSat, setOrSat] = React.useState(0)
-    const handleMouseDown = (e) => {
-        isDrawing.current = true;
-        const pos = e.target.getStage().getPointerPosition();
-        setLines([...lines, {tool, points: [pos.x, pos.y]}]);
-    };
-
-    const handleMouseMove = (e) => {
-        if (!isDrawing.current) {
-            return;
-        }
-        const stage = e.target.getStage();
-        const point = stage.getPointerPosition();
-        let lastLine = lines[lines.length - 1];
-
-        lastLine.points = lastLine.points.concat([point.x, point.y]);
-
-
-        lines.splice(lines.length - 1, 1, lastLine);
-        setLines(lines.concat());
-    };
-
-    const handleMouseUp = () => {
-        isDrawing.current = false;
-    };
 
     function downloadURI(uri, name) {
         var link = document.createElement('a');

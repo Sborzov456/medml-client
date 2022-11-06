@@ -1,14 +1,10 @@
 
-import {Box, FormControl, FormControlLabel, FormLabel, MenuItem, Select} from "@mui/material";
+import {Box, FormControl} from "@mui/material";
 import * as React from "react";
 import Grid from "@mui/material/Grid";
-import {TextFieldResult} from "./ResultsPage";
 import ConvasComponent from "./ConvasComponent";
 import {useParams} from "react-router-dom";
 import axios from "axios";
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import GlobalStyles from "@mui/material/GlobalStyles";
 
 const MaskPageInterface = (props) => {
     const {number2} = useParams();
@@ -54,12 +50,6 @@ class MaskPage extends React.Component {
             });
 
     }
-
-    handleChooseTirads = (event) => {
-        this.setState({
-            tiradsType: event.target.value,
-        });
-    };
 
 
     render() {

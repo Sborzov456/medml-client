@@ -8,15 +8,14 @@ import {
     Card,
     createTheme,
     FormControlLabel,
-    FormGroup,
-    Switch
+    FormGroup, IconButton, Slide,
 } from "@mui/material";
 import {FormControl} from "@mui/material";
 import {MenuItem} from "@mui/material";
 import {Box} from "@mui/material";
 import {TextField} from "@mui/material";
 import {styled} from "@mui/material";
-
+import 'dayjs/locale/ru';
 import Grid from '@mui/material/Grid';
 import {TextFieldWrapper} from "./UploadPage";
 import {DatePicker} from "@mui/x-date-pickers";
@@ -27,6 +26,9 @@ import axios from "axios";
 import {Link, useParams} from "react-router-dom";
 import {Checkbox} from "@mui/material";
 import TiffImageComponent from "./TiffImageComponent";
+import CloseIcon from "@mui/icons-material/Close";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 
 const theme = createTheme()
 export const TextFieldResult = styled(TextField)`
@@ -74,6 +76,10 @@ const ResultsPageInterface = (props) => {
     )
 }
 
+const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 
 class ResultsPage extends React.Component {
     constructor(props) {
@@ -82,10 +88,10 @@ class ResultsPage extends React.Component {
             originalImage: "",
             segmentedImage: "",
             boxImage: "",
-            uziDevice: 1,
+            uziDevice: {id: 2, name: 'Logic'},
             projectionType: "long",
             patientCard: 1,
-            uziDate: null,
+            uziDate: new Date(),
             tiradsType: 1,
             predictedTypes: [],
             shortResult: false,
@@ -110,80 +116,71 @@ class ResultsPage extends React.Component {
             brightness: 0,
             sharpness: 0,
             contrast: 0,
-            imageParams: {'original': [0, 0, 0], 'segmented': [0, 0, 0], 'box': [0, 0, 0]},
+            openSuccess: false,
+            devices: []
         };
         this.handlePatientList();
         this.handleStartPage();
-
-
     }
 
     handleResponse = () => {
+        this.setState({
+            openSuccess: true,
+        })
+        console.log(this.state.openSuccess)
         this.handleExport()
-        var storedNames = JSON.parse(localStorage.getItem("names"));
-        if (storedNames === null) {
-            storedNames = []
-        }
-        var tmp = null;
-        for (tmp of storedNames){
-            if (tmp === this.props.props){
-                return;
-            }
-        }
-        storedNames.push(this.props.props)
-        console.log(storedNames)
-        localStorage.setItem("names", JSON.stringify(storedNames));
     };
-    handleClickImageOr = () => {
-        this.setState({
-            imageChoosen: !this.state.imageChoosen,
-            linkEditingImage: this.state.originalImage,
-            brightness: this.state.imageParams['original'][0],
-            sharpness: this.state.imageParams['original'][1],
-            contrast: this.state.imageParams['original'][2]
-        });
-
-    }
-    handleClickImageS = () => {
-        this.setState({
-            imageChoosen: !this.state.imageChoosen,
-            linkEditingImage: this.state.segmentedImage,
-            brightness: this.state.imageParams['segmented'][0],
-            sharpness: this.state.imageParams['segmented'][1],
-            contrast: this.state.imageParams['segmented'][2]
-        })
-    }
-    handleClickImageB = () => {
-        this.setState({
-            imageChoosen: !this.state.imageChoosen,
-            linkEditingImage: this.state.boxImage,
-            brightness: this.state.imageParams['box'][0],
-            sharpness: this.state.imageParams['box'][1],
-            contrast: this.state.imageParams['box'][2]
-        })
-    }
     handleStartPage = () => {
         axios.get(this.props.url+"/api/v2/uzi/" + this.props.props + "/?format=json")
             .then((response) => {
                 this.setState({startData: response.data.info})
                 var tmpTirads = [];
-                tmpTirads.push(response.data.info.nodule_1 + ' - 1',
-                    response.data.info.nodule_2 + ' - 2',
-                    response.data.info.nodule_3 + ' - 3',
-                    response.data.info.nodule_4 + ' - 4',
-                    response.data.info.nodule_5 + ' - 5');
-                tmpTirads.sort()
-                tmpTirads.reverse()
+                var secondTmpTirads = []
+                secondTmpTirads.push(parseFloat(response.data.info.nodule_1), parseFloat(response.data.info.nodule_2), parseFloat(response.data.info.nodule_3), parseFloat(response.data.info.nodule_4), parseFloat(response.data.info.nodule_5))
+                secondTmpTirads.sort(function(a, b) {
+                    return a - b;
+                })
+                secondTmpTirads.reverse()
+                for (let a of secondTmpTirads){
+                    if(a === parseFloat(response.data.info.nodule_1)){
+                        tmpTirads.push(a+ '% - EU-TIRADS 1')
+                    }
+                    if(a === parseFloat(response.data.info.nodule_2)){
+                        tmpTirads.push(a+ '% - EU-TIRADS 2')
+                    }
+                    if(a === parseFloat(response.data.info.nodule_3)){
+                        tmpTirads.push(a+ '% - EU-TIRADS 3')
+                    }
+                    if(a === parseFloat(response.data.info.nodule_4)){
+                        tmpTirads.push(a+ '% - EU-TIRADS 4')
+                    }
+                    if(a === parseFloat(response.data.info.nodule_5)){
+                        tmpTirads.push(a+ '% - EU-TIRADS 5')
+                    }
+                }
+                axios.get(this.props.url + "/api/v2/uzi/devices/?format=json")
+                    .then((res) => {
+                        this.setState({devices: res.data.results})
+                        const tmp = res.data.results
+                        for (let cur of tmp){
+                            if (cur.name === response.data.info.uzi_device_name){
+                                this.setState({
+                                    uziDevice : cur
+                                })
+                                console.log(cur)
+                            }
+                        }})
+
                 this.setState({
+                    uziDate: response.data.info.acceptance_datetime,
                     predictedTypes: tmpTirads,
                     patientCard: response.data.info.patient.id,
                     patientPolicy: response.data.info.patient.personal_policy,
                     patientLastName: response.data.info.patient.last_name,
                     patientFirstName: response.data.info.patient.first_name,
                     patientFathersName: response.data.info.patient.fathers_name,
-                    uziDevice: response.data.info.uzi_device_name === 'GE Voluson E8' ? 1 : 2,
                     projectionType: response.data.info.projection_type,
-                    longResult: response.data.info.diagnosis,
+                    longResult: response.data.info.echo_descr,
                     uziLength: response.data.info.nodule_length,
                     uziWidth: response.data.info.nodule_widht,
                     uziDepth: response.data.info.nodule_height,
@@ -207,16 +204,35 @@ class ResultsPage extends React.Component {
             const image = new File([res.data], 'uploadfile.png')
             formData.append("segmentation_image.image", image);
             formData.append("group.nodule_type", this.state.tiradsType);
+            console.log(typeof formData.get("group.nodule_type"))
             axios.put(this.props.url+"/api/v2/uzi/update/seg_group/" + this.props.props, formData)
         }
-    )
+        )
+        axios.get(this.props.url+"/api/v2/uzi/" + this.props.props+"/?format=json").then((response) => {
+            console.log(response.data)
+            const formData = new FormData();
+            formData.append("images", response.data.images);
+            formData.append("info.id", response.data.info.id);
+            formData.append("info.projection_type", this.state.projectionType);
+            formData.append("info.echo_descr", this.state.longResult);
+            formData.append("info.nodule_1", response.data.info.nodule_1);
+            formData.append("info.nodule_2", response.data.info.nodule_2);
+            formData.append("info.nodule_3", response.data.info.nodule_3);
+            formData.append("info.nodule_4", response.data.info.nodule_4);
+            formData.append("info.nodule_5", response.data.info.nodule_5);
+            formData.append("info.nodule_width", parseFloat(this.state.uziWidth));
+            formData.append("info.nodule_height", parseFloat(this.state.uziLength));
+            formData.append("info.nodule_length", parseFloat(this.state.uziDepth));
+            formData.append("info.uzi_device_name", this.state.uziDevice.name)
+            formData.append("info.acceptance_datetime", this.state.uziDate === null ? response.data.info.acceptance_datetime : this.state.uziDate.toISOString());
+            formData.append("info.diagnosis", response.data.info.diagnosis);
+            formData.append("info.patient", response.data.info.patient);
+            axios.put(this.props.url+"/api/v2/uzi/" + this.props.props+'/update', formData)
+        })
+
     };
 
-    handleChooseDate = (event) => {
-        this.setState({
-            uziDate: event.target.value,
-        });
-    };
+
 
     handleChooseTirads = (event) => {
         this.setState({
@@ -256,6 +272,7 @@ class ResultsPage extends React.Component {
         });
     };
     handleChooseDevice = (event) => {
+        console.log(event.target.value)
         this.setState({
             uziDevice: event.target.value,
             deviceChosen: true
@@ -268,30 +285,32 @@ class ResultsPage extends React.Component {
             projectionChosen: true,
         });
     };
-    handleChoosePatient = (object, value) => {
-        object.preventDefault()
-        var patient1 = 0;
-        var patient = null;
-        for (patient of this.state.patients) {
-            if (patient.personal_policy === value.personal_policy) {
-                patient1 = patient.id;
-            }
+
+    handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
         }
+
         this.setState({
-            patientCard: patient1,
-            patientChosen: true,
-            patientPolicy: value.personal_policy,
-            patientLastName: value.last_name,
-            patientFirstName: value.first_name,
-            patientFathersName: value.fathers_name,
-        });
+            openSuccess: false,
+        })
     };
-
-
     render() {
         const styles = getStyles();
         return (
             <FormControl sx={{height: '100%', width: '100%'}}>
+                <Snackbar  open={this.state.openSuccess} autoHideDuration={6000} onClose={this.handleClose}
+                           TransitionComponent={Slide}
+                           action={
+                               <IconButton
+                                   aria-label="close"
+                                   color="inherit"
+                                   onClick={this.handleClose}
+                               >
+                                   <CloseIcon/>
+                               </IconButton>}>
+                    <Alert severity="success" sx={{width:'100%',backgroundColor: '#00d995'}} onClose={this.handleClose}>Результат сохранен!</Alert>
+                </Snackbar>
                 <Box sx={{
                     backgroundColor: '#ffffff',
                     paddingLeft: 15,
@@ -304,9 +323,9 @@ class ResultsPage extends React.Component {
                         backgroundColor: "#ffffff",
                     },
                 }} color={theme.palette.secondary.contrastText}>
-                    <Grid direction={'column'} spacing={4} alignContent={'center'} justifyContent={'center'}>
+                    <Grid direction={'column'} spacing={0} alignContent={'center'} justifyContent={'center'}>
                         <Grid item>
-                            <Grid container direction={'row'} spacing={2}>
+                            <Grid container spacing={2} direction={'row'}>
                                 <Grid item>
                                     <GlobalStyles styles={{
                                         h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},
@@ -332,60 +351,63 @@ class ResultsPage extends React.Component {
                                     <h2>{this.state.predictedTypes[2]} </h2>
                                 </Grid>
                                 <Grid item>
-                                    <Box sx={{width: 300}}></Box>
                                 </Grid>
-                                <Grid item>
-                                    <Box sx={{width: 350, borderRadius: 3, boxShadow: 1}}>
-                                        <FormControl variant={'outlined'} fullWidth>
-                                            <Autocomplete
-                                                id="country-select-demo"
-                                                sx={{width: 350}}
-                                                options={this.state.patients}
-                                                autoHighlight
-                                                onChange={this.handleChoosePatient}
-                                                style={{whiteSpace: 'normal'}}
-                                                value={{
-                                                    last_name: this.state.patientLastName,
-                                                    first_name: this.state.patientFirstName,
-                                                    fathers_name: this.state.patientFathersName,
-                                                    personal_policy: this.state.patientPolicy
-                                                }}
-                                                getOptionLabel={(option) => option.last_name + ' ' + option.first_name + ' ' + option.fathers_name + ' ' + option.personal_policy}
-                                                renderOption={(props, option) => (
-                                                    <Box component="li" {...props}>
-                                                        <GlobalStyles styles={{
-                                                            h6: {
-                                                                color: 'dimgray',
-                                                                fontSize: 15,
-                                                                fontFamily: "Roboto",
-                                                                fontWeight: "lighter"
-                                                            },
-                                                            h3: {
-                                                                color: 'dimgray',
-                                                                fontSize: 15,
-                                                                fontFamily: "Roboto",
-                                                                fontWeight: "medium"
-                                                            }
-                                                        }}/>
-                                                        <h3>{option.last_name} {option.first_name} {option.fathers_name}</h3>
-                                                        <h6>{option.personal_policy}</h6>
-                                                    </Box>
-                                                )}
-                                                renderInput={(params) => (
-                                                    <TextFieldWrapper
-                                                        {...params}
-                                                        multiline
-                                                        label="Пациент"
-                                                        variant='outlined'
-                                                        inputProps={{
-                                                            ...params.inputProps,
-                                                        }}
-                                                    />
-                                                )}
-                                            />
-                                        </FormControl>
-                                    </Box>
-                                </Grid>
+                            </Grid>
+                            <Grid item>
+                                <Box sx={{width: 500}} display={'flex'}>
+                                        <GlobalStyles styles={{
+                                            h6: {
+                                                color: '#4fb3ea',
+                                                fontSize: 20,
+                                                fontFamily: "Roboto",
+                                                fontWeight: 'normal',
+                                                whiteSpace: 'normal',
+                                                marginBlockStart: 0,
+                                                marginBlockEnd:0,
+                                                marginInlineEnd:5,
+                                            },
+                                            h3: {
+                                                color: 'dimgray',
+                                                fontSize: 20,
+                                                fontFamily: "Roboto",
+                                                fontWeight: "lighter",
+                                                whiteSpace: 'normal',
+                                                marginBlockStart: 0,
+                                                marginBlockEnd:0,
+                                            }
+                                        }}/>
+                                        <h6>Пациент:  </h6>
+                                        <h3>  {this.state.patientLastName} {this.state.patientFirstName} {this.state.patientFathersName}</h3>
+                                        )}
+                                </Box>
+                            </Grid>
+                            <Grid item>
+                                <Box sx={{width: 500}} display={'flex'}>
+                                    <GlobalStyles styles={{
+                                        h6: {
+                                            color: '#4fb3ea',
+                                            fontSize: 20,
+                                            fontFamily: "Roboto",
+                                            fontWeight: 'normal',
+                                            whiteSpace: 'normal',
+                                            marginBlockStart: 0,
+                                            marginBlockEnd:0,
+                                            marginInlineEnd:5,
+                                        },
+                                        h3: {
+                                            color: 'dimgray',
+                                            fontSize: 20,
+                                            fontFamily: "Roboto",
+                                            fontWeight: "lighter",
+                                            whiteSpace: 'normal',
+                                            marginBlockStart: 0,
+                                            marginBlockEnd:0,
+                                        }
+                                    }}/>
+                                    <h6>Полис:  </h6>
+                                    <h3>  {this.state.patientPolicy}</h3>
+                                    )}
+                                </Box>
                             </Grid>
                         </Grid>
                         <Grid item fullWidth alignItems={'ceneter'} justifyContent={'center'} sx={{paddingTop:5}}>
@@ -431,25 +453,54 @@ class ResultsPage extends React.Component {
                                         <Grid item>
                                             <Box sx={{width: 300, borderRadius: 3, boxShadow: 1}}>
                                                 <FormControl variant={'outlined'} fullWidth>
-                                                    <TextFieldResult
-                                                        InputLabelProps={{shrink: true}}
-                                                        select
+                                                    <Autocomplete
+                                                        id="devices"
+                                                        sx={{width: 300}}
+                                                        options={this.state.devices}
+                                                        autoHighlight
                                                         value={this.state.uziDevice}
-                                                        label="Аппарат"
+                                                        defaultValue={{id: this.state.uziDevice.id, name: this.state.uziDevice.name}}
                                                         onChange={this.handleChooseDevice}
-                                                        variant='outlined'
-                                                        SelectProps={{defaultValue: this.state.uziDevice}}
-                                                    >
-                                                        <MenuItem value={1}>GE Voluson E8</MenuItem>
-                                                        <MenuItem value={2}>Logic</MenuItem>
-                                                    </TextFieldResult>
+                                                        style={{whiteSpace: 'normal'}}
+                                                        getOptionLabel={(option) => option.name}
+                                                        renderOption={(props, option) => (
+                                                            <Box component="li" {...props} sx={{maxHeight: 40}}>
+                                                                <GlobalStyles styles={{
+                                                                    h6: {
+                                                                        color: 'dimgray',
+                                                                        fontSize: 15,
+                                                                        fontFamily: "Roboto",
+                                                                        fontWeight: "lighter"
+                                                                    },
+                                                                    h7: {
+                                                                        color: 'dimgray',
+                                                                        fontSize: 15,
+                                                                        fontFamily: "Roboto",
+                                                                        fontWeight: "bolder"
+                                                                    }
+                                                                }}/>
+                                                                {option.name}
+                                                            </Box>
+                                                        )}
+                                                        renderInput={(params) => (
+                                                            <TextFieldWrapper
+                                                                {...params}
+                                                                multiline
+                                                                label="Аппарат"
+                                                                variant='outlined'
+                                                                inputProps={{
+                                                                    ...params.inputProps,
+                                                                }}
+                                                            />
+                                                        )}
+                                                    />
                                                 </FormControl>
                                             </Box>
                                         </Grid>
                                         <Grid item>
                                             <Box sx={{width: 300, borderRadius: 3, boxShadow: 1}}>
                                                 <FormControl variant={'outlined'} fullWidth>
-                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                    <LocalizationProvider adapterLocale={'ru'} dateAdapter={AdapterDayjs}>
                                                         <DatePicker
                                                             label="Дата приема"
                                                             value={this.state.uziDate}
@@ -507,7 +558,7 @@ class ResultsPage extends React.Component {
                                                 <h2 style={{fontSize: 15, fontWeight: 'normal'}}>Обнаружено
                                                     новообразование</h2>
                                                 <FormControlLabel control={<Checkbox sx={{color: '#4fb3ea', '&.Mui-checked': {
-                                                        color: '#4fb3ea',}}} name={'Обнаружено новообразование'}
+                                                        color: '#4fb3ea',}}} label={'Обнаружено новообразование'}
                                                                                    onChange={this.handleChooseShortResult}
                                                                                    value={this.state.shortResult}/>}/>
                                             </FormGroup>
@@ -583,7 +634,6 @@ class ResultsPage extends React.Component {
                                                                 fontFamily: "Roboto"
                                                             },
                                                             h4: {color: '#5e6379', fontSize: 20, fontFamily: "Roboto"},
-                                                            h6: {color: '#4FB3EAFF', fontSize: 20, fontFamily: "Roboto"}
                                                         }}/>
                                                         <h4>Объём: {this.state.uziVolume}</h4>
 

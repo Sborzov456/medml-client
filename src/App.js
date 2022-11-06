@@ -2,18 +2,16 @@ import React from "react";
 
 import UploadPage from "./UploadPage";
 import ResultsPageInterface from "./ResultsPage";
-import MaskPage from "./MaskPage";
+
 import {
     Route,
     Routes,
-    Nav, Link
+    Link
 } from "react-router-dom";
 import MaskPageInterface from "./MaskPage";
 import {
     AppBar,
     Box,
-    Button,
-    Divider,
     Drawer,
     IconButton,
     List,
@@ -23,11 +21,14 @@ import {
     ListItemText, Toolbar
 } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
-import InboxIcon from '@mui/icons-material/Inbox';
+
 import PersonIcon from '@mui/icons-material/Person';
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import ShotTable from "./ShotTable";
+
+import NewPatientPageInterface from "./NewPatientPage";
+import EditPatientPageInterface from "./EditPatientPage";
 
 
 
@@ -107,6 +108,8 @@ function App(props) {
             <Box sx={{height:40}}/>
             <Routes>
                 {/*<Route exact path="results/:number" element={<ResultsPageInterface />} />*/}
+                <Route exact path="new_patient" element={<NewPatientPageInterface url={props.url}/>}/>
+                <Route exact path="patient/edit/:number" element={<EditPatientPageInterface url={props.url}/>}/>
                 <Route exact path="results" element={<ShotTable url={props.url}/>}/>
                 <Route exact path="result/:number2/mask" element={<MaskPageInterface url={props.url}/>}/>
                 <Route exact path="result/:number"  element={<ResultsPageInterface url={props.url}/>} />}/>

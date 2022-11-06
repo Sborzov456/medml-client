@@ -6,7 +6,7 @@ import {DataGrid} from '@mui/x-data-grid';
 import {Box} from "@mui/material";
 
 
-import {json, Link, useParams} from "react-router-dom";
+import { Link} from "react-router-dom";
 import GlobalStyles from "@mui/material/GlobalStyles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import {useEffect, useState} from "react";
@@ -97,9 +97,7 @@ const MyGrid = (props) => {
     }
 
     class ShotTable extends React.Component {
-        constructor(props) {
-            super(props);
-        }
+
 
         render() {
             return (<FormControl fullWidth sx={{height: '100%', width: '100%'}}>
@@ -130,6 +128,7 @@ const MyGrid = (props) => {
                         </IconButton>
                     </Box>
                     <Box sx={{
+                        minHeight:470, height: 'auto',
                         backgroundColor: '#ffffff', paddingLeft: 5, paddingTop: 1, paddingBottom: 10,
 
                     }} display={'flex'}>

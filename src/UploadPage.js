@@ -2,7 +2,7 @@ import * as React from 'react';
 import '@fontsource/poppins/700.css'
 
 import GlobalStyles from '@mui/material/GlobalStyles';
-import {Autocomplete, Button, createTheme, IconButton,} from "@mui/material";
+import {Autocomplete, Button, createTheme, IconButton, Slide,} from "@mui/material";
 import {FormControl} from "@mui/material";
 
 import {MenuItem} from "@mui/material";
@@ -16,6 +16,12 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import axios from "axios";
 import {Link} from 'react-router-dom';
 
+import EditIcon from '@mui/icons-material/Edit';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import CloseIcon from '@mui/icons-material/Close';
+
+
 
 const theme = createTheme()
 export const TextFieldWrapper = styled(TextField)`
@@ -25,7 +31,9 @@ export const TextFieldWrapper = styled(TextField)`
     border-width: 2px;
   }
 `;
-
+const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 class UploadPage extends React.Component {
     constructor(props) {
@@ -45,9 +53,13 @@ class UploadPage extends React.Component {
             patients: [],
             patientPolicy: null,
             result: false,
-            resultid: 0
+            resultid: 0,
+            devices: [],
+            openSuccess: false,
+            openError: false,
         };
         this.handlePatientList()
+        this.handleDevicesList()
     }
 
     handleUploadFile = event => {
@@ -62,13 +74,20 @@ class UploadPage extends React.Component {
             });
         }, false)
     }
-
-    handleChooseDevice = (event) => {
+    handleChooseDevice = (object, value) => {
+        object.preventDefault()
+        var device1 = 0;
+        for (let device of this.state.devices) {
+            if (device.name === value.name) {
+                device1 = device.id;
+            }
+        }
         this.setState({
-            uziDevice: event.target.value,
+            uziDevice: device1,
             deviceChosen: true
         });
     };
+
 
     handleChooseProjection = (event) => {
         this.setState({
@@ -96,6 +115,10 @@ class UploadPage extends React.Component {
         axios.get(this.props.url + "/api/v2/patient/list/?format=json")
             .then((response) => this.setState({patients: response.data.results}))
     };
+    handleDevicesList = () => {
+        axios.get(this.props.url + "/api/v2/uzi/devices/?format=json")
+            .then((response) => this.setState({devices: response.data.results}))
+    };
 
     handleResult = () => {
         const formData = new FormData();
@@ -105,8 +128,13 @@ class UploadPage extends React.Component {
         formData.append("patient_card", this.state.patientCard);
 
         formData.append("original_image", this.state.imageFile);
-        const response = axios.post(this.props.url + "/api/v2/uzi/create/", formData)
-        const data = response.then((response) => {
+        const response = axios.post(this.props.url + "/api/v2/uzi/create/", formData).catch( () => {
+                this.setState({
+                    openError: true
+                })
+        }
+    )
+        response.then((response) => {
             this.setState({
                 resultid: response.data.image_group_id,
             })
@@ -132,51 +160,113 @@ class UploadPage extends React.Component {
 
     handleWhat = () => {
         this.setState({
-            result: true
+            result: true,
+            openSuccess: true
         })
     };
+    handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
 
+        this.setState({
+            openSuccess: false,
+            openError: false,
+        })
+    };
     render() {
         return (
 
             <FormControl fullWidth fullHeight sx={{height: '100%', width: '100%'}}>
-
+                <Snackbar  open={this.state.openSuccess} autoHideDuration={6000} onClose={this.handleClose}
+                           TransitionComponent={Slide}
+                          action={
+                              <IconButton
+                                  aria-label="close"
+                                  color="inherit"
+                                  onClick={this.handleClose}
+                              >
+                                  <CloseIcon/>
+                              </IconButton>}>
+                    <Alert severity="success" sx={{width:'100%',backgroundColor: '#00d995'}} onClose={this.handleClose}>Снимок загружен!</Alert>
+                </Snackbar>
+                <Snackbar  open={this.state.openError} autoHideDuration={6000} onClose={this.handleClose}
+                           TransitionComponent={Slide}
+                           action={
+                               <IconButton
+                                   aria-label="close"
+                                   color="inherit"
+                                   onClick={this.handleClose}
+                               >
+                                   <CloseIcon/>
+                               </IconButton>}>
+                    <Alert severity="error" sx={{width:'100%',backgroundColor: '#d9007b'}} onClose={this.handleClose}>Снимок не загружен. Проверьте формат загружаемого файла.</Alert>
+                </Snackbar>
                 <Box sx={{
                     backgroundColor: '#ffffff',
-                    paddingLeft: 50,
+                    paddingLeft: 40,
                     paddingTop: 10,
                     borderTopLeftRadius: 130,
                     elevation: 10,
                     boxShadow: 2,
-                    height: 600,
+                    height: 'auto',
+                    minHeight: 600,
                     '&:hover': {
                         backgroundColor: "#ffffff",
-                    },
-                }} color={theme.palette.secondary.contrastText}>
+                    }
+                }} display={'flex'} color={theme.palette.secondary.contrastText}>
                     <Grid container direction={'row'} spacing={0}>
-                        <Grid item xl={2} md={4} sm={4} xs={4}>
+                        <Grid item xl={2} md={5} sm={4} xs={4}>
                             <GlobalStyles styles={{
                                 h1: {color: 'dimgray', fontSize: 40, fontFamily: "Roboto"},
                                 h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
                             }}/>
                             <h1>Новый снимок УЗИ</h1>
-                            <Box sx={{width: 300, borderRadius: 3, boxShadow: 1}}>
+                            <Box sx={{width: 400, borderRadius: 3, boxShadow: 1}}>
                                 <FormControl variant={'outlined'} fullWidth>
-                                    <TextFieldWrapper
-                                        labelId="device"
-                                        value={this.state.deviceId}
-                                        label="Аппарат"
+                                    <Autocomplete
+                                        id="devices"
+                                        sx={{width: 400}}
+                                        options={this.state.devices}
+                                        autoHighlight
                                         onChange={this.handleChooseDevice}
-                                        variant='outlined'
-                                        select
-                                    >
-                                        <MenuItem value={1}>GE Voluson E8</MenuItem>
-                                        <MenuItem value={2}>Logic</MenuItem>
-                                    </TextFieldWrapper>
+                                        style={{whiteSpace: 'normal'}}
+                                        getOptionLabel={(option) => option.name}
+                                        renderOption={(props, option) => (
+                                            <Box component="li" {...props} sx={{maxHeight: 40}}>
+                                                <GlobalStyles styles={{
+                                                    h6: {
+                                                        color: 'dimgray',
+                                                        fontSize: 15,
+                                                        fontFamily: "Roboto",
+                                                        fontWeight: "lighter"
+                                                    },
+                                                    h7: {
+                                                        color: 'dimgray',
+                                                        fontSize: 15,
+                                                        fontFamily: "Roboto",
+                                                        fontWeight: "bolder"
+                                                    }
+                                                }}/>
+                                                {option.name}
+                                            </Box>
+                                        )}
+                                        renderInput={(params) => (
+                                            <TextFieldWrapper
+                                                {...params}
+                                                multiline
+                                                label="Аппарат"
+                                                variant='outlined'
+                                                inputProps={{
+                                                    ...params.inputProps,
+                                                }}
+                                            />
+                                        )}
+                                    />
                                 </FormControl>
                             </Box>
                             <Box sx={{width: 300, paddingBottom: 5}}></Box>
-                            <Box sx={{width: 300, borderRadius: 3, boxShadow: 1}}>
+                            <Box sx={{width: 400, borderRadius: 3, boxShadow: 1}}>
                                 <FormControl variant={'outlined'} fullWidth>
                                     <TextFieldWrapper
                                         labelId="device"
@@ -194,34 +284,43 @@ class UploadPage extends React.Component {
                             <Box sx={{width: 300, paddingBottom: 5}}></Box>
 
 
-                            <Box sx={{width: 300, borderRadius: 3, boxShadow: 1}}>
+                            <Box sx={{width: 400, borderRadius: 3, boxShadow: 1}}>
                                 <FormControl variant={'outlined'} fullWidth>
                                     <Autocomplete
                                         id="country-select-demo"
-                                        sx={{width: 300}}
+                                        sx={{width: 400}}
                                         options={this.state.patients}
                                         autoHighlight
                                         onChange={this.handleChoosePatient}
                                         style={{whiteSpace: 'normal'}}
                                         getOptionLabel={(option) => option.last_name + ' ' + option.first_name + ' ' + option.fathers_name + ' ' + option.personal_policy}
                                         renderOption={(props, option) => (
-                                            <Box component="li" {...props}>
+                                            <Box sx={{width:400}} component="li" {...props} display={'flex'}>
                                                 <GlobalStyles styles={{
                                                     h6: {
-                                                        color: 'dimgray',
+                                                        color: 'black',
                                                         fontSize: 15,
                                                         fontFamily: "Roboto",
-                                                        fontWeight: "lighter"
+                                                        fontWeight: "lighter",
+                                                        display: 'inline',
+                                                        minWidth: 150
                                                     },
                                                     h3: {
-                                                        color: 'dimgray',
+                                                        color: 'black',
                                                         fontSize: 15,
                                                         fontFamily: "Roboto",
-                                                        fontWeight: "medium"
+                                                        fontWeight: 'normal',
+                                                        marginInline: 5,
+                                                        minWidth: 170
                                                     }
                                                 }}/>
-                                                <h3>{option.last_name} {option.first_name} {option.fathers_name}</h3>
+                                                <h3 >{option.last_name} {option.first_name} {option.fathers_name}</h3>
                                                 <h6>{option.personal_policy}</h6>
+                                                <IconButton component={Link} to={`/patient/edit/${option.id}`}
+                                                    aria-label="close"
+                                                >
+                                                    <EditIcon/>
+                                                </IconButton>
                                             </Box>
                                         )}
                                         renderInput={(params) => (
@@ -236,6 +335,18 @@ class UploadPage extends React.Component {
                                             />
                                         )}
                                     />
+                                </FormControl>
+                            </Box>
+                            <Box sx={{width: 400, paddingTop: 3}}>
+                                <FormControl fullWidth>
+                                    <Button component={Link} to={`new_patient`}
+                                            sx={{color: '#4fb3ea',
+                                                backgroundColor: '#ffffff',
+                                                '&:focus': {backgroundColor: '#4fb3ea'},
+                                                fontStyle: {fontFamily: 'Roboto', fontColor: '#4fb3ea'}
+                                            }} variant={'text'} onClick={this.handleResponse}>
+                                        Добавить нового пациента
+                                    </Button>
                                 </FormControl>
                             </Box>
                         </Grid>
