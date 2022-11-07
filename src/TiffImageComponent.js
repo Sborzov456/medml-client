@@ -6,7 +6,7 @@ import {Icon} from "@iconify/react";
 import {useEffect, useState} from "react";
 import {Swiper, SwiperSlide} from 'swiper/react';
 import Canvas2image from "canvas-to-png";
-import SwiperCore, {Navigation, EffectFade, Scrollbar, Pagination} from 'swiper';
+import SwiperCore, {Navigation, Scrollbar, Pagination} from 'swiper';
 import 'swiper/css/navigation';
 import 'swiper/css'
 import styles from './Swiper.module.scss'

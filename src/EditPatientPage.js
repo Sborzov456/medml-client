@@ -248,8 +248,8 @@ class EditPatientPage extends React.Component {
                         h5: {color: 'dimgray', fontSize: 20, fontFamily: "Roboto"}
                     }}/>
                     <h1>Изменение карты пациента</h1>
-                    <Grid container direction={'row'} spacing={0}>
-                        <Grid item xl={2} md={5} sm={2} xs={4}>
+                    <Grid container direction={'row'} spacing={1}>
+                        <Grid item xs>
                             <Box sx={{width: 500, paddingBottom: 3, paddingTop: 3}}>
                                 <FormControl fullWidth>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
@@ -350,7 +350,7 @@ class EditPatientPage extends React.Component {
                                 </FormGroup>
                             </Box>
                         </Grid>
-                        <Grid item xl={2} md={5} sm={4} xs={4}>
+                        <Grid item xs>
                             <Box sx={{width: 500, height: 98, paddingBottom: 7, paddingTop: 3}}>
                                 <FormControl>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>

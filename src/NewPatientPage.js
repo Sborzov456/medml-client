@@ -186,7 +186,7 @@ class NewPatientPage extends React.Component {
     render() {
         return (
 
-            <FormControl fullWidth fullHeight sx={{height: '100%', width: '100%'}}>
+            <FormControl fullWidth fullHeight >
                 <Snackbar open={this.state.openSuccess} autoHideDuration={6000} onClose={this.handleClose}
                           TransitionComponent={Slide}
                           action={<IconButton
@@ -222,15 +222,15 @@ class NewPatientPage extends React.Component {
                     minHeight: 600,
                     '&:hover': {
                         backgroundColor: "#ffffff",
-                    }
-                }} color={theme.palette.secondary.contrastText}>
+                    },
+                }} color={theme.palette.secondary.contrastText} >
                     <GlobalStyles styles={{
                         h1: {color: 'dimgray', fontSize: 30, fontFamily: "Roboto"},
                         h5: {color: 'dimgray', fontSize: 20, fontFamily: "Roboto"}
                     }}/>
                     <h1>Создание карты пациента</h1>
-                    <Grid container direction={'row'} spacing={0}>
-                        <Grid item xl={2} md={5} sm={2} xs={4}>
+                    <Grid container spacing={1}>
+                        <Grid item xs>
                             <Box sx={{width: 500, paddingBottom: 3, paddingTop: 3}}>
                                 <FormControl fullWidth>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
@@ -331,7 +331,7 @@ class NewPatientPage extends React.Component {
                                 </FormGroup>
                             </Box>
                         </Grid>
-                        <Grid item xl={2} md={5} sm={4} xs={4}>
+                        <Grid item xs>
                             <Box sx={{width: 500, height: 98, paddingBottom: 7, paddingTop: 3}}>
                                 <FormControl>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>

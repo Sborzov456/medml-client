@@ -83,7 +83,7 @@ const MyGrid = (props) => {
             })
             .then(() => setTableData(tmpAr))
 
-        }, [])
+        }, [props.url])
 
         return (<div style={{height: 400, width: '100%'}}>
                 <DataGrid
