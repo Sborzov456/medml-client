@@ -29,6 +29,9 @@ import ShotTable from "./ShotTable";
 
 import NewPatientPageInterface from "./NewPatientPage";
 import EditPatientPageInterface from "./EditPatientPage";
+import SignUpPageInterface from "./SingUpPage";
+import SignInPageInterface from "./SignInPage";
+import FilterIcon from '@mui/icons-material/Filter';
 
 
 
@@ -54,9 +57,9 @@ function App(props) {
             onKeyDown={toggleDrawer(anchor, false)}
         >
             <List sx={{ paddingTop: 17}}>
-                {['Снимки', 'Добавить снимок','Вопросы' ].map((text, index) => (
+                {['Войти', 'Снимки', 'Добавить снимок','Вопросы'].map((text, index) => (
                     <ListItem key={text} disablePadding>
-                        <ListItemButton component={Link} to={index === 1 ? `/` : index === 0 ? `results`: null}>
+                        <ListItemButton component={Link} to={index === 1 ? `results` : index === 0 ? `sign_in`: index === 2 ? `/` : null}>
                             <ListItemIcon style={{maxWidth: '35px', maxHeight: '35px'}}
                                           sx={{
                                 '& svg': {
@@ -65,7 +68,7 @@ function App(props) {
                                 },
                             }
                             }>
-                                {index === 0 ? <PersonIcon /> : (index === 1) ? <AddCircleOutlineIcon />: <QuestionAnswerIcon/>}
+                                {index === 0 ? <PersonIcon /> : (index === 1) ? <FilterIcon/> : (index === 2) ? <AddCircleOutlineIcon />: <QuestionAnswerIcon/>}
                             </ListItemIcon>
                             <ListItemText style={{fontSize: 15, fontWeight: 'lighter', color: '#595e65'}}>{text}</ListItemText>
                         </ListItemButton>
@@ -108,6 +111,8 @@ function App(props) {
             <Box sx={{height:40}}/>
             <Routes>
                 {/*<Route exact path="results/:number" element={<ResultsPageInterface />} />*/}
+                <Route exact path="sign_in" element={<SignInPageInterface url={props.url}/>}/>
+                <Route exact path="sign_up" element={<SignUpPageInterface url={props.url}/>}/>
                 <Route exact path="new_patient" element={<NewPatientPageInterface url={props.url}/>}/>
                 <Route exact path="patient/edit/:number" element={<EditPatientPageInterface url={props.url}/>}/>
                 <Route exact path="results" element={<ShotTable url={props.url}/>}/>
