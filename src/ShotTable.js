@@ -118,7 +118,7 @@ const MyGrid = (props) => {
                             h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
                         }}/>
                         <h2>Снимок</h2>
-                        <IconButton component={Link} to={`/`}  style={{maxWidth: '30px', maxHeight: '30px'}}
+                        <IconButton component={Link} to={`home`}  style={{maxWidth: '30px', maxHeight: '30px'}}
                                     sx={{
                                         paddingLeft: 3, paddingTop: 5.5, '& svg': {
                                             fontSize: 30

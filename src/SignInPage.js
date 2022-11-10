@@ -31,7 +31,7 @@ const SignInPageInterface = (props) => {
     const {number} = useParams();
     return (
 
-        <SignInPage props={number} url={props.url}></SignInPage>
+        <SignInPage props={number} url={props.url} setSignIn={props.setSignIn}></SignInPage>
 
     )
 }
@@ -68,7 +68,8 @@ class SignInPage extends React.Component {
             passwordEntered: false,
             openSuccess: false,
             openError: false,
-            showPassword: false
+            showPassword: false,
+            success: false
         };
     }
     handleClickShowPassword = () => {
@@ -104,10 +105,17 @@ class SignInPage extends React.Component {
         axios.post(this.props.url + "/api/v2/auth/login/", formData)
             .then((response) => {
                 this.setState({
-                    openSuccess: true
+                    openSuccess: true,
+                    success: true
                 })
                 localStorage.setItem('refresh', response.data.refresh)
                 localStorage.setItem('access', response.data.access)
+                this.props.setSignIn(false)
+                console.log('changed')
+                var link = document.createElement('a');
+                link.href = '/home';
+                link.click();
+                document.body.removeChild(link);
             })
             .catch(() => {
                 this.setState({
@@ -245,7 +253,7 @@ class SignInPage extends React.Component {
                                 <Button component={Link} to={`/sign_up`}
                                         sx={{ textTransform: 'none', width: 'auto', fontStyle: {color: '#4FB3EAFF'},
                                             fontFamily: 'Roboto', fontWeight: 'normal', fontSize: 15, marginBlockStart:0.2
-                                        }} variant='text' onClick={this.handleResponse}>
+                                        }} variant='text'>
                                     Зарегистрироваться
                                 </Button>
                             </Box>

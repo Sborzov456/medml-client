@@ -240,7 +240,7 @@ class SignUpPage extends React.Component {
                                     <Button component={Link} to={`/sign_in`}
                                         sx={{ textTransform: 'none', width: 'auto', fontStyle: {color: '#4FB3EAFF'},
                                             fontFamily: 'Roboto', fontWeight: 'normal', fontSize: 15, marginBlockStart:0.2
-                                        }} variant='text' onClick={this.handleResponse}>
+                                        }} variant='text'>
                                         Войти
                                     </Button>
                                 </Box>

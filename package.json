@@ -1,5 +1,6 @@
 {
   "name": "medml",
+  "homepage": "home",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -15,6 +16,7 @@
     "@mui/styled-engine-sc": "^5.10.6",
     "@mui/x-data-grid": "^5.17.8",
     "@mui/x-date-pickers": "^5.0.4",
+    "@reactivers/use-auth": "^1.0.2",
     "@rgba-image/png": "^0.1.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -39,6 +41,7 @@
     "styled-components": "^5.3.6",
     "swiper": "^8.4.4",
     "tiff-to-png": "^2.0.2",
+    "use-auth": "^0.1.1",
     "use-image": "^1.1.0",
     "utif": "^3.1.0",
     "validator": "^13.7.0",
