@@ -114,7 +114,11 @@ class UploadPage extends React.Component {
     handlePatientList = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         axios.get(this.props.url + "/api/v2/patient/list/?format=json")
-            .then((response) => this.setState({patients: response.data.results}))
+            .then((response) => {
+                this.setState({patients: response.data.results})
+                    console.log(response.data.results)
+            }
+            )
     };
     handleDevicesList = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
@@ -124,7 +128,7 @@ class UploadPage extends React.Component {
 
     handleResult = () => {
         const formData = new FormData();
-
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         formData.append("uzi_device", this.state.uziDevice);
         formData.append("projection_type", this.state.projectionType);
         formData.append("patient_card", this.state.patientCard);
@@ -406,7 +410,7 @@ class UploadPage extends React.Component {
                                                 Провести диагностику
                                             </Button>
                                             <Box sx={{width: 10}}></Box>
-                                            <Button component={Link} to={`result/${this.state.resultid}`} sx={{
+                                            <Button component={Link} to={`/result/${this.state.resultid}`} sx={{
                                                 backgroundColor: '#4fb3ea',
                                                 '&:focus': {backgroundColor: '#4fb3ea'},
                                                 '&:hover': {

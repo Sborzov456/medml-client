@@ -132,6 +132,7 @@ class ResultsPage extends React.Component {
         axios.get(this.props.url+"/api/v2/uzi/" + this.props.props + "/?format=json")
             .then((response) => {
                 this.setState({startData: response.data.info})
+                console.log(response.data)
                 var tmpTirads = [];
                 var secondTmpTirads = []
                 secondTmpTirads.push(parseFloat(response.data.info.nodule_1), parseFloat(response.data.info.nodule_2), parseFloat(response.data.info.nodule_3), parseFloat(response.data.info.nodule_4), parseFloat(response.data.info.nodule_5))
@@ -187,6 +188,7 @@ class ResultsPage extends React.Component {
                     segmentedImage: response.data.images.segmentation.image,
                     boxImage: response.data.images.box.image,
                     tiradsType: response.data.info.nodule_type,
+                    shortResult: response.data.info.has_nodules === 'T'
 
                 })
             });
@@ -548,10 +550,10 @@ class ResultsPage extends React.Component {
                                             <FormGroup>
                                                 <h2 style={{fontSize: 15, fontWeight: 'normal'}}>Обнаружено
                                                     новообразование</h2>
-                                                <FormControlLabel control={<Checkbox sx={{color: '#4fb3ea', '&.Mui-checked': {
+                                                <FormControlLabel control={<Checkbox checked={this.state.shortResult} sx={{color: '#4fb3ea', '&.Mui-checked': {
                                                         color: '#4fb3ea',}}} label={'Обнаружено новообразование'}
                                                                                    onChange={this.handleChooseShortResult}
-                                                                                   value={this.state.shortResult}/>}/>
+                                                                                   />}/>
                                             </FormGroup>
                                         </Grid>
                                     </Grid>

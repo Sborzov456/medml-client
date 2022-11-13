@@ -192,7 +192,7 @@ class SignUpPage extends React.Component {
                     <Alert severity="success" sx={{width: '100%', backgroundColor: '#00d995'}}
                            onClose={this.handleClose}
                            action={
-                               <Button component={Link} to={`/siqn_in`} sx={{lineHeight: 1.43, marginBlock: 0, fontStyle: {color: '#ffffff'}}} onClick={this.handleClose}>Войти</Button>}>Аккаунт создан!
+                               <Button component={Link} to={`/sign_in`} sx={{lineHeight: 1.43, marginBlock: 0, fontStyle: {color: '#ffffff'}}} onClick={this.handleClose}>Войти</Button>}>Аккаунт создан!
                     </Alert>
                 </Snackbar>
                 <Snackbar open={this.state.openError} autoHideDuration={6000} onClose={this.handleClose}

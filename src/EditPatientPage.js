@@ -91,8 +91,8 @@ class EditPatientPage extends React.Component {
     }
     handleStartPage = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(this.props.url + '/api/v2/patient/update/'+this.props.props+'/?format=json', ).then((response)=>{
-            console.log(response.data.patient.is_active)
+        axios.get(this.props.url + '/api/v2/patient/update/'+this.props.props +'/?format=json', ).then((response)=>{
+            console.log(response.data)
             this.setState({
                 lastName: response.data.patient.last_name,
                 lastNameEntered: true,
