@@ -74,6 +74,7 @@ const MyGrid = (props) => {
         }
         storedNames.reverse()
         var tmpAr = [];
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         axios.get(props.url + "/api/v2/uzi/ids/?format=json&ids=[" + storedNames + "]").then((response) => {
             console.log(response.data.results)
             for (let cur of storedNames) {
@@ -118,7 +119,7 @@ const MyGrid = (props) => {
                             h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
                         }}/>
                         <h2>Снимок</h2>
-                        <IconButton component={Link} to={`home`}  style={{maxWidth: '30px', maxHeight: '30px'}}
+                        <IconButton component={Link} to={`/home`}  style={{maxWidth: '30px', maxHeight: '30px'}}
                                     sx={{
                                         paddingLeft: 3, paddingTop: 5.5, '& svg': {
                                             fontSize: 30

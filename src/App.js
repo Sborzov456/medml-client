@@ -83,7 +83,7 @@ function App(props) {
             const formData = new FormData()
             formData.append('refresh', localStorage.getItem('refresh'))
             axios.post(props.url + "/api/v2/auth/token/refresh/?format=json", formData).then((response) => {
-                localStorage.setItem('access', response.data.access)
+                localStorage.setItem('access', response.data.access.toString())
                 setSignIn(false)
             }).catch(() => {
                 setSignIn(true)

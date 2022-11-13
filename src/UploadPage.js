@@ -112,10 +112,12 @@ class UploadPage extends React.Component {
         });
     };
     handlePatientList = () => {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         axios.get(this.props.url + "/api/v2/patient/list/?format=json")
             .then((response) => this.setState({patients: response.data.results}))
     };
     handleDevicesList = () => {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         axios.get(this.props.url + "/api/v2/uzi/devices/?format=json")
             .then((response) => this.setState({devices: response.data.results}))
     };
@@ -215,8 +217,8 @@ class UploadPage extends React.Component {
                         backgroundColor: "#ffffff",
                     }
                 }} display={'flex'} color={theme.palette.secondary.contrastText}>
-                    <Grid container direction={'row'} spacing={0}>
-                        <Grid item xl={2} md={5} sm={4} xs={4}>
+                    <Grid container direction={'row'} spacing={2}>
+                        <Grid item  xs>
                             <GlobalStyles styles={{
                                 h1: {color: 'dimgray', fontSize: 40, fontFamily: "Roboto"},
                                 h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
@@ -339,7 +341,7 @@ class UploadPage extends React.Component {
                             </Box>
                             <Box sx={{width: 400, paddingTop: 3}}>
                                 <FormControl fullWidth>
-                                    <Button component={Link} to={`new_patient`}
+                                    <Button component={Link} to={`/new_patient`}
                                             sx={{color: '#4fb3ea',
                                                 backgroundColor: '#ffffff',
                                                 '&:focus': {backgroundColor: '#4fb3ea'},
@@ -350,14 +352,14 @@ class UploadPage extends React.Component {
                                 </FormControl>
                             </Box>
                         </Grid>
-                        <Grid item>
+                        <Grid item xs>
 
                             <Box display="flex"
                                  alignItems="center"
                                  sx={{height: 400, paddingRight: 12}}>
                                 <Grid alignItems={'center'} justify={'center'} container direction={'column'}
                                       spacing={0}>
-                                    <Grid item justify="center">
+                                    <Grid item xs justify="center">
                                         <input type='file'
                                                ref={'fileInput'}
                                                onChange={this.handleUploadFile}

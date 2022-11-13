@@ -13,7 +13,12 @@ import Konva from "konva";
 
 
 const ImageComponent = (props) => {
-    const [image] = useImage(props.url+props.img, 'anonymous', 'origin')
+    let token = localStorage.getItem('access')
+    const [image] = useImage(props.url+props.img, 'anonymous', 'origin', {
+        headers: {
+            Authorization: "Bearer " + token,
+        }
+    } )
     const layerRef = React.useRef(null);
     const stageRef = React.useRef(null);
     const [orBr, setOrBr] = React.useState(0)

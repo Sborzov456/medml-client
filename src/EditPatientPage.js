@@ -90,8 +90,9 @@ class EditPatientPage extends React.Component {
         this.handleStartPage()
     }
     handleStartPage = () => {
-        axios.get(this.props.url + '/api/v2/patient/update/'+this.props.props+'/?format=json').then((response)=>{
-            console.log(response)
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
+        axios.get(this.props.url + '/api/v2/patient/update/'+this.props.props+'/?format=json', ).then((response)=>{
+            console.log(response.data.patient.is_active)
             this.setState({
                 lastName: response.data.patient.last_name,
                 lastNameEntered: true,
@@ -181,8 +182,8 @@ class EditPatientPage extends React.Component {
         formData.append("patient.is_active", this.state.active);
         formData.append("card.has_nodules", this.state.ill ? "T" : "F");
         formData.append("card.diagnosis", this.state.diagnosis);
-
-        axios.put(this.props.url + "/api/v2/patient/update/"+this.props.props+'/', formData)
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
+        axios.put(this.props.url + "/api/v2/patient/update/"+this.props.props+'/', formData, )
             .then(() => this.setState({
                 openSuccess: true
             }))
@@ -334,7 +335,7 @@ class EditPatientPage extends React.Component {
                                 <FormLabel component="legend"></FormLabel>
                                 <FormGroup aria-label="position" row>
                                     <FormControlLabel
-                                        control={<Checkbox value={this.state.active} sx={{
+                                        control={<Checkbox checked={this.state.active} sx={{
                                             '&.Mui-checked': {
                                                 color: '#4FB3EAFF',
                                             }

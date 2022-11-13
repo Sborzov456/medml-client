@@ -113,9 +113,6 @@ class ResultsPage extends React.Component {
             patientFathersName: "",
             imageChoosen: false,
             linkEditingImage: "",
-            brightness: 0,
-            sharpness: 0,
-            contrast: 0,
             openSuccess: false,
             devices: []
         };
@@ -131,6 +128,7 @@ class ResultsPage extends React.Component {
         this.handleExport()
     };
     handleStartPage = () => {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         axios.get(this.props.url+"/api/v2/uzi/" + this.props.props + "/?format=json")
             .then((response) => {
                 this.setState({startData: response.data.info})
@@ -158,6 +156,7 @@ class ResultsPage extends React.Component {
                         tmpTirads.push(a+ '% - EU-TIRADS 5')
                     }
                 }
+                axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
                 axios.get(this.props.url + "/api/v2/uzi/devices/?format=json")
                     .then((res) => {
                         this.setState({devices: res.data.results})
@@ -195,39 +194,31 @@ class ResultsPage extends React.Component {
     }
 
     handlePatientList = () => {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         axios.get(this.props.url+"/api/v2/patient/list/?format=json")
             .then((response) => this.setState({patients: response.data.results}))
     };
     handleExport = () => {
-        axios.get(this.props.url+this.state.segmentedImage, {responseType: 'blob'}).then( res => {
-            const formData = new FormData();
-            const image = new File([res.data], 'uploadfile.png')
-            formData.append("segmentation_image.image", image);
-            formData.append("group.nodule_type", this.state.tiradsType);
-            console.log(typeof formData.get("group.nodule_type"))
-            axios.put(this.props.url+"/api/v2/uzi/update/seg_group/" + this.props.props, formData)
-        }
-        )
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         axios.get(this.props.url+"/api/v2/uzi/" + this.props.props+"/?format=json").then((response) => {
             console.log(response.data)
             const formData = new FormData();
-            formData.append("images", response.data.images);
-            formData.append("info.id", response.data.info.id);
-            formData.append("info.projection_type", this.state.projectionType);
-            formData.append("info.echo_descr", this.state.longResult);
-            formData.append("info.nodule_1", response.data.info.nodule_1);
-            formData.append("info.nodule_2", response.data.info.nodule_2);
-            formData.append("info.nodule_3", response.data.info.nodule_3);
-            formData.append("info.nodule_4", response.data.info.nodule_4);
-            formData.append("info.nodule_5", response.data.info.nodule_5);
-            formData.append("info.nodule_width", parseFloat(this.state.uziWidth));
-            formData.append("info.nodule_height", parseFloat(this.state.uziLength));
-            formData.append("info.nodule_length", parseFloat(this.state.uziDepth));
-            formData.append("info.uzi_device_name", this.state.uziDevice.name)
-            formData.append("info.acceptance_datetime", this.state.uziDate === null ? response.data.info.acceptance_datetime : this.state.uziDate.toISOString());
-            formData.append("info.diagnosis", response.data.info.diagnosis);
-            formData.append("info.patient", response.data.info.patient);
-            axios.put(this.props.url+"/api/v2/uzi/" + this.props.props+'/update', formData)
+            formData.append("id", response.data.images.box.image_group);
+            formData.append("patient_card.patient", parseInt(response.data.info.patient.id));
+            formData.append("patient_card.acceptance_datetime", this.state.uziDate);
+            formData.append("patient_card.has_nodules", this.state.shortResult? 'T' : 'F');
+            formData.append("patient_card.diagnosis", response.data.info.patient.diagnosis);
+            formData.append("projection_type", this.state.projectionType);
+            formData.append("nodule_type", this.state.tiradsType);
+            formData.append("echo_descr", this.state.longResult);
+            formData.append("nodule_widht", this.state.uziWidth);
+            formData.append("nodule_height", this.state.uziDepth);
+            formData.append("nodule_length", this.state.uziLength);
+            formData.append("uzi_device", this.state.uziDevice.id);
+            console.log(formData.get('id'))
+            axios.put(this.props.url+"/api/v2/uzi/" + this.props.props +'/update', formData).then((response) => {
+
+            })
         })
 
     };

@@ -21,7 +21,12 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 const ConvasComponent = (props) => {
-    const [image] = useImage(props.img, 'anonymous', 'origin')
+    let token = localStorage.getItem('access')
+    const [image] = useImage(props.img, 'anonymous', 'origin', {
+        headers: {
+            Authorization: "Bearer " + token,
+        }
+    } )
     const [tool, setTool] = React.useState('pen');
     const [width, setWidth] = React.useState(30);
     const [lines, setLines] = React.useState([]);
@@ -85,7 +90,10 @@ const ConvasComponent = (props) => {
             const imageF = new File([response], 'uploadfile.png')
             formData.append("segmentation_image.image", imageF);
             formData.append("group.nodule_type", type);
-            axios.put(props.url+"/api/v2/uzi/update/seg_group/" + props.number, formData).then(() => setSuc(true)).catch(() => {
+            let token = localStorage.getItem('access')
+            console.log(token)
+            axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
+            axios.put(props.url+"/api/v2/uzi/update/seg_group/" + props.number, formData,).then(() => setSuc(true)).catch(() => {
                 setEr(true)
                 imageRef.current.cache()
                 imageRef.current.filters([Konva.Filters.Brighten]);

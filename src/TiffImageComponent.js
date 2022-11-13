@@ -10,6 +10,7 @@ import SwiperCore, {Navigation, Scrollbar, Pagination} from 'swiper';
 import 'swiper/css/navigation';
 import 'swiper/css'
 import styles from './Swiper.module.scss'
+import axios from "axios";
 
 SwiperCore.use([Pagination])
 
@@ -52,7 +53,7 @@ const TiffImageComponent = (props) => {
 
     const handleExport = () => {
         fetch(props.url + props.img, {
-            method: "GET", headers: {}
+            method: "GET", headers: {'Authorization': `Bearer ${localStorage.getItem('access')}`}
         })
             .then(response => {
                 response.arrayBuffer().then(function (buffer) {

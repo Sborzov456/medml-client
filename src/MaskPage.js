@@ -24,8 +24,7 @@ class MaskPage extends React.Component {
             projectionType: null,
             patientCard: null,
             uziDate: null,
-            tiradsType:null,
-            predictedTypes: {0: '3 - 77.43%',   1: '4 - 44.22%',   2: '2 - 7.84%'},
+            tiradsType: null,
             shortResult: false,
             uziWidth: 0,
             uziLength: 0,
@@ -41,6 +40,7 @@ class MaskPage extends React.Component {
         this.handleStartPage()
     }
     handleStartPage = () => {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         axios.get(this.props.url+"/api/v2/uzi/"+this.props.props+"/?format=json")
             .then((response) => {
                 this.setState({ startData: response.data.info})
