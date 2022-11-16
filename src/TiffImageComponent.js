@@ -18,37 +18,38 @@ SwiperCore.use([Pagination])
 const TiffImageComponent = (props) => {
     const [imgArray, setArray] = useState([]);
     useEffect(() => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', props.url + props.img);
-        xhr.responseType = 'arraybuffer';
-        xhr.onload = e => {
-            const ifds = UTIF.decode(e.target.response);
-            const firstPageOfTif = ifds[0];
-            const tmp_ar = [];
-            var index = 0;
-            for (let tmp of ifds) {
-                UTIF.decodeImage(e.target.response, ifds[index], ifds);
-                const rgba = UTIF.toRGBA8(tmp);
-                const imageWidth = firstPageOfTif.width;
-                const imageHeight = firstPageOfTif.height;
-                const cnv = document.createElement('canvas');
-                cnv.width = imageWidth;
-                cnv.height = imageHeight;
-                const ctx = cnv.getContext('2d');
-                const imageData = ctx.createImageData(imageWidth, imageHeight);
-                for (let i = 0; i < rgba.length; i++) {
-                    imageData.data[i] = rgba[i];
+        if (props.img !== "" && props.img !== null) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', props.url + props.img);
+            xhr.responseType = 'arraybuffer';
+            xhr.onload = e => {
+                const ifds = UTIF.decode(e.target.response);
+                const firstPageOfTif = ifds[0];
+                const tmp_ar = [];
+                var index = 0;
+                for (let tmp of ifds) {
+                    UTIF.decodeImage(e.target.response, ifds[index], ifds);
+                    const rgba = UTIF.toRGBA8(tmp);
+                    const imageWidth = firstPageOfTif.width;
+                    const imageHeight = firstPageOfTif.height;
+                    const cnv = document.createElement('canvas');
+                    cnv.width = imageWidth;
+                    cnv.height = imageHeight;
+                    const ctx = cnv.getContext('2d');
+                    const imageData = ctx.createImageData(imageWidth, imageHeight);
+                    for (let i = 0; i < rgba.length; i++) {
+                        imageData.data[i] = rgba[i];
+                    }
+                    ctx.putImageData(imageData, 0, 0);
+                    const cur = Canvas2image.convertToPNG(cnv, 400, 300)
+                    tmp_ar.push(<img src={cur.src} alt={""}/>)
+                    index += 1;
                 }
-                ctx.putImageData(imageData, 0, 0);
-                const cur = Canvas2image.convertToPNG(cnv, 400, 300)
-                tmp_ar.push(<img src={cur.src} alt={""}/>)
-                index += 1;
-            }
-            setArray(tmp_ar);
-
-        };
-        xhr.send();
-    }, [])
+                setArray(tmp_ar);
+            };
+            xhr.send();
+        }
+    }, [props.url, props.img])
 
 
     const handleExport = () => {
