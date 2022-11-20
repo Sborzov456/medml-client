@@ -191,7 +191,7 @@ class ResultsPage extends React.Component {
                     shortResult: response.data.info.has_nodules === 'T'
 
                 })
-            });
+            })
 
     }
 
@@ -312,6 +312,10 @@ class ResultsPage extends React.Component {
                     borderTopLeftRadius: 130,
                     elevation: 10,
                     boxShadow: 2,
+                    height: 'auto',
+                    minHeight: 600,
+                    width: 'auto',
+                    minWidth: 500,
                     '&:hover': {
                         backgroundColor: "#ffffff",
                     },
@@ -409,7 +413,7 @@ class ResultsPage extends React.Component {
                                         <Card
                                             className={this.props.className}
                                             style={styles.cardStyle.style}
-                                            sx={{boxShadow:3, width:400}}
+                                            sx={{boxShadow:3, width:400, minHeight:300}}
                                             containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>
                                             {(this.state.originalImage.split('.')[1] === 'tiff' || this.state.originalImage.split('.')[1] === 'tif') && <TiffImageComponent url={this.props.url} img={this.state.originalImage}/>}
                                             {this.state.originalImage.split('.')[1] === 'png' && <ImageComponent url={this.props.url} img={this.state.originalImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>}
@@ -419,7 +423,7 @@ class ResultsPage extends React.Component {
                                         <Card
                                             className={this.props.className}
                                             style={styles.cardStyle.style}
-                                            sx={{boxShadow:3, width:400}}
+                                            sx={{boxShadow:3, width:400, minHeight:300}}
                                             containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>
                                             {(this.state.originalImage.split('.')[1] === 'tiff' || this.state.originalImage.split('.')[1] === 'tif') &&<TiffImageComponent url={this.props.url} img={this.state.segmentedImage}/>}
                                             {this.state.originalImage.split('.')[1] === 'png' &&<ImageComponent url={this.props.url} img={this.state.segmentedImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>}
@@ -429,7 +433,7 @@ class ResultsPage extends React.Component {
                                         <Card
                                             className={this.props.className}
                                             style={styles.cardStyle.style}
-                                            sx={{boxShadow:3, width:400}}
+                                            sx={{boxShadow:3, width:400, minHeight:300}}
                                             containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>
                                             {(this.state.originalImage.split('.')[1] === 'tiff' || this.state.originalImage.split('.')[1] === 'tif') && <TiffImageComponent url={this.props.url} img={this.state.boxImage}/>}
                                             {this.state.originalImage.split('.')[1] === 'png' &&<ImageComponent url={this.props.url} img={this.state.boxImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>}

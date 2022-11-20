@@ -1,6 +1,6 @@
 import {Stage, Layer, Image} from 'react-konva';
 import * as React from "react";
-import {Box, FormControl, IconButton, Slider} from "@mui/material";
+import {Box, CircularProgress, FormControl, IconButton, Slider} from "@mui/material";
 import {Icon} from "@iconify/react";
 
 import useImage from "use-image";
@@ -9,16 +9,27 @@ import useImage from "use-image";
 import GlobalStyles from "@mui/material/GlobalStyles";
 
 import Konva from "konva";
+import {useEffect, useState} from "react";
 
 
 
 const ImageComponent = (props) => {
     let token = localStorage.getItem('access')
+    const [succ, setSucc] = useState(false)
     const [image] = useImage(props.url+props.img, 'anonymous', 'origin', {
         headers: {
             Authorization: "Bearer " + token,
         }
     } )
+    useEffect(() =>
+    {
+        if (props.img === "" || props.img === null) {
+            setSucc(false)
+        } else {
+            setSucc(true)
+        }
+    }
+    )
     const layerRef = React.useRef(null);
     const stageRef = React.useRef(null);
     const [orBr, setOrBr] = React.useState(0)
@@ -65,7 +76,8 @@ const ImageComponent = (props) => {
     }
     return (
         <div>
-            <Box container direction={'column'}>
+            {!succ && <Box display={'flex'} alignItems={'center'} justifyItems={'center'} justifyContent={'center'} alignContent={'center'} sx={{minHeight:300}}><CircularProgress /> </Box>}
+            {succ && <Box container direction={'column'}>
                 <GlobalStyles styles={{
                     h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},
                     h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
@@ -77,7 +89,7 @@ const ImageComponent = (props) => {
                 }}>
                     <Icon icon="fluent:save-20-filled"/>
                 </IconButton>
-                 <Stage
+                <Stage
                     width={400}
                     height={300}
                     ref={stageRef}
@@ -124,6 +136,7 @@ const ImageComponent = (props) => {
                     </Box>
                 </Box>
             </Box>
+            }
             <div id={'stage'}></div>
         </div>
     )

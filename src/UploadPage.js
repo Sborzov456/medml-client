@@ -2,7 +2,7 @@ import * as React from 'react';
 import '@fontsource/poppins/700.css'
 
 import GlobalStyles from '@mui/material/GlobalStyles';
-import {Autocomplete, Button, createTheme, IconButton, Slide,} from "@mui/material";
+import {Autocomplete, Button, CircularProgress, createTheme, IconButton, Slide,} from "@mui/material";
 import {FormControl} from "@mui/material";
 
 import {MenuItem} from "@mui/material";
@@ -57,6 +57,7 @@ class UploadPage extends React.Component {
             devices: [],
             openSuccess: false,
             openError: false,
+            loading: false
         };
         this.handlePatientList()
         this.handleDevicesList()
@@ -127,6 +128,9 @@ class UploadPage extends React.Component {
     };
 
     handleResult = () => {
+        this.setState({
+            loading: true
+        })
         const formData = new FormData();
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         formData.append("uzi_device", this.state.uziDevice);
@@ -136,7 +140,8 @@ class UploadPage extends React.Component {
         formData.append("original_image", this.state.imageFile);
         const response = axios.post(this.props.url + "/api/v2/uzi/create/", formData).catch( () => {
                 this.setState({
-                    openError: true
+                    openError: true,
+                    loading: false
                 })
         }
     )
@@ -167,7 +172,8 @@ class UploadPage extends React.Component {
     handleWhat = () => {
         this.setState({
             result: true,
-            openSuccess: true
+            openSuccess: true,
+            loading: false
         })
     };
     handleClose = (event, reason) => {
@@ -217,11 +223,13 @@ class UploadPage extends React.Component {
                     boxShadow: 2,
                     height: 'auto',
                     minHeight: 600,
+                    width: 'auto',
+                    minWidth: 500,
                     '&:hover': {
                         backgroundColor: "#ffffff",
                     }
                 }} display={'flex'} color={theme.palette.secondary.contrastText}>
-                    <Grid container direction={'row'} spacing={2}>
+                    <Grid container direction={'row'} spacing={5}>
                         <Grid item  xs>
                             <GlobalStyles styles={{
                                 h1: {color: 'dimgray', fontSize: 40, fontFamily: "Roboto"},
@@ -345,7 +353,7 @@ class UploadPage extends React.Component {
                             </Box>
                             <Box sx={{width: 400, paddingTop: 3}}>
                                 <FormControl fullWidth>
-                                    <Button component={Link} to={`/new_patient`}
+                                    <Button component={Link} to={`/patient/create`}
                                             sx={{color: '#4fb3ea',
                                                 backgroundColor: '#ffffff',
                                                 '&:focus': {backgroundColor: '#4fb3ea'},
@@ -356,11 +364,13 @@ class UploadPage extends React.Component {
                                 </FormControl>
                             </Box>
                         </Grid>
-                        <Grid item xs>
+                        <Grid item xs container direction={'column'}
+                              alignItems="center" sx={{paddingRight: 10}}>
 
                             <Box display="flex"
+                                 justifyContent="center"
                                  alignItems="center"
-                                 sx={{height: 400, paddingRight: 12}}>
+                                 sx={{height: 400}}>
                                 <Grid alignItems={'center'} justify={'center'} container direction={'column'}
                                       spacing={0}>
                                     <Grid item xs justify="center">
@@ -376,6 +386,18 @@ class UploadPage extends React.Component {
                                             }, boxShadow: 10
                                         }
                                         }>
+                                            {this.state.loading && (
+                                                <CircularProgress
+                                                    size={70}
+                                                    sx={{ marginInline: 1, position: 'absolute', top: '50%',
+                                                        left: '50%',
+                                                        marginTop: '-34px',
+                                                        marginLeft: '-34px',
+                                                        zIndex: 1,
+                                                        color: '#4FB3EAFF',
+                                                    }}
+                                                />
+                                            )}
                                             <AddCircleOutlineIcon></AddCircleOutlineIcon>
                                         </IconButton>
                                     </Grid>
@@ -417,8 +439,19 @@ class UploadPage extends React.Component {
                                                     backgroundColor: '#2c608a'
                                                 }
                                             }} variant={'contained'} disabled={!this.state.result}>
+                                                {this.state.loading && (
+                                                    <CircularProgress
+                                                        size={24}
+                                                        sx={{ marginInline: 1, position: 'absolute', top: '50%',
+                                                            left: '50%',
+                                                            marginTop: '-12px',
+                                                            marginLeft: '-12px',
+                                                            zIndex: 1,
+                                                            color: '#4FB3EAFF',
+                                                        }}
+                                                    />
+                                                )}
                                                 Посмотреть результат
-
                                             </Button>
                                         </Box>
                                     </Grid>

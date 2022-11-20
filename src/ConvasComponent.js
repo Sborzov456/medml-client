@@ -130,7 +130,7 @@ const ConvasComponent = (props) => {
                                <CloseIcon/>
                            </IconButton>}>
                 <Alert severity="success" sx={{width:'100%',backgroundColor: '#00d995', marginBlock: 0}} action={
-                    <Button component={Link} to={`/`} sx={{lineHeight: 1.43, marginBlock: 0, fontStyle: {color: '#ffffff'}}} onClick={handleClose}>Вернуться на главную страницу</Button>
+                    <Button component={Link} to={`/home`} sx={{lineHeight: 1.43, marginBlock: 0, fontStyle: {color: '#ffffff'}}} onClick={handleClose}>Вернуться на главную страницу</Button>
                 } onClose={handleClose}>Данные сохранены!</Alert>
             </Snackbar>
             <Snackbar  open={er} autoHideDuration={6000} onClose={handleClose}

@@ -1,6 +1,6 @@
 import * as React from "react";
 import UTIF from 'utif';
-import {Box, Button} from "@mui/material";
+import {Box, Button, CircularProgress} from "@mui/material";
 import GlobalStyles from "@mui/material/GlobalStyles";
 import {Icon} from "@iconify/react";
 import {useEffect, useState} from "react";
@@ -17,7 +17,9 @@ SwiperCore.use([Pagination])
 
 const TiffImageComponent = (props) => {
     const [imgArray, setArray] = useState([]);
+    const [succ, setSucc] = useState(false)
     useEffect(() => {
+        setSucc(false)
         if (props.img !== "" && props.img !== null) {
             const xhr = new XMLHttpRequest();
             xhr.open('GET', props.url + props.img);
@@ -46,6 +48,7 @@ const TiffImageComponent = (props) => {
                     index += 1;
                 }
                 setArray(tmp_ar);
+                setSucc(true)
             };
             xhr.send();
         }
@@ -71,7 +74,8 @@ const TiffImageComponent = (props) => {
             });
     };
     return (<div>
-        <Box container direction={'column'} alignItems={'center'}>
+        {!succ && <Box display={'flex'} alignItems={'center'} justifyItems={'center'} justifyContent={'center'} alignContent={'center'} sx={{minHeight:300}}><CircularProgress /> </Box>}
+        {succ && <Box container direction={'column'} alignItems={'center'}>
             <GlobalStyles styles={{
                 h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},
                 h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
@@ -101,7 +105,9 @@ const TiffImageComponent = (props) => {
                 {imgArray.map((item) => <SwiperSlide className={styles.swiperslide}>{item}</SwiperSlide>)}
             </Swiper>
         </Box>
+        }
         <div id={'stage'}></div>
+
     </div>);
 }
 
