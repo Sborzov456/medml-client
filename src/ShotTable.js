@@ -84,9 +84,10 @@ const MyGrid = (props) => {
         axios.get(props.url + "/api/v2/patient/shots/"+ props.number + "?format=json").then((response) => {
             console.log(response.data.results)
             for (let cur of response.data.results.shots) {
-                console.log(response.data.results[cur])
-                tmpAr.push(createData(cur.id, new Date(Date.parse(cur.acceptance_datetime)), cur.nodule_type, 0.479 * cur.nodule_height * cur.nodule_length * cur.nodule_widht, cur.uzi_device, cur.projection_type === "long" ? "Поперечная" : "Продольная"))
-            }
+                if(cur.id !== null) {
+                    tmpAr.push(createData(cur.id, new Date(Date.parse(cur.acceptance_datetime)), cur.nodule_type, 0.479 * cur.nodule_height * cur.nodule_length * cur.nodule_widht, cur.uzi_device, cur.projection_type === "long" ? "Поперечная" : "Продольная"))
+                }
+                }
             })
             .then(() => setTableData(tmpAr))
 

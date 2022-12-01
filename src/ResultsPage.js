@@ -29,6 +29,7 @@ import TiffImageComponent from "./TiffImageComponent";
 import CloseIcon from "@mui/icons-material/Close";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import Gallery from "./Gallery";
 
 const theme = createTheme()
 export const TextFieldResult = styled(TextField)`
@@ -139,22 +140,28 @@ class ResultsPage extends React.Component {
                 secondTmpTirads.sort(function(a, b) {
                     return a - b;
                 })
+                const indexes = {1: true, 2: true, 3: true, 4: true, 5: true}
                 secondTmpTirads.reverse()
                 for (let a of secondTmpTirads){
-                    if(a === parseFloat(response.data.info.nodule_1)){
+                    if((a === parseFloat(response.data.info.nodule_1)) && indexes[1]){
                         tmpTirads.push(a+ '% - EU-TIRADS 1')
+                        indexes[1] = false
                     }
-                    if(a === parseFloat(response.data.info.nodule_2)){
+                    else if((a === parseFloat(response.data.info.nodule_2)) && indexes[2]){
                         tmpTirads.push(a+ '% - EU-TIRADS 2')
+                        indexes[2] = false
                     }
-                    if(a === parseFloat(response.data.info.nodule_3)){
+                    else if((a === parseFloat(response.data.info.nodule_3)) && indexes[3]){
                         tmpTirads.push(a+ '% - EU-TIRADS 3')
+                        indexes[3] = false
                     }
-                    if(a === parseFloat(response.data.info.nodule_4)){
+                    else if((a === parseFloat(response.data.info.nodule_4)) && indexes[4]){
                         tmpTirads.push(a+ '% - EU-TIRADS 4')
+                        indexes[4] = false
                     }
-                    if(a === parseFloat(response.data.info.nodule_5)){
+                    else if((a === parseFloat(response.data.info.nodule_5)) && indexes[5]){
                         tmpTirads.push(a+ '% - EU-TIRADS 5')
+                        indexes[5] = false
                     }
                 }
                 axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
@@ -322,34 +329,34 @@ class ResultsPage extends React.Component {
                 }} color={theme.palette.secondary.contrastText}>
                     <Grid direction={'column'} spacing={0} alignContent={'center'} justifyContent={'center'}>
                         <Grid item>
-                            <Grid container spacing={2} direction={'row'}>
-                                <Grid item>
-                                    <GlobalStyles styles={{
-                                        h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},
-                                        h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
-                                    }}/>
-                                    <h2>Определенный тип узла: </h2>
-                                </Grid>
-                                <Grid item>
-                                    <h2 style={{color: '#4FB3EAFF'}}>{this.state.predictedTypes[0]}</h2>
-                                </Grid>
-                                <Grid item>
-                                    <GlobalStyles styles={{
-                                        h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},
-                                        h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
-                                    }}/>
-                                    <h2 color={'#417bbe'}>{this.state.predictedTypes[1]} </h2>
-                                </Grid>
-                                <Grid item>
-                                    <GlobalStyles styles={{
-                                        h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},
-                                        h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
-                                    }}/>
-                                    <h2>{this.state.predictedTypes[2]} </h2>
-                                </Grid>
-                                <Grid item>
-                                </Grid>
-                            </Grid>
+                            {/*<Grid container spacing={2} direction={'row'}>*/}
+                            {/*    <Grid item>*/}
+                            {/*        <GlobalStyles styles={{*/}
+                            {/*            h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},*/}
+                            {/*            h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}*/}
+                            {/*        }}/>*/}
+                            {/*        <h2>Определенный тип узла: </h2>*/}
+                            {/*    </Grid>*/}
+                            {/*    <Grid item>*/}
+                            {/*        <h2 style={{color: '#4FB3EAFF'}}>{this.state.predictedTypes[0]}</h2>*/}
+                            {/*    </Grid>*/}
+                            {/*    <Grid item>*/}
+                            {/*        <GlobalStyles styles={{*/}
+                            {/*            h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},*/}
+                            {/*            h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}*/}
+                            {/*        }}/>*/}
+                            {/*        <h2 color={'#417bbe'}>{this.state.predictedTypes[1]} </h2>*/}
+                            {/*    </Grid>*/}
+                            {/*    <Grid item>*/}
+                            {/*        <GlobalStyles styles={{*/}
+                            {/*            h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},*/}
+                            {/*            h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}*/}
+                            {/*        }}/>*/}
+                            {/*        <h2>{this.state.predictedTypes[2]} </h2>*/}
+                            {/*    </Grid>*/}
+                            {/*    <Grid item>*/}
+                            {/*    </Grid>*/}
+                            {/*</Grid>*/}
                             <Grid item>
                                 <Box sx={{width: 500}} display={'flex'}>
                                         <GlobalStyles styles={{
@@ -407,40 +414,41 @@ class ResultsPage extends React.Component {
                                 </Box>
                             </Grid>
                         </Grid>
-                        <Grid item fullWidth alignItems={'ceneter'} justifyContent={'center'} sx={{paddingTop:5}}>
-                            <Grid container direction={'row'} spacing={6}>
-                                <Grid item>
-                                        <Card
-                                            className={this.props.className}
-                                            style={styles.cardStyle.style}
-                                            sx={{boxShadow:3, width:400, minHeight:300}}
-                                            containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>
-                                            {(this.state.originalImage.split('.')[1] === 'tiff' || this.state.originalImage.split('.')[1] === 'tif') && <TiffImageComponent url={this.props.url} img={this.state.originalImage}/>}
-                                            {this.state.originalImage.split('.')[1] === 'png' && <ImageComponent url={this.props.url} img={this.state.originalImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>}
-                                        </Card>
-                                </Grid>
-                                <Grid item>
-                                        <Card
-                                            className={this.props.className}
-                                            style={styles.cardStyle.style}
-                                            sx={{boxShadow:3, width:400, minHeight:300}}
-                                            containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>
-                                            {(this.state.originalImage.split('.')[1] === 'tiff' || this.state.originalImage.split('.')[1] === 'tif') &&<TiffImageComponent url={this.props.url} img={this.state.segmentedImage}/>}
-                                            {this.state.originalImage.split('.')[1] === 'png' &&<ImageComponent url={this.props.url} img={this.state.segmentedImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>}
-                                        </Card>
-                                </Grid>
-                                <Grid item>
-                                        <Card
-                                            className={this.props.className}
-                                            style={styles.cardStyle.style}
-                                            sx={{boxShadow:3, width:400, minHeight:300}}
-                                            containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>
-                                            {(this.state.originalImage.split('.')[1] === 'tiff' || this.state.originalImage.split('.')[1] === 'tif') && <TiffImageComponent url={this.props.url} img={this.state.boxImage}/>}
-                                            {this.state.originalImage.split('.')[1] === 'png' &&<ImageComponent url={this.props.url} img={this.state.boxImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>}
-                                        </Card>
-                                </Grid>
+                        <Grid item fullWidth alignItems={'center'} justifyContent={'center'} sx={{paddingTop:5}}>
+                            <Gallery url={this.props.url} props={this.props.props} link1={this.state.originalImage} link2={this.state.segmentedImage} link3={this.state.boxImage} number={this.props.props} type={this.state.tiradsType}></Gallery>
+                            {/*<Grid container direction={'row'} spacing={6}>*/}
+                            {/*    <Grid item>*/}
+                            {/*            <Card*/}
+                            {/*                className={this.props.className}*/}
+                            {/*                style={styles.cardStyle.style}*/}
+                            {/*                sx={{boxShadow:3, width:400, minHeight:300}}*/}
+                            {/*                containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>*/}
+                            {/*                {(this.state.originalImage.split('.')[1] === 'tiff' || this.state.originalImage.split('.')[1] === 'tif') && <TiffImageComponent url={this.props.url} img={this.state.originalImage}/>}*/}
+                            {/*                {this.state.originalImage.split('.')[1] === 'png' && <ImageComponent url={this.props.url} img={this.state.originalImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>}*/}
+                            {/*            </Card>*/}
+                            {/*    </Grid>*/}
+                            {/*    <Grid item>*/}
+                            {/*            <Card*/}
+                            {/*                className={this.props.className}*/}
+                            {/*                style={styles.cardStyle.style}*/}
+                            {/*                sx={{boxShadow:3, width:400, minHeight:300}}*/}
+                            {/*                containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>*/}
+                            {/*                {(this.state.originalImage.split('.')[1] === 'tiff' || this.state.originalImage.split('.')[1] === 'tif') &&<TiffImageComponent url={this.props.url} img={this.state.segmentedImage}/>}*/}
+                            {/*                {this.state.originalImage.split('.')[1] === 'png' &&<ImageComponent url={this.props.url} img={this.state.segmentedImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>}*/}
+                            {/*            </Card>*/}
+                            {/*    </Grid>*/}
+                            {/*    <Grid item>*/}
+                            {/*            <Card*/}
+                            {/*                className={this.props.className}*/}
+                            {/*                style={styles.cardStyle.style}*/}
+                            {/*                sx={{boxShadow:3, width:400, minHeight:300}}*/}
+                            {/*                containerStyle={Object.assign(styles.cardStyle.containerStyle, this.props.containerStyle)}>*/}
+                            {/*                {(this.state.originalImage.split('.')[1] === 'tiff' || this.state.originalImage.split('.')[1] === 'tif') && <TiffImageComponent url={this.props.url} img={this.state.boxImage}/>}*/}
+                            {/*                {this.state.originalImage.split('.')[1] === 'png' &&<ImageComponent url={this.props.url} img={this.state.boxImage} number={this.props.props} type={this.state.projectionType} choosen={this.state.imageChoosen}/>}*/}
+                            {/*            </Card>*/}
+                            {/*    </Grid>*/}
 
-                            </Grid>
+                            {/*</Grid>*/}
                         </Grid>
                         <Grid item fullWidth alignItems={''} justifyContent={'center'}>
                             <Box sx={{height: 15}}/>

@@ -41,6 +41,7 @@ class UploadPage extends React.Component {
         this.state = {
             originalImage: "",
             uziDevice: null,
+            deviceName:{id: 0, name: ""},
             projectionType: null,
             patientCard: null,
             clicked: false,
@@ -50,6 +51,7 @@ class UploadPage extends React.Component {
             patientChosen: false,
             typeText: "Выберите файл в формате .png или .tiff",
             imageFile: null,
+            imageChoosen: false,
             patients: [],
             patientPolicy: null,
             result: false,
@@ -57,7 +59,8 @@ class UploadPage extends React.Component {
             devices: [],
             openSuccess: false,
             openError: false,
-            loading: false
+            loading: false,
+            patient:{id:0, last_name: "", first_name: "", fathers_name:"", personal_policy: ""}
         };
         this.handlePatientList()
         this.handleDevicesList()
@@ -71,7 +74,8 @@ class UploadPage extends React.Component {
             this.setState({
                 originalImage: reader.result,
                 typeText: imageFile.name,
-                imageFile: event.target.files[0]
+                imageFile: event.target.files[0],
+                imageChoosen: true
             });
         }, false)
     }
@@ -84,6 +88,7 @@ class UploadPage extends React.Component {
             }
         }
         this.setState({
+            deviceName: {id: value.id, name: value.name},
             uziDevice: device1,
             deviceChosen: true
         });
@@ -109,7 +114,8 @@ class UploadPage extends React.Component {
         this.setState({
             patientCard: patient1,
             patientChosen: true,
-            patientPolicy: value.personal_policy
+            patientPolicy: value.personal_policy,
+            patient:{id: value.id, last_name: value.last_name, first_name: value.first_name, fathers_name: value.fathers_name, personal_policy: value.personal_policy}
         });
     };
     handlePatientList = () => {
@@ -164,6 +170,19 @@ class UploadPage extends React.Component {
             console.log(storedNames)
             localStorage.setItem("names", JSON.stringify(storedNames))
             this.handleWhat();
+                this.setState({
+                    uziDevice: null,
+                    projectionType: null,
+                    patientCard: null,
+                    imageFile: null,
+                    typeText: "Выберите файл в формате .png или .tiff",
+                    deviceName: {id: 0, name: ""},
+                    patient:{id:0, last_name: "", first_name: "", fathers_name:"", personal_policy: ""},
+                    deviceChosen: false,
+                    projectionChosen: false,
+                    patientChosen: false,
+                    imageChoosen: false
+                })
         }
 
         })
@@ -237,13 +256,14 @@ class UploadPage extends React.Component {
                             }}/>
                             <h1>Новый снимок УЗИ</h1>
                             <Box sx={{width: 400, borderRadius: 3, boxShadow: 1}}>
-                                <FormControl variant={'outlined'} fullWidth>
+                                <FormControl variant={'outlined'} fullWidth >
                                     <Autocomplete
                                         id="devices"
                                         sx={{width: 400}}
                                         options={this.state.devices}
                                         autoHighlight
                                         onChange={this.handleChooseDevice}
+                                        value={this.state.deviceName}
                                         style={{whiteSpace: 'normal'}}
                                         getOptionLabel={(option) => option.name}
                                         renderOption={(props, option) => (
@@ -304,10 +324,11 @@ class UploadPage extends React.Component {
                                         id="country-select-demo"
                                         sx={{width: 400}}
                                         options={this.state.patients}
+                                        value={this.state.patient}
                                         autoHighlight
                                         onChange={this.handleChoosePatient}
                                         style={{whiteSpace: 'normal'}}
-                                        getOptionLabel={(option) => option.last_name + ' ' + option.first_name + ' ' + option.fathers_name + ' ' + option.personal_policy}
+                                        getOptionLabel={(option) => this.state.patient.personal_policy === ""? "" : option.last_name + ' ' + option.first_name + ' ' + option.fathers_name + ' ' + option.personal_policy}
                                         renderOption={(props, option) => (
                                             <Box sx={{width:400}} component="li" {...props} display={'flex'}>
                                                 <GlobalStyles styles={{
@@ -328,7 +349,7 @@ class UploadPage extends React.Component {
                                                         minWidth: 170
                                                     }
                                                 }}/>
-                                                <h3 >{option.last_name} {option.first_name} {option.fathers_name}</h3>
+                                                <h3>{option.last_name} {option.first_name} {option.fathers_name}</h3>
                                                 <h6>{option.personal_policy}</h6>
                                                 <IconButton component={Link} to={`/patient/edit/${option.id}`}
                                                     aria-label="close"
@@ -428,7 +449,7 @@ class UploadPage extends React.Component {
                                                 '&:hover': {
                                                     backgroundColor: '#2c608a'
                                                 }
-                                            }} onClick={this.handleResult} variant={'contained'}>
+                                            }} onClick={this.handleResult} variant={'contained'} disabled={!this.state.deviceChosen||!this.state.patientChosen||!this.state.projectionChosen||!this.state.imageChoosen}>
                                                 Провести диагностику
                                             </Button>
                                             <Box sx={{width: 10}}></Box>

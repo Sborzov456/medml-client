@@ -9,7 +9,6 @@ import Canvas2image from "canvas-to-png";
 import SwiperCore, {Navigation, Scrollbar, Pagination} from 'swiper';
 import 'swiper/css/navigation';
 import 'swiper/css'
-import styles from './Swiper.module.scss'
 import axios from "axios";
 
 SwiperCore.use([Pagination])
@@ -102,7 +101,7 @@ const TiffImageComponent = (props) => {
                 speed={800}
                 slidesPerView={1}
             >
-                {imgArray.map((item) => <SwiperSlide className={styles.swiperslide}>{item}</SwiperSlide>)}
+                {imgArray.map((item) => <SwiperSlide ></SwiperSlide>)}
             </Swiper>
         </Box>
         }

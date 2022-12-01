@@ -10,6 +10,8 @@ import GlobalStyles from "@mui/material/GlobalStyles";
 
 import Konva from "konva";
 import {useEffect, useState} from "react";
+import {circularProgressClasses} from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
 
 
 
@@ -28,7 +30,7 @@ const ImageComponent = (props) => {
         } else {
             setSucc(true)
         }
-    }
+    }, []
     )
     const layerRef = React.useRef(null);
     const stageRef = React.useRef(null);
@@ -76,7 +78,19 @@ const ImageComponent = (props) => {
     }
     return (
         <div>
-            {!succ && <Box display={'flex'} alignItems={'center'} justifyItems={'center'} justifyContent={'center'} alignContent={'center'} sx={{minHeight:300}}><CircularProgress /> </Box>}
+            {!succ && <Box display={'flex'} alignItems={'center'} justifyItems={'center'} justifyContent={'center'} alignContent={'center'} sx={{minHeight:300}}>
+                <CircularProgress variant="indeterminate"
+                                                                                                                                                                                   disableShrink
+                                                                                                                                                                                   sx={{
+                                                                                                                                                                                       color: '#4FB3EAFF',
+                                                                                                                                                                                       animationDuration: '550ms',
+                                                                                                                                                                                       [`& .${circularProgressClasses.circle}`]: {
+                                                                                                                                                                                           strokeLinecap: 'round',
+                                                                                                                                                                                       },
+                                                                                                                                                                                   }}
+                                                                                                                                                                                   size={40}
+                                                                                                                                                                                   thickness={4}
+                                                                                                                                                                                   {...props}/> </Box>}
             {succ && <Box container direction={'column'}>
                 <GlobalStyles styles={{
                     h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},

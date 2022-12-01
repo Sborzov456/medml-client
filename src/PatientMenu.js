@@ -74,7 +74,6 @@ export default function PatientMenu(props) {
                 }}
             >
                 <MenuItem onClick={handleDialog}>Удалить</MenuItem>
-                <MenuItem onClick={handleClose}>Отправить эксперту</MenuItem>
             </Menu>
             <Dialog PaperProps={{sx:{ borderRadius:3}}}
                     open={openDialog}

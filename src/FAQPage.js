@@ -1,233 +1,204 @@
 import * as React from 'react';
-import '@fontsource/poppins/700.css'
-
-import GlobalStyles from '@mui/material/GlobalStyles';
-import {Autocomplete, Button, createTheme, IconButton, Slide,} from "@mui/material";
-import {FormControl} from "@mui/material";
-
-import {MenuItem} from "@mui/material";
-import {Box} from "@mui/material";
-import {TextField} from "@mui/material";
-import {styled} from "@mui/material";
-
-import Grid from '@mui/material/Grid';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-
-import axios from "axios";
-import {Link} from 'react-router-dom';
-
-import EditIcon from '@mui/icons-material/Edit';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import CloseIcon from '@mui/icons-material/Close';
+import { styled } from '@mui/material/styles';
+import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
+import MuiAccordion from '@mui/material/Accordion';
+import MuiAccordionSummary from '@mui/material/AccordionSummary';
+import MuiAccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import {Accordion, AccordionDetails, AccordionSummary, Box} from "@mui/material";
 
 
+export default function CustomizedAccordions() {
+    const [expanded, setExpanded] = React.useState(null);
 
-const theme = createTheme()
-export const TextFieldWrapper = styled(TextField)`
-  fieldset {
-    border-radius: 10px;
-    border-color: #4FB3EAFF;
-    border-width: 2px;
-  }
-`;
-const Alert = React.forwardRef(function Alert(props, ref) {
-    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+    const handleChange = (panel) => (event, newExpanded) => {
+        setExpanded(newExpanded ? panel : false);
+    };
 
-class FAQPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            originalImage: "",
-            uziDevice: null,
-            projectionType: null,
-            patientCard: null,
-            clicked: false,
-            uploadImage: false,
-            deviceChosen: false,
-            projectionChosen: false,
-            patientChosen: false,
-            typeText: "Выберите файл в формате .png или .tiff",
-            imageFile: null,
-            patients: [],
-            patientPolicy: null,
-            result: false,
-            resultid: 0,
-            devices: [],
-            openSuccess: false,
-            openError: false,
-        };
-        this.handlePatientList()
-        this.handleDevicesList()
-    }
-
-    handleUploadFile = event => {
-        var imageFile = event.target.files[0];
-        const reader = new FileReader();
-        reader.readAsDataURL(imageFile)
-        reader.addEventListener("load", () => {
-            this.setState({
-                originalImage: reader.result,
-                typeText: imageFile.name,
-                imageFile: event.target.files[0]
-            });
-        }, false)
-    }
-    handleChooseDevice = (object, value) => {
-        object.preventDefault()
-        var device1 = 0;
-        for (let device of this.state.devices) {
-            if (device.name === value.name) {
-                device1 = device.id;
+    return (
+        <Box sx={{
+            backgroundColor: '#ffffff',
+            paddingLeft: 10,
+            paddingTop: 10,
+            paddingBottom: 10,
+            borderTopLeftRadius: 80,
+            borderTopRightRadius: 80,
+            borderBottomLeftRadius: 80,
+            borderBottomRightRadius: 80,
+            elevation: 10,
+            boxShadow: 2,
+            height: 'auto',
+            minHeight: 600,
+            width: 'auto',
+            minWidth: 500,
+            '&:hover': {
+                backgroundColor: "#ffffff",
             }
-        }
-        this.setState({
-            uziDevice: device1,
-            deviceChosen: true
-        });
-    };
+        }} >
+            <Typography variant={'h2'} align={'center'} fontWeight={'bold'} fontFamily={'Roboto'} color={'#4FB3EAFF'} sx={{}}>Как использовать ассистента?</Typography>
+            <Accordion sx={{marginBlock: 3}} elevation={0} expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+                <AccordionSummary expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
+                                  aria-controls="panel2d-content" id="panel2d-header" sx={{flexDirection: 'row-reverse',
+                    '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+                        transform: 'rotate(90deg)', color: '#2292cb',  marginRight: 3
+                    },
+                    '& .MuiAccordionSummary-content': {
+                        marginLeft: 3,
+                    },
+                }}>
+                    <Typography variant={'h7'} fontWeight={'normal'} fontStyle={{color: '#2292cb'}}>Как войти в систему?</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography variant={'h7'}>
+                        Для входа в систему воспользуйтесь выданными эл. почтой и паролем.
+                    </Typography>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion sx={{marginBlock: 3}} elevation={0} expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+                <AccordionSummary expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
+                                  aria-controls="panel2d-content" id="panel2d-header" sx={{flexDirection: 'row-reverse',
+                    '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+                        transform: 'rotate(90deg)', color: '#2292cb',  marginRight: 3
+                    },
+                    '& .MuiAccordionSummary-content': {
+                        marginLeft: 3,
+                    },
+                }}>
+                    <Typography variant={'h7'} fontWeight={'normal'} fontStyle={{color: '#2292cb'}}>Как создать новый аккаунт?</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography variant={'h7'}>
+                        Для того, чтобы создать новый аккаунт, Вам необходимо сначала <b>войти с выданными
+                        данными для авторизации</b>: эл. почтой и паролем. После этого вы можете нажать на опцию <b>"Выйти"</b> и создать новый аккаунт.
+                        Для этого под полями ввода эл.почты и пароля на страницк "Войти"
+                        необходимо выбрать режим <b>"Зарегистрироваться"</b>. Для создания аккаунта обязаельно заполнение
+                        всех полей формы и создание надежного пароля.
+                    </Typography>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion sx={{marginBlock: 3}} elevation={0} expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
+                <AccordionSummary expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
+                                  aria-controls="panel2d-content" id="panel2d-header" sx={{flexDirection: 'row-reverse',
+                    '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+                        transform: 'rotate(90deg)', color: '#2292cb', marginRight: 3
+                    },
+                    '& .MuiAccordionSummary-content': {
+                        marginLeft: 3,
+                    },
+                }}>
+                    <Typography variant={'h7'} fontWeight={'normal'} fontStyle={{color: '#2292cb'}}>Как загрузить новый снимок?</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography variant={'h7'}>
+                        Для загрузки нового снимка перейдите в раздел<b> "Добавить снимок"</b>.
+                    </Typography>
+                    <Typography variant={'h7'}>
+                        <p/>В данном разделе необходимо заполнить все поля. Для лучшего результата выберите наиболее подходящий аппарат УЗИ
+                        и тип проекции.
+                        <p/>Снимок можно присвоить стандартному пациенту, который будет находиться в списке первым. Если Вы хотите сразу занести
+                        результат в карту определенного пациента, то можете выбрать его из списка пациентов. Если пациент отсутствует в списке, Вы можете создать
+                        новую карту нажав на "Добавить нового пациента".
+                        <p/>Для загрузки снимка нажмите на "+" справа от форм ввода информации. Снимок может быть в формате <b>.tiff</b> или <b>.png</b>.
+                        <p/>После заполнения всех полей нажмите на "Провести диагностику". Если в левом углу появится зеленое предупреждение с надписью
+                        "Снимок загружен!", все поля были заполнены верно и можно открыть результаты диагностики, нажав на "Посмотреть результат".
+                    </Typography>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion sx={{marginBlock: 3}} elevation={0} expanded={expanded === 'panel4'} onChange={handleChange('panel4')}>
+                <AccordionSummary expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
+                                  aria-controls="panel2d-content" id="panel2d-header" sx={{flexDirection: 'row-reverse',
+                    '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+                        transform: 'rotate(90deg)', color: '#2292cb',  marginRight: 3
+                    },
+                    '& .MuiAccordionSummary-content': {
+                        marginLeft: 3,
+                    },
+                }}>
+                    <Typography variant={'h7'} fontWeight={'normal'} fontStyle={{color: '#2292cb'}}>Что делать, если некоторые снимки не открылись?</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography variant={'h7'}>
+                        Файлы большого размера действительно могут обрабатываться дольше, чем вы получите возможность посмотреть результат.
+                    </Typography>
+                    <Typography variant={'h7'}>
+                        <p/>В этом нет ничего страшного. Надпись "Снимок анализируется" означает, что ассистент еще обрабатывает результат, и как только снимок
+                        обработается, он сразу же появится на месте пустых разделов.
+                        <p/>Пока идет обработка, Вы можете изменить данные по диагностике: заполнить эхографические признаки или присвоить определенный Вами тип узла.
+                        <p/><b>Не забудьте сохранить </b>введенные данные, нажав на <b>"Сохранить результат"</b>.
+                    </Typography>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion sx={{marginBlock: 3}} elevation={0} expanded={expanded === 'panel5'} onChange={handleChange('panel5')}>
+                <AccordionSummary expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
+                                  aria-controls="panel2d-content" id="panel2d-header" sx={{flexDirection: 'row-reverse',
+                    '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+                        transform: 'rotate(90deg)', color: '#2292cb',  marginRight: 3
+                    },
+                    '& .MuiAccordionSummary-content': {
+                        marginLeft: 3,
+                    },
+                }}>
+                    <Typography variant={'h7'} fontWeight={'normal'} fontStyle={{color: '#2292cb'}}>Что делать, если я хочу сохранить снимок?</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography variant={'h7'}>
+                        Для этого необходимо нажать на "Сохранить" над картинкой, которую Вы хотели бы сохранить на свой компьютер.
+                    </Typography>
 
-
-    handleChooseProjection = (event) => {
-        this.setState({
-            projectionType: event.target.value,
-            projectionChosen: true,
-        });
-    };
-
-    handleChoosePatient = (object, value) => {
-        object.preventDefault()
-        var patient1 = 0;
-        var patient = null;
-        for (patient of this.state.patients) {
-            if (patient.personal_policy === value.personal_policy) {
-                patient1 = patient.id;
-            }
-        }
-        this.setState({
-            patientCard: patient1,
-            patientChosen: true,
-            patientPolicy: value.personal_policy
-        });
-    };
-    handlePatientList = () => {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(this.props.url + "/api/v2/patient/list/?format=json")
-            .then((response) => {
-                    this.setState({patients: response.data.results})
-                    console.log(response.data.results)
-                }
-            )
-    };
-    handleDevicesList = () => {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(this.props.url + "/api/v2/uzi/devices/?format=json")
-            .then((response) => this.setState({devices: response.data.results}))
-    };
-
-    handleResult = () => {
-        const formData = new FormData();
-        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        formData.append("uzi_device", this.state.uziDevice);
-        formData.append("projection_type", this.state.projectionType);
-        formData.append("patient_card", this.state.patientCard);
-
-        formData.append("original_image", this.state.imageFile);
-        const response = axios.post(this.props.url + "/api/v2/uzi/create/", formData).catch( () => {
-                this.setState({
-                    openError: true
-                })
-            }
-        )
-        response.then((response) => {
-            this.setState({
-                resultid: response.data.image_group_id,
-            })
-
-            var storedNames = JSON.parse(localStorage.getItem("names"));
-            if (storedNames === null) {
-                storedNames = []
-            }
-            for (let tmp of storedNames) {
-                if (tmp === response.data.image_group_id) {
-                    return;
-                }
-            }
-            if (response.data.image_group_id !== 0){
-                storedNames.push(response.data.image_group_id)
-                console.log(storedNames)
-                localStorage.setItem("names", JSON.stringify(storedNames))
-                this.handleWhat();
-            }
-
-        })
-    };
-
-    handleWhat = () => {
-        this.setState({
-            result: true,
-            openSuccess: true
-        })
-    };
-    handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        this.setState({
-            openSuccess: false,
-            openError: false,
-        })
-    };
-    render() {
-        return (
-
-            <FormControl fullWidth fullHeight sx={{height: '100%', width: '100%'}}>
-                <Snackbar  open={this.state.openSuccess} autoHideDuration={6000} onClose={this.handleClose}
-                           TransitionComponent={Slide}
-                           action={
-                               <IconButton
-                                   aria-label="close"
-                                   color="inherit"
-                                   onClick={this.handleClose}
-                               >
-                                   <CloseIcon/>
-                               </IconButton>}>
-                    <Alert severity="success" sx={{width:'100%',backgroundColor: '#00d995'}} onClose={this.handleClose}>Снимок загружен!</Alert>
-                </Snackbar>
-                <Snackbar  open={this.state.openError} autoHideDuration={6000} onClose={this.handleClose}
-                           TransitionComponent={Slide}
-                           action={
-                               <IconButton
-                                   aria-label="close"
-                                   color="inherit"
-                                   onClick={this.handleClose}
-                               >
-                                   <CloseIcon/>
-                               </IconButton>}>
-                    <Alert severity="error" sx={{width:'100%',backgroundColor: '#d9007b'}} onClose={this.handleClose}>Снимок не загружен. Проверьте формат загружаемого файла.</Alert>
-                </Snackbar>
-                <Box sx={{
-                    backgroundColor: '#ffffff',
-                    paddingLeft: 40,
-                    paddingTop: 10,
-                    borderTopLeftRadius: 130,
-                    elevation: 10,
-                    boxShadow: 2,
-                    height: 'auto',
-                    minHeight: 600,
-                    width: 'auto',
-                    minWidth: 500,
-                    '&:hover': {
-                        backgroundColor: "#ffffff",
-                    }
-                }} display={'flex'} color={theme.palette.secondary.contrastText}>
-                    </Box>
-            </FormControl>
-        )
-
-    }
+                </AccordionDetails>
+            </Accordion>
+            <Accordion sx={{marginBlock: 3}} elevation={0} expanded={expanded === 'panel6'} onChange={handleChange('panel6')}>
+                <AccordionSummary expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
+                                  aria-controls="panel2d-content" id="panel2d-header" sx={{flexDirection: 'row-reverse',
+                    '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+                        transform: 'rotate(90deg)', color: '#2292cb',  marginRight: 3
+                    },
+                    '& .MuiAccordionSummary-content': {
+                        marginLeft: 3,
+                    },
+                }}>
+                    <Typography variant={'h7'} fontWeight={'normal'} fontStyle={{color: '#2292cb'}}>Что делать, если я не могу согласиться с результатами анализа?</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography variant={'h7'}>
+                        Для таких случаев предусмотрен механизм публикации материалов на ресурс.
+                    </Typography>
+                    <Typography variant={'h7'}>
+                        <p/> Для того, чтобы воспользоваться данной функцией, Вам необходимо нажать на "Добавить результат на ресурс". Нажатие перенаправит Вас на редактор масок для обучения.
+                        <p/>В данном редакторе у Вас есть возможность выделения положения узла на исходном снимке и выбора определенного Вами типа узла по EU TI-RADS. Не забудьте <b>сохранить</b>,
+                        нажав на <b>иконку дискеты </b>
+                    </Typography>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion sx={{marginBlock: 3}} elevation={0} expanded={expanded === 'panel7'} onChange={handleChange('panel7')}>
+                <AccordionSummary expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
+                                  aria-controls="panel2d-content" id="panel2d-header" sx={{flexDirection: 'row-reverse',
+                    '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+                        transform: 'rotate(90deg)', color: '#2292cb',  marginRight: 3
+                    },
+                    '& .MuiAccordionSummary-content': {
+                        marginLeft: 3,
+                    },
+                }}>
+                    <Typography variant={'h7'} fontWeight={'normal'} fontStyle={{color: '#2292cb'}}>Как посмотреть предыдущие диагностики?</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography variant={'h7'}>
+                        Для этого необходимо зайти в список пациентов, нажав на "Пациенты".
+                    </Typography>
+                    <Typography variant={'h7'}>
+                        <p/> В данном разделе будут находится все пациенты, добавленные в систему.
+                        Для открытия всей информации о пациенте необходимо нажать "Открыть карту". Карты пациентов можно фильтровать или сортировать для более удобного поиска. Для этого необходимо нажать на три точки рядом с одним из заголовков
+                        таблицы.
+                        <p/>В данном разделе так же можно добавить нового пациента, нажав на "+".
+                        <p/> В разделе "Снимки", куда вы перейдете после открытия карты, будут находится все преддущие диагностики пациента, добавленные в систему.
+                        Для открытия всей информации о диагностике необходимо нажать "Открыть результат". Диагностики можно фильтровать или
+                        сортировать для более удобного поиска. Для этого необходимо нажать на три точки рядом с одним из заголовков
+                        таблицы.
+                        <p/>В данном разделе так же можно добавить новый снимок, нажав на "+". Или отредактировать информацию о пациенте, нажав на иконку карандаша.
+                    </Typography>
+                </AccordionDetails>
+            </Accordion>
+        </Box>
+    );
 }
-
-export default FAQPage;
