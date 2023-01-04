@@ -1,8 +1,8 @@
 import * as React from 'react';
-import '@fontsource/poppins/700.css'
+import DataTable from 'react-data-table-component';
 
-import {Button, Chip, FormControl, IconButton} from "@mui/material";
-import {DataGrid} from '@mui/x-data-grid';
+import {Button, Chip, FormControl, IconButton, TextField} from "@mui/material";
+
 import {Box} from "@mui/material";
 
 
@@ -15,6 +15,7 @@ import axios from "axios";
 import EditIcon from "@mui/icons-material/Edit";
 import Grid from "@mui/material/Grid";
 
+
 const PatientInterface = (props) => {
     const {number} = useParams();
     return (
@@ -24,39 +25,43 @@ const PatientInterface = (props) => {
     )
 }
 function createData(id,  uziDate, tiradsType, uziVolume, uziDevice, projectionType) {
-    return {id,  uziDate, tiradsType, uziVolume, uziDevice, projectionType};
+    return {id: id, uziDate: uziDate.toLocaleDateString(), tiradsType: tiradsType.toString(), uziVolume: uziVolume.toString(),uziDevice: uziDevice.toString(), projectionType: projectionType.toString()};
 }
+const FilterComponent = ({ filterText, onFilter, onClear }) => (
+    <>
+        <TextField
+	    id="search"
+        type="text"	    placeholder="Filter By Name"
+		aria-label="Search Input"
+        value={filterText}
+		onChange={onFilter}
+	/></>
+);
 
 const MyGrid = (props) => {
-    const columns = [{
-        field: 'id', headerName: '', width: 1, sortable: false, disableColumnMenu: true,
-    }, {field: 'uziDate', headerName: 'Дата приема', width: 220, type: 'date'}, {
-        field: 'tiradsType', headerName: 'Тип узла \n по EU TI-RADS', width: 190,
-
+    const [filterText, setFilterText] = React.useState('');
+    var [tableData, setTableData] = useState([])
+    const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false);
+    const filteredItems = tableData.filter(item => item['Дата приема'] && item['Дата приема'].toLowerCase().includes(filterText.toLowerCase()),);
+    const columns = [ { name: 'Дата приема', selector: row => row.uziDate, width: '200px', sortable:true}, {
+        name: 'Тип узла \n по EU TI-RADS', selector: row => row.tiradsType, width: '200px', sortable:true
     }, {
-        field: 'uziVolume', headerName: 'Объём образования', width: 220,
-    }, {field: 'uziDevice', headerName: 'Аппарат', width: 220}, {
-        field: 'projectionType', headerName: 'Тип проекции', width: 220, sortable: false, disableColumnMenu: true,
-    }, {
-        field: 'button',
-        headerName: '',
-        width: 220,
-        sortable: false,
-        renderCell: (params) => renderDetailsButton(params),
-        disableColumnMenu: true,
-    }, {
-        field: 'button_delete',
-        headerName: '',
-        width: 30,
-        sortable: false,
-        renderCell: (params) => renderDeleteButton(params),
-        disableColumnMenu: true,
-    },];
+        name: 'Объём образования', selector: row => row.uziVolume, width: '220px', sortable:true
+    }, {name: 'Аппарат', selector: row => row.uziDevice, width: '220px', sortable:true}, {
+        name: 'Тип проекции', selector: row => row.projectionType, width: '220px', sortable:true
+        }, {
+            name: '',
+            cell: (row) => renderDetailsButton(row.id), width: '220px'
+        }, {
+            key: 'button_delete',
+            name: '',
+            cell: (row) => renderDeleteButton(row.id),
+        },];
     const renderDetailsButton = (params) => {
         return (<strong>
                 <Button
                     component={Link}
-                    to={'/result/' + params.row.id}
+                    to={'/result/' + params}
                     variant="contained"
                     size={'small'}
                     style={{marginLeft: 16, backgroundColor: '#4FB3EAFF'}}
@@ -67,11 +72,20 @@ const MyGrid = (props) => {
     }
     const renderDeleteButton = (params) => {
         return (<strong>
-                <BasicMenu props={params.row.id} rows={tableData} set={setTableData}/>
+                <BasicMenu props={params} rows={tableData} set={setTableData}/>
             </strong>)
     }
 
-    var [tableData, setTableData] = useState([])
+    const subHeaderComponentMemo = React.useMemo(() => {
+		const handleClear = () => {
+			if (filterText) {
+			setResetPaginationToggle(!resetPaginationToggle);
+            setFilterText('');
+			}
+		};
+	return (
+        <FilterComponent onFilter={e => setFilterText(e.target.value)} onClear={handleClear} filterText={filterText} />);
+    }, [filterText, resetPaginationToggle]);
 
     useEffect(() => {
         var storedNames = JSON.parse(localStorage.getItem("names"));
@@ -93,13 +107,11 @@ const MyGrid = (props) => {
 
         }, [props.url])
 
-        return (<div style={{height: 400, width: '100%'}}>
-                <DataGrid
-                    rows={tableData}
-                    columns={columns}
-                    pageSize={5}
-                    disableSelectionOnClick={true}
-                    rowsPerPageOptions={[5]}
+        return (
+            <div>
+                <DataTable
+                    data={tableData}
+                    columns={columns} pagination defaultSortFieldId={1}
                 />
             </div>)
     }

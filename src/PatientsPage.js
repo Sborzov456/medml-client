@@ -1,11 +1,11 @@
 import * as React from 'react';
 import '@fontsource/poppins/700.css'
 
-import {Button, Chip, FormControl, IconButton} from "@mui/material";
-import {DataGrid} from '@mui/x-data-grid';
+import {Autocomplete, Button, Chip, FormControl, IconButton, Paper, styled, TextField} from "@mui/material";
 import {Box} from "@mui/material";
+import DataTable from 'react-data-table-component';
 
-
+import ClearIcon from '@mui/icons-material/Clear';
 import {Link, Navigate} from "react-router-dom";
 import GlobalStyles from "@mui/material/GlobalStyles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -14,40 +14,72 @@ import PatientMenu from "./PatientMenu";
 import axios from "axios";
 
 function createData(id, patientName, patientPolicy, email, uziDate, hasNodules, isActive) {
-    return {id, patientName, patientPolicy,email, uziDate, hasNodules,isActive};
+    return {id: id, patientName: patientName,patientPolicy: patientPolicy, email: email,uziDate: uziDate.toLocaleDateString(),hasNodules: hasNodules,isActive: isActive};
 }
 
+
+
 const MyGrid = (props) => {
-    const columns = [{
-        field: 'id', headerName: '', width: 1, sortable: false, disableColumnMenu: true,
-    }, {field: 'patientName', headerName: 'Пациент', width: 230}, {
-        field: 'patientPolicy',
-        headerName: 'Полис пациента',
-        width: 210
+    const [filterText, setFilterText] = React.useState('');
+    var [tableData, setTableData] = useState([])
+    const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false);
+    const filteredItems = tableData.filter(item => ((item.patientName && item.patientName.toLowerCase().includes(filterText.toLowerCase())) || (item.patientPolicy && item.patientPolicy.toLowerCase().includes(filterText.toLowerCase()))), );
+    const FilterComponent = ({ filterText, onFilter, onClear }) => (
+        <Paper elevation={0} sx={{justifyContent: 'center', alignContent:'center', alignItems: 'center', justifyItems: 'center', display: 'flex'}}>
+            <TextField
+                id="search"
+                type="text"
+                placeholder="Поиск по имени или номеру полиса"
+                aria-label="Search Input"
+                value={filterText}
+                onChange={onFilter}
+                sx={{width:350, borderColor: '#4FB3EAFF',"& .MuiOutlinedInput-root.Mui-focused": {
+                        "& > fieldset": {
+                            borderColor: '#4FB3EAFF'
+                        }
+                    }, 'fieldset':{borderRadius: 5}}} style={{borderRadius: '10 px'}}
+            />
+            <IconButton onClick={setFilterText('')}> <ClearIcon>
+
+            </ClearIcon>
+            </IconButton>
+        </Paper>
+    );
+    const subHeaderComponentMemo = React.useMemo(() => {
+        const handleClear = () => {
+            if (filterText) {
+                setResetPaginationToggle(!resetPaginationToggle);
+                setFilterText('');
+            }
+        };
+        return (
+            <FilterComponent onFilter={e => setFilterText(e.target.value)} onClear={handleClear} filterText={filterText} />);
+    }, [filterText, resetPaginationToggle]);
+    const columns = [{name: 'Пациент', width: '230px', sortable: true, selector: row => row.patientName}, {
+        name: 'Полис пациента',
+        width: '210px',sortable: true, selector: row => row.patientPolicy
     }, {
-        field: 'email', headerName: 'Эл. почта', width: 230,
+        name: 'Эл. почта', width: '230px',sortable: true, selector: row => row.email
     },
-        {field: 'uziDate', headerName: 'Дата приема', width: 130, type: 'date'},
+        {name: 'Дата приема', width: '130px', sortable: true, selector: row => row.uziDate},
         {
-            field: 'hasNodules', headerName: 'Диагноз', width: 160, renderCell: (params) => renderChip2(params),
+            name: 'Диагноз', width: '160px', cell: (row) => renderChip2(row.hasNodules),
         },
         {
-        field: 'isActive', headerName: 'Статус', width: 160, sortable: false, renderCell: (params) => renderChip(params),
+        name: 'Статус', width: '160px', sortable: false, cell: (row) => renderChip(row.isActive),
     },
         {
-            field: 'button',
-            headerName: '',
-            width: 190,
+            name: '',
+            width: '190px',
             sortable: false,
-            renderCell: (params) => renderDetailsButton(params),
+            cell: (row) => renderDetailsButton(row.id),
             disableColumnMenu: true,
         },
         {
-        field: 'button_delete',
-        headerName: '',
-        width: 30,
+        name: '',
+        width: '30px',
         sortable: false,
-        renderCell: (params) => renderDeleteButton(params),
+        cell: (row) => renderDeleteButton(row.id),
         disableColumnMenu: true,
     },
         ];
@@ -55,7 +87,7 @@ const MyGrid = (props) => {
         return (<strong>
             <Button
                 component={Link}
-                to={'/patient/' + params.row.id}
+                to={'/patient/' + params}
                 variant="contained"
                 size={'small'}
                 style={{marginLeft: 16, backgroundColor: '#4FB3EAFF'}}
@@ -68,9 +100,9 @@ const MyGrid = (props) => {
         return (<strong>
             <Chip
                 size={'small'}
-                style={{marginLeft: 16, borderColor: params.row.isActive? '#4FB3EAFF': '#a6bac4'}}
-                label={params.row.isActive ? "Активен" : "Не активен"}
-                sx={{color: params.row.isActive? '#4FB3EAFF': '#a6bac4'}}
+                style={{marginLeft: 16, borderColor: params? '#4FB3EAFF': '#a6bac4'}}
+                label={params ? "Активен" : "Не активен"}
+                sx={{color: params? '#4FB3EAFF': '#a6bac4'}}
                 variant={'outlined'}
             >
             </Chip>
@@ -83,9 +115,9 @@ const MyGrid = (props) => {
         return (<strong>
             <Chip
                 size={'small'}
-                style={{marginLeft: 16, borderColor: params.row.hasNodules? '#4FB3EAFF': '#a6bac4'}}
-                label={params.row.hasNodules ? "Обнаружено" : "Не Обнаружено"}
-                sx={{color: params.row.hasNodules? '#4FB3EAFF': '#a6bac4'}}
+                style={{marginLeft: 16, borderColor: params? '#4FB3EAFF': '#a6bac4'}}
+                label={params ? "Обнаружено" : "Не Обнаружено"}
+                sx={{color: params? '#4FB3EAFF': '#a6bac4'}}
                 variant={'outlined'}
             >
             </Chip>
@@ -93,11 +125,10 @@ const MyGrid = (props) => {
     }
     const renderDeleteButton = (params) => {
         return (<strong>
-            <PatientMenu props={params.row.id} rows={tableData} set={setTableData}/>
+            <PatientMenu props={params} rows={tableData} set={setTableData}/>
         </strong>)
     }
 
-    var [tableData, setTableData] = useState([])
 
     useEffect(() => {
         var storedNames = JSON.parse(localStorage.getItem("names"));
@@ -118,14 +149,15 @@ const MyGrid = (props) => {
 
     }, [props.url])
 
-    return (<div style={{height: 400, width: '100%'}}>
-        <DataGrid
-            rows={tableData}
+    return (<div style={{width:'100%' }}>
+        <DataTable
             columns={columns}
-            pageSize={5}
-            onRowClick={handlePatientCard}
-            disableSelectionOnClick={true}
-            rowsPerPageOptions={[5]}
+            data={filteredItems}
+            pagination
+            paginationResetDefaultPage={resetPaginationToggle} // optionally, a hook to reset pagination to page 1
+            subHeader
+            subHeaderComponent={subHeaderComponentMemo}
+            persistTableHead
         />
     </div>)
 }

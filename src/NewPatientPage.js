@@ -35,7 +35,6 @@ const regex = new RegExp('\\d+');
 const NewPatientPageInterface = (props) => {
     const {number} = useParams();
     return (
-
         <NewPatientPage props={number} url={props.url}></NewPatientPage>
 
     )
