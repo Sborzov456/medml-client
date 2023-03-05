@@ -1,60 +1,49 @@
 import * as React from 'react';
 import '@fontsource/poppins/700.css'
 
-import {Autocomplete, Button, Chip, FormControl, IconButton, Paper, styled, TextField} from "@mui/material";
+import { Button, Chip, FormControl, IconButton, Paper, TextField} from "@mui/material";
 import {Box} from "@mui/material";
 import DataTable from 'react-data-table-component';
 
 import ClearIcon from '@mui/icons-material/Clear';
-import {Link, Navigate} from "react-router-dom";
+import {Link} from "react-router-dom";
 import GlobalStyles from "@mui/material/GlobalStyles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import {useEffect, useState} from "react";
 import PatientMenu from "./PatientMenu";
 import axios from "axios";
+import Grid from "@mui/material/Grid";
+import EditIcon from "@mui/icons-material/Edit";
 
 function createData(id, patientName, patientPolicy, email, uziDate, hasNodules, isActive) {
     return {id: id, patientName: patientName,patientPolicy: patientPolicy, email: email,uziDate: uziDate.toLocaleDateString(),hasNodules: hasNodules,isActive: isActive};
 }
 
+const FilterComponent = (props) => (
+    <Paper elevation={0} sx={{justifyContent: 'center', alignContent:'center', alignItems: 'center', justifyItems: 'center', display: 'flex'}}>
+        <TextField
+            id="search"
+            type="text"
+            placeholder="Поиск по имени или номеру полиса"
+            aria-label="Search Input"
+            value={props.filterText}
+            onChange={(e) => props.onFilter(e.target.value)}
+            sx={{paddingLeft: 5,width:350, borderColor: '#4FB3EAFF',"& .MuiOutlinedInput-root.Mui-focused": {
+                    "& > fieldset": {
+                        borderColor: '#4FB3EAFF'
+                    }
+                }, 'fieldset':{borderRadius: 5}}} style={{borderRadius: '10 px'}}
 
+        />
+        <IconButton onClick={() => props.onFilter("")}> <ClearIcon>
+        </ClearIcon>
+        </IconButton>
+    </Paper>
+);
 
 const MyGrid = (props) => {
-    const [filterText, setFilterText] = React.useState('');
     var [tableData, setTableData] = useState([])
-    const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false);
-    const filteredItems = tableData.filter(item => ((item.patientName && item.patientName.toLowerCase().includes(filterText.toLowerCase())) || (item.patientPolicy && item.patientPolicy.toLowerCase().includes(filterText.toLowerCase()))), );
-    const FilterComponent = ({ filterText, onFilter, onClear }) => (
-        <Paper elevation={0} sx={{justifyContent: 'center', alignContent:'center', alignItems: 'center', justifyItems: 'center', display: 'flex'}}>
-            <TextField
-                id="search"
-                type="text"
-                placeholder="Поиск по имени или номеру полиса"
-                aria-label="Search Input"
-                value={filterText}
-                onChange={onFilter}
-                sx={{width:350, borderColor: '#4FB3EAFF',"& .MuiOutlinedInput-root.Mui-focused": {
-                        "& > fieldset": {
-                            borderColor: '#4FB3EAFF'
-                        }
-                    }, 'fieldset':{borderRadius: 5}}} style={{borderRadius: '10 px'}}
-            />
-            <IconButton onClick={setFilterText('')}> <ClearIcon>
-
-            </ClearIcon>
-            </IconButton>
-        </Paper>
-    );
-    const subHeaderComponentMemo = React.useMemo(() => {
-        const handleClear = () => {
-            if (filterText) {
-                setResetPaginationToggle(!resetPaginationToggle);
-                setFilterText('');
-            }
-        };
-        return (
-            <FilterComponent onFilter={e => setFilterText(e.target.value)} onClear={handleClear} filterText={filterText} />);
-    }, [filterText, resetPaginationToggle]);
+    var filteredItems = tableData.filter(item => ((item.patientName && item.patientName.toLowerCase().includes(props.filterText.toLowerCase())) || (item.patientPolicy && item.patientPolicy.toLowerCase().includes(props.filterText.toLowerCase()))), );
     const columns = [{name: 'Пациент', width: '230px', sortable: true, selector: row => row.patientName}, {
         name: 'Полис пациента',
         width: '210px',sortable: true, selector: row => row.patientPolicy
@@ -88,11 +77,11 @@ const MyGrid = (props) => {
             <Button
                 component={Link}
                 to={'/patient/' + params}
-                variant="contained"
+                variant="outlined"
                 size={'small'}
-                style={{marginLeft: 16, backgroundColor: '#4FB3EAFF'}}
+                style={{marginLeft: 16,width: 100, color: '#4FB3EAFF'}}
             >
-                Открыть карту
+                Карта
             </Button>
         </strong>)
     }
@@ -107,9 +96,6 @@ const MyGrid = (props) => {
             >
             </Chip>
         </strong>)
-    }
-    const handlePatientCard = (params ) => {
-        return <Navigate to={"/patient/"+params.row.id} replace />
     }
     const renderChip2 = (params) => {
         return (<strong>
@@ -126,7 +112,8 @@ const MyGrid = (props) => {
     const renderDeleteButton = (params) => {
         return (<strong>
             <PatientMenu props={params} rows={tableData} set={setTableData}/>
-        </strong>)
+        </strong>
+        )
     }
 
 
@@ -138,10 +125,9 @@ const MyGrid = (props) => {
         storedNames.reverse()
         var tmpAr = [];
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(props.url + '/api/v2/med_worker/patients/1').then((response) => {
+        axios.get(props.url + '/api/v2/med_worker/patients/'+localStorage.getItem('id')).then((response) => {
             console.log(response.data.results)
             for (let cur of response.data.results.cards) {
-                console.log(response.data.results[cur])
                 tmpAr.push(createData(cur.id, cur.patient.last_name + " " + cur.patient.first_name + " " + cur.patient.fathers_name, cur.patient.personal_policy, cur.patient.email,  new Date(Date.parse(cur.acceptance_datetime)), cur.has_nodules === "T", cur.patient.is_active))
             }
         })
@@ -149,56 +135,115 @@ const MyGrid = (props) => {
 
     }, [props.url])
 
-    return (<div style={{width:'100%' }}>
+    return (<div style={{width:'100%'}}>
         <DataTable
             columns={columns}
             data={filteredItems}
             pagination
-            paginationResetDefaultPage={resetPaginationToggle} // optionally, a hook to reset pagination to page 1
-            subHeader
-            subHeaderComponent={subHeaderComponentMemo}
             persistTableHead
         />
     </div>)
 }
 
 class PatientTable extends React.Component {
-
-
+    constructor(props) {
+        super(props);
+        this.state = {
+            filterText: "",
+            lastName: "",
+            firstName: "",
+            fathersName:'',
+            medOrg: "",
+            is_remote_worker: true,
+            job: "",
+            mesAm: 0
+        };
+        this.handleInformation()
+    }
+    handleInformation = () => {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
+        axios.get(this.props.url + '/api/v2/med_worker/patients/'+localStorage.getItem('id'))
+            .then((response) => {
+                    this.setState({
+                        lastName: response.data.results.med_worker.last_name,
+                        firstName: response.data.results.med_worker.first_name,
+                        fathersName:response.data.results.med_worker.fathers_name,
+                        medOrg: response.data.results.med_worker.med_organization,
+                        is_remote_worker: response.data.results.med_worker.is_remote_worker,
+                        job: response.data.results.med_worker.job,
+                    })
+                axios.get(this.props.url+'/api/v2/inner_mail/notifications/all/'+ localStorage.getItem('id')+'/?status=0').then((response) => {
+                    this.setState({
+                        mesAm: response.data.count
+                    })
+                    console.log(response.data)
+                })
+                }
+            )
+    }
+    handleFilterText = (e) => {
+        this.setState({
+            filterText: e
+        })
+    }
     render() {
-        return (<FormControl fullWidth sx={{height: '100%', width: '100%'}}>
-            <Box sx={{
+        return (<FormControl sx={{height: '100%', width: '100%'}}>
+            <Box component={""} sx={{
                 backgroundColor: '#ffffff',
                 paddingLeft: 5,
-                paddingTop: 7,
+                paddingTop: 10,
                 borderTopLeftRadius: 130,
-                elevation: 10,
-                boxShadow: 2,
                 '&:hover': {
                     backgroundColor: "#ffffff",
                 },
 
-            }} display={'flex'}>
+            }}>
                 <GlobalStyles styles={{
-                    h2: {color: 'dimgray', fontSize: 30, fontFamily: "Roboto"},
-                    h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
+                    h1: {color: 'dimgray', fontSize: 30, fontFamily: "Roboto", fontWeight: 'normal'},
+                    h2: {color: 'dimgray', fontSize: 20, fontFamily: "Roboto", marginBlock:0, fontWeight: 'normal'},
+                    h5: {color: 'dimgray', fontSize: 15, fontFamily: "Roboto",fontWeight:'lighter',marginBlock:5},
+                    h3: {color: 'dimgray', fontSize: 15, fontFamily: "Roboto", fontWeight:'normal', marginBlock:-1},
+                    h4: {color: 'dimgray', fontSize: 15, fontFamily: "Roboto", fontWeight:'normal', marginBlock:5, marginInline:4}
                 }}/>
-                <h2>Пациенты</h2>
+                <Box component={""}>
+                <Grid component={""} container direction={'column'} sx={{paddingLeft: 2}}>
+                    <Grid component={""} item container direction={'row'}>
+                        <h2>{this.state.lastName+" "+this.state.firstName+" "+this.state.fathersName}</h2>
+                        <IconButton component={Link} to={`/profile/edit/`} style={{maxWidth: '20px', maxHeight: '20px'}}
+                                    sx={{
+                                        paddingLeft: 3, '& svg': {
+                                            fontSize: 20
+                                        },
+                                    }}>
+                            <EditIcon/>
+                        </IconButton>
+                    </Grid>
+                    <Grid component={""} item container direction={'row'}>
+                        <h5>Медицинская организация:</h5>
+                        <h4>{ this.state.medOrg}, {this.state.job}</h4>
+                    </Grid>
+                </Grid>
+                </Box>
+                <Box component={""} sx={{paddingLeft: 2}} display={'flex'}>
+                <h1>Мои пациенты</h1>
                 <IconButton component={Link} to={`/patient/create`}  style={{maxWidth: '30px', maxHeight: '30px'}}
                             sx={{
-                                paddingLeft: 3, paddingTop: 5.5, '& svg': {
+                                paddingLeft: 3, paddingTop: 5, '& svg': {
                                     fontSize: 30
                                 },
                             }}>
                     <AddCircleOutlineIcon></AddCircleOutlineIcon>
                 </IconButton>
+                <FilterComponent filterText={this.state.filterText} onFilter={this.handleFilterText}/>
+                </Box>
             </Box>
-            <Box sx={{
+            <Box component={""} sx={{
                 minHeight:470, height: 'auto',
                 backgroundColor: '#ffffff', paddingLeft: 5, paddingTop: 1, paddingBottom: 10,
 
-            }} display={'flex'}>
-                <MyGrid url={this.props.url}/>
+            }} display={'flow'}>
+
+                <MyGrid url={this.props.url} filterText={this.state.filterText}/>
             </Box>
         </FormControl>)
     }

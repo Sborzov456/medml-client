@@ -5,6 +5,7 @@ import Menu from '@mui/material/Menu';
 import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton} from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CloseIcon from '@mui/icons-material/Close';
+import {Link} from "react-router-dom";
 
 function BootstrapDialogTitle(props) {
     const { children, onClose, ...other } = props;
@@ -31,9 +32,9 @@ function BootstrapDialogTitle(props) {
 }
 
 export default function BasicMenu(props) {
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = React.useState(false);
     const open = Boolean(anchorEl);
-    const [openDialog, setDialog] = React.useState(null);
+    const [openDialog, setDialog] = React.useState(Boolean(false));
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -74,7 +75,7 @@ export default function BasicMenu(props) {
                 }}
             >
                 <MenuItem onClick={handleDialog}>Удалить</MenuItem>
-                <MenuItem onClick={handleClose}>Отправить эксперту</MenuItem>
+                <MenuItem component={Link} to={`/result/`+props.props+`/expert`}>Отправить эксперту</MenuItem>
             </Menu>
             <Dialog PaperProps={{sx:{ borderRadius:3}}}
                 open={openDialog}

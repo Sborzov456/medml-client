@@ -1,9 +1,5 @@
 import * as React from 'react';
-import { styled } from '@mui/material/styles';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
-import MuiAccordion from '@mui/material/Accordion';
-import MuiAccordionSummary from '@mui/material/AccordionSummary';
-import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import {Accordion, AccordionDetails, AccordionSummary, Box} from "@mui/material";
 
@@ -16,7 +12,7 @@ export default function CustomizedAccordions() {
     };
 
     return (
-        <Box sx={{
+        <Box component={""} sx={{
             backgroundColor: '#ffffff',
             paddingLeft: 10,
             paddingTop: 10,
@@ -25,8 +21,6 @@ export default function CustomizedAccordions() {
             borderTopRightRadius: 80,
             borderBottomLeftRadius: 80,
             borderBottomRightRadius: 80,
-            elevation: 10,
-            boxShadow: 2,
             height: 'auto',
             minHeight: 600,
             width: 'auto',
@@ -35,7 +29,7 @@ export default function CustomizedAccordions() {
                 backgroundColor: "#ffffff",
             }
         }} >
-            <Typography variant={'h2'} align={'center'} fontWeight={'bold'} fontFamily={'Roboto'} color={'#4FB3EAFF'} sx={{}}>Как использовать ассистента?</Typography>
+            <Typography component={""} variant={'h2'} align={'center'} fontWeight={'normal'} fontFamily={'Roboto'} color={'dimgray'} sx={{}}>Как использовать ассистента?</Typography>
             <Accordion sx={{marginBlock: 3}} elevation={0} expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
                 <AccordionSummary expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
                                   aria-controls="panel2d-content" id="panel2d-header" sx={{flexDirection: 'row-reverse',
@@ -46,10 +40,10 @@ export default function CustomizedAccordions() {
                         marginLeft: 3,
                     },
                 }}>
-                    <Typography variant={'h7'} fontWeight={'normal'} fontStyle={{color: '#2292cb'}}>Как войти в систему?</Typography>
+                    <Typography component={""} variant={'h7'} fontWeight={'normal'} fontStyle={{color: expanded === 'panel1'? '#2292cb': 'dimgray'}}>Как войти в систему?</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Typography variant={'h7'}>
+                    <Typography component={""} variant={'h7'} fontWeight={'lighter'}>
                         Для входа в систему воспользуйтесь выданными эл. почтой и паролем.
                     </Typography>
                 </AccordionDetails>
@@ -64,10 +58,10 @@ export default function CustomizedAccordions() {
                         marginLeft: 3,
                     },
                 }}>
-                    <Typography variant={'h7'} fontWeight={'normal'} fontStyle={{color: '#2292cb'}}>Как создать новый аккаунт?</Typography>
+                    <Typography component={""} variant={'h7'} fontWeight={'normal'} fontStyle={{color: expanded === 'panel2'? '#2292cb': 'dimgray'}}>Как создать новый аккаунт?</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Typography variant={'h7'}>
+                    <Typography component={""} variant={'h7'} fontWeight={'lighter'}>
                         Для того, чтобы создать новый аккаунт, Вам необходимо сначала <b>войти с выданными
                         данными для авторизации</b>: эл. почтой и паролем. После этого вы можете нажать на опцию <b>"Выйти"</b> и создать новый аккаунт.
                         Для этого под полями ввода эл.почты и пароля на страницк "Войти"
@@ -86,13 +80,13 @@ export default function CustomizedAccordions() {
                         marginLeft: 3,
                     },
                 }}>
-                    <Typography variant={'h7'} fontWeight={'normal'} fontStyle={{color: '#2292cb'}}>Как загрузить новый снимок?</Typography>
+                    <Typography component={""} variant={'h7'} fontWeight={'normal'} fontStyle={{color: expanded === 'panel3'? '#2292cb': 'dimgray'}}>Как загрузить новый снимок?</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Typography variant={'h7'}>
+                    <Typography component={""} variant={'h7'} fontWeight={'lighter'}>
                         Для загрузки нового снимка перейдите в раздел<b> "Добавить снимок"</b>.
                     </Typography>
-                    <Typography variant={'h7'}>
+                    <Typography component={""} variant={'h7'} fontWeight={'lighter'}>
                         <p/>В данном разделе необходимо заполнить все поля. Для лучшего результата выберите наиболее подходящий аппарат УЗИ
                         и тип проекции.
                         <p/>Снимок можно присвоить стандартному пациенту, который будет находиться в списке первым. Если Вы хотите сразу занести
@@ -114,13 +108,13 @@ export default function CustomizedAccordions() {
                         marginLeft: 3,
                     },
                 }}>
-                    <Typography variant={'h7'} fontWeight={'normal'} fontStyle={{color: '#2292cb'}}>Что делать, если некоторые снимки не открылись?</Typography>
+                    <Typography component={""} variant={'h7'} fontWeight={'normal'} fontStyle={{color: expanded === 'panel4'? '#2292cb': 'dimgray'}}>Что делать, если некоторые снимки не открылись?</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Typography variant={'h7'}>
+                    <Typography component={""} variant={'h7'} fontWeight={'lighter'}>
                         Файлы большого размера действительно могут обрабатываться дольше, чем вы получите возможность посмотреть результат.
                     </Typography>
-                    <Typography variant={'h7'}>
+                    <Typography component={""} variant={'h7'} fontWeight={'lighter'}>
                         <p/>В этом нет ничего страшного. Надпись "Снимок анализируется" означает, что ассистент еще обрабатывает результат, и как только снимок
                         обработается, он сразу же появится на месте пустых разделов.
                         <p/>Пока идет обработка, Вы можете изменить данные по диагностике: заполнить эхографические признаки или присвоить определенный Вами тип узла.
@@ -138,10 +132,10 @@ export default function CustomizedAccordions() {
                         marginLeft: 3,
                     },
                 }}>
-                    <Typography variant={'h7'} fontWeight={'normal'} fontStyle={{color: '#2292cb'}}>Что делать, если я хочу сохранить снимок?</Typography>
+                    <Typography component={""} variant={'h7'} fontWeight={'normal'} fontStyle={{color: expanded === 'panel5'? '#2292cb': 'dimgray'}}>Что делать, если я хочу сохранить снимок?</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Typography variant={'h7'}>
+                    <Typography component={""} variant={'h7'} fontWeight={'lighter'}>
                         Для этого необходимо нажать на "Сохранить" над картинкой, которую Вы хотели бы сохранить на свой компьютер.
                     </Typography>
 
@@ -157,13 +151,13 @@ export default function CustomizedAccordions() {
                         marginLeft: 3,
                     },
                 }}>
-                    <Typography variant={'h7'} fontWeight={'normal'} fontStyle={{color: '#2292cb'}}>Что делать, если я не могу согласиться с результатами анализа?</Typography>
+                    <Typography component={""} variant={'h7'} fontWeight={'normal'} fontStyle={{color: expanded === 'panel6'? '#2292cb': 'dimgray'}}>Что делать, если я не могу согласиться с результатами анализа?</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Typography variant={'h7'}>
+                    <Typography component={""} variant={'h7'} fontWeight={'lighter'}>
                         Для таких случаев предусмотрен механизм публикации материалов на ресурс.
                     </Typography>
-                    <Typography variant={'h7'}>
+                    <Typography component={""} variant={'h7'} fontWeight={'lighter'}>
                         <p/> Для того, чтобы воспользоваться данной функцией, Вам необходимо нажать на "Добавить результат на ресурс". Нажатие перенаправит Вас на редактор масок для обучения.
                         <p/>В данном редакторе у Вас есть возможность выделения положения узла на исходном снимке и выбора определенного Вами типа узла по EU TI-RADS. Не забудьте <b>сохранить</b>,
                         нажав на <b>иконку дискеты </b>
@@ -180,13 +174,13 @@ export default function CustomizedAccordions() {
                         marginLeft: 3,
                     },
                 }}>
-                    <Typography variant={'h7'} fontWeight={'normal'} fontStyle={{color: '#2292cb'}}>Как посмотреть предыдущие диагностики?</Typography>
+                    <Typography component={""} variant={'h7'} fontWeight={'normal'} fontStyle={{color: expanded === 'panel7'? '#2292cb': 'dimgray'}}>Как посмотреть предыдущие диагностики?</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Typography variant={'h7'}>
+                    <Typography component={""} variant={'h7'} fontWeight={'lighter'}>
                         Для этого необходимо зайти в список пациентов, нажав на "Пациенты".
                     </Typography>
-                    <Typography variant={'h7'}>
+                    <Typography component={""} variant={'h7'} fontWeight={'lighter'}>
                         <p/> В данном разделе будут находится все пациенты, добавленные в систему.
                         Для открытия всей информации о пациенте необходимо нажать "Открыть карту". Карты пациентов можно фильтровать или сортировать для более удобного поиска. Для этого необходимо нажать на три точки рядом с одним из заголовков
                         таблицы.

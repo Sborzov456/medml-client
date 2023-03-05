@@ -161,7 +161,7 @@ class NewPatientPage extends React.Component {
         formData.append("card.has_nodules", this.state.ill ? "T" : "F");
         formData.append("card.diagnosis", this.state.diagnosis);
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.post(this.props.url + "/api/v2/patient/create/1", formData)
+        axios.post(this.props.url + "/api/v2/patient/create/"+localStorage.getItem('id'), formData)
             .then(() => this.setState({
                 openSuccess: true
             }))
@@ -184,7 +184,6 @@ class NewPatientPage extends React.Component {
 
     render() {
         return (
-
             <FormControl fullWidth fullHeight >
                 <Snackbar open={this.state.openSuccess} autoHideDuration={6000} onClose={this.handleClose}
                           TransitionComponent={Slide}
@@ -210,13 +209,11 @@ class NewPatientPage extends React.Component {
                     <Alert severity="error" sx={{width: '100%', backgroundColor: '#d9007b'}} onClose={this.handleClose}>Карта
                         не добавлена. Проверьте введенные данные.</Alert>
                 </Snackbar>
-                <Box sx={{
+                <Box component={""} sx={{
                     backgroundColor: '#ffffff',
                     paddingLeft: 20,
                     paddingTop: 10,
                     borderTopLeftRadius: 130,
-                    elevation: 10,
-                    boxShadow: 2,
                     height: 'auto',
                     minHeight: 600,
                     '&:hover': {
@@ -224,13 +221,14 @@ class NewPatientPage extends React.Component {
                     },
                 }} color={theme.palette.secondary.contrastText} >
                     <GlobalStyles styles={{
-                        h1: {color: 'dimgray', fontSize: 30, fontFamily: "Roboto"},
+                        h1: {color: 'dimgray', fontSize: 30, fontFamily: "Roboto", fontWeight: 'normal'},
                         h5: {color: 'dimgray', fontSize: 20, fontFamily: "Roboto"}
                     }}/>
-                    <h1>Создание карты пациента</h1>
-                    <Grid container spacing={1}>
-                        <Grid item xs>
-                            <Box sx={{width: 500, paddingBottom: 3, paddingTop: 3}}>
+
+                    <Grid component={""} container spacing={1} >
+                        <Grid component={""} item xs sx={{display: 'flex', flexDirection:'column', justifyContent: 'center', alignContent: 'center'}}>
+                            <h1>Создание карты пациента</h1>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3, paddingTop: 3}}>
                                 <FormControl fullWidth>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
                                         Фамилия
@@ -246,7 +244,7 @@ class NewPatientPage extends React.Component {
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                            <Box sx={{width: 500, paddingBottom: 3}}>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                 <FormControl fullWidth>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
                                         Имя
@@ -262,7 +260,7 @@ class NewPatientPage extends React.Component {
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                            <Box sx={{width: 500, paddingBottom: 3}}>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                 <FormControl fullWidth>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
                                         Отчество
@@ -278,7 +276,7 @@ class NewPatientPage extends React.Component {
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                            <Box sx={{width: 500, paddingBottom: 3}}>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                 <FormControl fullWidth>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
                                         Эл. почта
@@ -294,7 +292,7 @@ class NewPatientPage extends React.Component {
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                            <Box sx={{width: 500, paddingBottom: 3}}>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                 <FormControl fullWidth>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
                                         Полис
@@ -310,7 +308,7 @@ class NewPatientPage extends React.Component {
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                            <Box sx={{width: 500, paddingBottom: 3}}>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                 <FormLabel component="legend"></FormLabel>
                                 <FormGroup aria-label="position" row>
                                     <FormControlLabel
@@ -330,8 +328,8 @@ class NewPatientPage extends React.Component {
                                 </FormGroup>
                             </Box>
                         </Grid>
-                        <Grid item xs>
-                            <Box sx={{width: 500, height: 98, paddingBottom: 7, paddingTop: 3}}>
+                        <Grid component={""} item xs>
+                            <Box component={""} sx={{width: 500, height: 98, paddingBottom: 7, paddingTop: 3}}>
                                 <FormControl>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
                                         Диагноз
@@ -351,7 +349,7 @@ class NewPatientPage extends React.Component {
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                            <Box sx={{width: 600, paddingBottom: 3}}>
+                            <Box component={""} sx={{width: 600, paddingBottom: 3}}>
                                 <FormLabel component="legend"></FormLabel>
                                 <FormGroup aria-label="position" row>
                                     <FormControlLabel
@@ -385,7 +383,7 @@ class NewPatientPage extends React.Component {
                                     />
                                 </FormGroup>
                             </Box>
-                            <Box sx={{width: 500, paddingBottom: 3}}>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                 <FormControl fullWidth>
                                     <InputLabel shrink sx={{marginBlockEnd: 5}}>
                                         ФИО лечащего врача
@@ -400,7 +398,7 @@ class NewPatientPage extends React.Component {
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                            <Box sx={{width: 500, paddingBottom: 3}}>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                 <FormControl fullWidth>
                                     <InputLabel shrink sx={{marginBlockEnd: 5}}>
                                         Специальность
@@ -415,7 +413,7 @@ class NewPatientPage extends React.Component {
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                            <Box sx={{width: 500, paddingBottom: 3}}>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                 <FormControl fullWidth>
                                     <InputLabel shrink sx={{marginBlockEnd: 5}}>
                                         Эл. почта
@@ -431,18 +429,16 @@ class NewPatientPage extends React.Component {
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                            <Box sx={{width: 500, paddingBottom: 3}}>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                 <FormControl fullWidth>
                                     <Button disabled={!(this.state.lastNameEntered &&
                                         this.state.firstNameEntered && this.state.fathersNameEntered && this.state.emailEntered && this.state.policyEntered)}
                                             sx={{
-                                        backgroundColor: '#4fb3ea',
+                                        color: '#4fb3ea',
                                         '&:focus': {backgroundColor: '#4fb3ea'},
-                                        '&:hover': {
-                                            backgroundColor: '#2c608a'
-                                        },
+
                                         fontFamily: 'Roboto'
-                                    }} variant={'contained'} onClick={this.handleResponse}>
+                                    }} variant={'outlined'} onClick={this.handleResponse}>
                                         Создать карту пациента
                                     </Button>
                                 </FormControl>

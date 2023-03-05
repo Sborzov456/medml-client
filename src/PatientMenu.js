@@ -31,9 +31,9 @@ function BootstrapDialogTitle(props) {
 }
 
 export default function PatientMenu(props) {
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = React.useState(false);
     const open = Boolean(anchorEl);
-    const [openDialog, setDialog] = React.useState(null);
+    const [openDialog, setDialog] = React.useState(Boolean(false));
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -41,6 +41,7 @@ export default function PatientMenu(props) {
         setAnchorEl(null);
         setDialog(false)
     };
+
     const handleDelete = () => {
         var storedNames = JSON.parse(localStorage.getItem("names")).reverse()
         storedNames = storedNames.filter(function(value){

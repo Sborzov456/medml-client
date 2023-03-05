@@ -5,12 +5,8 @@ import GlobalStyles from '@mui/material/GlobalStyles';
 import {
     Box,
     Button,
-    Checkbox,
     createTheme,
     FormControl,
-    FormControlLabel,
-    FormGroup,
-    FormLabel,
     IconButton, InputAdornment,
     InputLabel,
     Slide,
@@ -32,7 +28,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 
 
-const regex = new RegExp('\\d+');
 
 const SignUpPageInterface = (props) => {
     const {number} = useParams();
@@ -155,7 +150,6 @@ class SignUpPage extends React.Component {
         formData.append("med_organization", this.state.hospital);
         formData.append("password1", this.state.password1);
         formData.append("password2", this.state.password2);
-        console.log(formData)
         axios.post(this.props.url + "/api/v2/auth/register/", formData)
             .then(() => this.setState({
                 openSuccess: true
@@ -207,35 +201,34 @@ class SignUpPage extends React.Component {
                     <Alert severity="error" sx={{width: '100%', backgroundColor: '#d9007b'}} onClose={this.handleClose}>Аккаунт не создан</Alert>
                 </Snackbar>
                 <GlobalStyles styles={{
-                    h1: {color: 'white', fontSize: 50, fontFamily: "Roboto"},
+                    h1: {color: '#4fb3ea', fontSize: 50, fontFamily: "Roboto"},
                     h5: {color: 'dimgray', fontSize: 30, fontFamily: "Roboto", marginBlockEnd: 0},
                     h3: {color: 'dimgray', fontSize: 15, fontFamily: "Roboto",fontWeight: 'normal', marginBlockEnd: 15}
                 }}/>
 
-                    <Grid container spacing={1}>
-                        <Grid item xs>
-                            <Box sx={{width:'auto', marginBlock: 15, marginInlineStart:10, marginInlineEnd:10}}>
+                    <Grid component={""} container spacing={1}>
+                        <Grid component={""} item xs>
+                            <Box component={""} sx={{width:'auto', marginBlock: 15, marginInlineStart:10, marginInlineEnd:10}}>
                                 <FormControl fullWidth fullHeight >
                             <h1>Интеллектуальный ассистент слепой диагностики узловых образований щитовидной железы</h1>
                                 </FormControl>
                             </Box>
                         </Grid>
-                        <Grid item xs>
-                            <Box sx={{
+                        <Grid component={""} item xs>
+                            <Box component={""} sx={{
                                 backgroundColor: '#ffffff',
                                 paddingLeft: 20,
                                 paddingTop: 10,
                                 borderTopLeftRadius: 130,
                                 elevation: 10,
-                                boxShadow: 2,
-                                height: 'auto',
+                                boxShadow: "0px 0px 20px gainsboro",                                height: 'auto',
                                 minHeight: 600,
                                 '&:hover': {
                                     backgroundColor: "#ffffff",
                                 },
                             }} color={theme.palette.secondary.contrastText} >
                                 <h5>Зарегистрироваться</h5>
-                                <Box sx={{paddingBottom: 3}} display={'flex'}>
+                                <Box component={""} sx={{paddingBottom: 3}} display={'flex'}>
                                     <h3>Уже есть аккаунт?</h3>
                                     <Button component={Link} to={`/sign_in`}
                                         sx={{ textTransform: 'none', width: 'auto', fontStyle: {color: '#4FB3EAFF'},
@@ -244,7 +237,7 @@ class SignUpPage extends React.Component {
                                         Войти
                                     </Button>
                                 </Box>
-                            <Box sx={{width: 500, paddingBottom: 3, paddingTop: 1}}>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3, paddingTop: 1}}>
                                 <FormControl fullWidth>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
                                         Фамилия
@@ -260,7 +253,7 @@ class SignUpPage extends React.Component {
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                            <Box sx={{width: 500, paddingBottom: 3}}>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                 <FormControl fullWidth>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
                                         Имя
@@ -276,7 +269,7 @@ class SignUpPage extends React.Component {
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                            <Box sx={{width: 500, paddingBottom: 3}}>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                 <FormControl fullWidth>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
                                         Отчество
@@ -292,7 +285,7 @@ class SignUpPage extends React.Component {
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                                <Box sx={{width: 500, paddingBottom: 3}}>
+                                <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                     <FormControl fullWidth>
                                         <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
                                             Мед. организация
@@ -308,7 +301,7 @@ class SignUpPage extends React.Component {
                                         </TextFieldWrapper>
                                     </FormControl>
                                 </Box>
-                            <Box sx={{width: 500, paddingBottom: 3}}>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                 <FormControl fullWidth>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
                                         Эл. почта
@@ -324,7 +317,7 @@ class SignUpPage extends React.Component {
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                            <Box sx={{width: 500, paddingBottom: 3}}>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                 <FormControl fullWidth>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
                                         Пароль
@@ -354,7 +347,7 @@ class SignUpPage extends React.Component {
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                                <Box sx={{width: 500, paddingBottom: 3}}>
+                                <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                     <FormControl fullWidth>
                                         <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
                                             Повторите пароль
@@ -384,18 +377,15 @@ class SignUpPage extends React.Component {
                                         </TextFieldWrapper>
                                     </FormControl>
                                 </Box>
-                                <Box sx={{width: 500, paddingBottom: 3}}>
+                                <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                     <FormControl fullWidth>
                                         <Button disabled={!(this.state.lastNameEntered &&
                                             this.state.firstNameEntered && this.state.fathersNameEntered && this.state.emailEntered && this.state.hospitalEntered && this.state.password1Entered && this.state.password2Entered)}
                                                 sx={{
-                                                    backgroundColor: '#4fb3ea',
+                                                    color: '#4fb3ea',
                                                     '&:focus': {backgroundColor: '#4fb3ea'},
-                                                    '&:hover': {
-                                                        backgroundColor: '#2c608a'
-                                                    },
                                                     fontFamily: 'Roboto'
-                                                }} variant={'contained'} onClick={this.handleResponse}>
+                                                }} variant={'outlined'} onClick={this.handleResponse}>
                                             Создать аккаунт
                                         </Button>
                                     </FormControl>

@@ -1,15 +1,13 @@
 import * as React from "react";
+import {useEffect, useRef, useState} from "react";
 import UTIF from 'utif';
-import {Box, Button, Card, FormControl, IconButton, Slider} from "@mui/material";
-import CircularProgress, {
-    circularProgressClasses,
-} from '@mui/material/CircularProgress';
+import {Box, Button, Card, Chip, FormControl, Slider} from "@mui/material";
+import CircularProgress, {circularProgressClasses,} from '@mui/material/CircularProgress';
 import GlobalStyles from "@mui/material/GlobalStyles";
 import {Icon} from "@iconify/react";
-import {useEffect, useRef, useState} from "react";
 import {Swiper, SwiperSlide} from 'swiper/react';
 import Canvas2image from "canvas-to-png";
-import SwiperCore, {Navigation, Scrollbar, Pagination} from 'swiper';
+import SwiperCore, {Navigation, Pagination} from 'swiper';
 import 'swiper/css/navigation';
 import 'swiper/css'
 import "./styles.css";
@@ -24,7 +22,6 @@ import Typography from "@mui/material/Typography";
 SwiperCore.use([Pagination])
 
 const SlideComponent = (props) => {
-    const [succ, setSucc] = useState(false)
     const [image] = useImage(props.img, 'anonymous', 'origin',)
     const layerRef = React.useRef(null);
     const stageRef = React.useRef(null);
@@ -47,9 +44,8 @@ const SlideComponent = (props) => {
     }
     return (
         <div>
-            <Box container direction={'column'}>
+            <Box component={""} container direction={'column'}>
                 <GlobalStyles styles={{
-                    h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},
                     h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
                 }}/>
                 <Stage
@@ -61,7 +57,7 @@ const SlideComponent = (props) => {
                         <Image ref={layerRef} width={400} height={300} mimeType={"image/png"} image={image}></Image>
                     </Layer>
                 </Stage>
-                <Box sx={{width: 300, paddingTop: 1}} display={'flex'} alignContent={'center'}>
+                <Box component={""} sx={{width: 300, paddingTop: 1}} display={'flex'} alignContent={'center'}>
                     <h2 style={{fontSize: 12, fontWeight: 'normal', paddingRight: 59, paddingLeft: 30}}>Яркость</h2>
                     <FormControl variant={'outlined'}>
                         <Slider aria-label="Яркость" defaultValue={0}
@@ -76,8 +72,8 @@ const SlideComponent = (props) => {
                                 sx={{width: 150}}/>
                     </FormControl>
                 </Box>
-                <Box display={'flex'}>
-                    <Box sx={{width: 300, paddingBottom: 1}} display={'flex'} alignContent={'center'}>
+                <Box component={""} display={'flex'}>
+                    <Box component={""} sx={{width: 300, paddingBottom: 1}} display={'flex'} alignContent={'center'}>
                         <h2 style={{
                             fontSize: 12,
                             fontWeight: 'normal',
@@ -165,25 +161,12 @@ const TiffImageComponent = (props) => {
             });
     };
     return (<div>
-        {!succ && <Box display={'flex'} alignItems={'center'} justifyItems={'center'} justifyContent={'center'} alignContent={'center'} sx={{minHeight:300}}>
+        {!succ &&
+            <Box component={""} display={'flex'} alignItems={'center'} justifyItems={'center'} justifyContent={'center'}
+                 alignContent={'center'} sx={{minHeight: 300}}>
 
-            <CircularProgress variant="indeterminate"
-                                                                                                                                                                               disableShrink
-                                                                                                                                                                               sx={{
-                                                                                                                                                                                   color: '#4FB3EAFF',
-                                                                                                                                                                                   animationDuration: '550ms',
-                                                                                                                                                                                   [`& .${circularProgressClasses.circle}`]: {
-                                                                                                                                                                                       strokeLinecap: 'round',
-                                                                                                                                                                                   },
-                                                                                                                                                                               }}
-                                                                                                                                                                               size={40}
-                                                                                                                                                                               thickness={4}
-                                                                                                                                                                               {...props}/> </Box>}
-        {succ && <Box container direction={'column'} alignItems={'center'} sx={{paddingBottom:1}}>
-            <GlobalStyles styles={{
-                h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},
-                h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
-            }}/>
+                <CircularProgress variant="indeterminate" {...props}/> </Box>}
+        {succ && <Box component={""} container direction={'column'} alignItems={'center'} sx={{paddingBottom: 1}}>
             <Button onClick={handleExport} sx={{
                 backgroundColor: '#ffffff', marginBlock: 0.5, marginInline: 0.5, '& svg': {
                     fontSize: 30, color: '#4fb3ea'
@@ -200,16 +183,17 @@ const TiffImageComponent = (props) => {
             </Button>
             <Swiper
                 modules={[Navigation, Pagination]}
-                    pagination={{
-                        type: "fraction",
-                    }}
+                pagination={{
+                    type: "fraction",
+                }}
                 navigation={true}
                 speed={800}
                 allowTouchMove={false}
                 slidesPerView={1}
                 ref={ref}
             >
-                {imgArray.map((item) => <SwiperSlide className={'mySwiper'} > <SlideComponent img={item}></SlideComponent> </SwiperSlide>)}
+                {imgArray.map((item) => <SwiperSlide className={'mySwiper'}> <SlideComponent
+                    img={item}></SlideComponent> </SwiperSlide>)}
             </Swiper>
         </Box>
         }
@@ -231,13 +215,12 @@ const getStyles = () => ({
         style: {
             width: '400',
             height: 'auto',
-            boxShadow: 50,
-            shadowBlur:20,
+            shadowBlur: 20,
             backgroundColor: '#ffffff',
 
         },
         containerStyle: {
-            width:400,
+            width: 400,
             height: '100%',
             flexDirection: 'column',
             alignContent: 'center',
@@ -250,16 +233,16 @@ const Gallery = (props) => {
     const originalSwiperRef = useRef(null);
     const segSwiperRef = useRef(null);
     const boxSwiperRef = useRef(null);
-    const link1= props.link1 !== null && props.link1 !== "" ? props.link1 : ""
+    const link1 = props.link1 !== null && props.link1 !== "" ? props.link1 : ""
     const [predictedTypes, setPred] = useState([])
-    const [link2, setLink2]= useState(props.link2 !== null && props.link2 !== ""? props.link2 : "")
-    const [link3, setLink3]= useState(props.link3 !== null && props.link3 !== ""? props.link3 : "")
+    const [link2, setLink2] = useState(props.link2 !== null && props.link2 !== "" ? props.link2 : "")
+    const [link3, setLink3] = useState(props.link3 !== null && props.link3 !== "" ? props.link3 : "")
     useEffect(() => {
         const originalSwiper = originalSwiperRef?.current?.swiper;
         const boxSwiper = segSwiperRef?.current?.swiper;
         const segSwiper = boxSwiperRef?.current?.swiper;
         if (originalSwiper?.controller && segSwiper?.controller && boxSwiper?.controller) {
-            originalSwiper.controller.control = [boxSwiper,segSwiper];
+            originalSwiper.controller.control = [boxSwiper, segSwiper];
             segSwiper.controller.control = [originalSwiper, boxSwiper];
             boxSwiper.controller.control = [segSwiper, originalSwiper];
         }
@@ -269,151 +252,155 @@ const Gallery = (props) => {
         if (link2 === "" || link2 === null || link3 === "" || link3 === null) {
             const interval = setInterval(() => {
                 axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-                axios.get(props.url+"/api/v2/uzi/" + props.props + "/?format=json").then(
+                axios.get(props.url + "/api/v2/uzi/" + props.props + "/?format=json").then(
                     (response) => {
-                        setLink2(response.data.images.segmentation.image !== null && response.data.images.segmentation.image !== ""? response.data.images.segmentation.image : "")
+                        setLink2(response.data.images.segmentation.image !== null && response.data.images.segmentation.image !== "" ? response.data.images.segmentation.image : "")
                         setLink3(response.data.images.box.image !== null && response.data.images.box.image !== "" ? response.data.images.box.image : "")
-                        console.log(link2)
                         var tmpTirads = [];
                         var secondTmpTirads = []
-                        secondTmpTirads.push(parseFloat(response.data.info.nodule_1), parseFloat(response.data.info.nodule_2), parseFloat(response.data.info.nodule_3), parseFloat(response.data.info.nodule_4), parseFloat(response.data.info.nodule_5))
-                        secondTmpTirads.sort(function(a, b) {
+                        secondTmpTirads.push(parseFloat(response.data.info.details.nodule_1), parseFloat(response.data.info.details.nodule_2), parseFloat(response.data.info.details.nodule_3), parseFloat(response.data.info.details.nodule_4), parseFloat(response.data.info.details.nodule_5))
+                        secondTmpTirads.sort(function (a, b) {
                             return a - b;
                         })
                         const indexes = {1: true, 2: true, 3: true, 4: true, 5: true}
                         secondTmpTirads.reverse()
-                        for (let a of secondTmpTirads){
-                            if((a === parseFloat(response.data.info.nodule_1)) && indexes[1]){
-                                tmpTirads.push(a+ '% - EU-TIRADS 1')
+                        for (let a of secondTmpTirads) {
+                            if ((a === parseFloat(response.data.info.details.nodule_1)) && indexes[1]) {
+                                tmpTirads.push(a + '% - EU-TIRADS 1')
                                 indexes[1] = false
-                            }
-                            else if((a === parseFloat(response.data.info.nodule_2)) && indexes[2]){
-                                tmpTirads.push(a+ '% - EU-TIRADS 2')
+                            } else if ((a === parseFloat(response.data.info.details.nodule_2)) && indexes[2]) {
+                                tmpTirads.push(a + '% - EU-TIRADS 2')
                                 indexes[2] = false
-                            }
-                            else if((a === parseFloat(response.data.info.nodule_3)) && indexes[3]){
-                                tmpTirads.push(a+ '% - EU-TIRADS 3')
+                            } else if ((a === parseFloat(response.data.info.details.nodule_3)) && indexes[3]) {
+                                tmpTirads.push(a + '% - EU-TIRADS 3')
                                 indexes[3] = false
-                            }
-                            else if((a === parseFloat(response.data.info.nodule_4)) && indexes[4]){
-                                tmpTirads.push(a+ '% - EU-TIRADS 4')
+                            } else if ((a === parseFloat(response.data.info.details.nodule_4)) && indexes[4]) {
+                                tmpTirads.push(a + '% - EU-TIRADS 4')
                                 indexes[4] = false
-                            }
-                            else if((a === parseFloat(response.data.info.nodule_5)) && indexes[5]){
-                                tmpTirads.push(a+ '% - EU-TIRADS 5')
+                            } else if ((a === parseFloat(response.data.info.details.nodule_5)) && indexes[5]) {
+                                tmpTirads.push(a + '% - EU-TIRADS 5')
                                 indexes[5] = false
                             }
                         }
                         setPred(tmpTirads)
                     }
                 )
-            }, 10000);
+            }, 5000);
             return () => clearInterval(interval);
         }
 
     }, [link3, link2]);
     return (
-        <div>
-            <Grid container spacing={2} direction={'row'} sx={{marginBlock:-7}}>
-                <Grid item>
-                    <GlobalStyles styles={{
-                        h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},
-                        h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
-                    }}/>
-                    <h2>Определенный тип узла: </h2>
-                </Grid>
-                <Grid item>
-                    <h2 style={{color: '#4FB3EAFF'}}>{predictedTypes[0]}</h2>
-                </Grid>
-                <Grid item>
-                    <GlobalStyles styles={{
-                        h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},
-                        h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
-                    }}/>
-                    <h2 color={'#417bbe'}>{predictedTypes[1]} </h2>
-                </Grid>
-                <Grid item>
-                    <GlobalStyles styles={{
-                        h2: {color: 'dimgray', fontSize: 25, fontFamily: "Roboto"},
-                        h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
-                    }}/>
-                    <h2>{predictedTypes[2]} </h2>
-                </Grid>
-                <Grid item>
-                </Grid>
-            </Grid>
-            <Grid container direction={'row'} spacing={6}>
-                <Grid item>
+        <div style={{marginBlock: 0}}>
+            <Box component={""} sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyItems: 'center',
+                alignItems: 'center',
+                marginBlockStart: 0
+            }}>
+                <GlobalStyles styles={{
+                    h2: {color: 'dimgray', fontSize: 18, fontFamily: "Roboto", fontWeight: 'normal'},
+                }}/>
+                <h5 style={{color: 'dimgray', fontSize: 18, fontWeight: 'normal'}}>Определенный искуственным интеллектом
+                    тип узла: </h5>
+                <Chip label={predictedTypes[0]} variant={'outlined'}
+                      sx={{color: '#4FB3EAFF', fontWeight: 'normal', borderColor: '#4FB3EAFF', marginInline: 1}}>
+                    {/*<h5 style={{color: '#4FB3EAFF', fontWeight: 'normal'}}>{}</h5>*/}
+                </Chip>
+                <GlobalStyles styles={{
+                    h5: {color: 'dimgray', fontSize: 18, fontFamily: "Roboto", fontWeight: 'lighter'}
+                }}/>
+                <Chip label={predictedTypes[1]} variant={'outlined'} sx={{marginInline: 1}}>
+                    {/*<h5 color={'#417bbe'}>{} </h5>*/}
+                </Chip>
+                <Chip label={predictedTypes[2]} variant={'outlined'} sx={{marginInline: 1}}>
+                    {/*<h5>{} </h5>*/}
+                </Chip>
+            </Box>
+            <Grid component={""} container direction={'row'} spacing={6}>
+                <Grid component={""} item>
                     <Card
-                        // className={this.props.className}
                         style={styles.cardStyle.style}
-                        sx={{boxShadow:3, width:400, minHeight:300}}
+                        sx={{width: 400, minHeight: 300}}
                         containerStyle={Object.assign(styles.cardStyle.containerStyle, props.containerStyle)}>
-                        {(link1.split('.')[1] === 'tiff' || link1.split('.')[1] === 'tif') && <TiffImageComponent url={props.url} img={link1} ref={originalSwiperRef}/>}
-                        {link1.split('.')[1] === 'png' && <ImageComponent url={props.url} img={link1} number={props.number} type={props.type} />}
-                        {link1 === "" && <Box display={'flex'} alignItems={'center'} justifyItems={'center'} justifyContent={'center'} alignContent={'center'} sx={{minHeight:300}}>
-                            <Typography variant="h7" color="text.secondary">{'Снимок анализируется'}</Typography>
+                        {(link1.split('.')[1] === 'tiff' || link1.split('.')[1] === 'tif') &&
+                            <TiffImageComponent url={props.url} img={link1} ref={originalSwiperRef}/>}
+                        {link1.split('.')[1] === 'png' &&
+                            <ImageComponent url={props.url} img={link1} number={props.number} type={props.type}/>}
+                        {link1 === "" && <Box component={""} display={'flex'} alignItems={'center'} justifyItems={'center'}
+                                              justifyContent={'center'} alignContent={'center'} sx={{minHeight: 300}}>
+                            <Typography component={""} variant="h7"
+                                        color="text.secondary">{'Снимок анализируется'}</Typography>
                             <CircularProgress variant="indeterminate"
-                                                                                                                                                                                                      disableShrink
-                                                                                                                                                                                                      sx={{
-                                                                                                                                                                                                          color: '#4FB3EAFF',
-                                                                                                                                                                                                          animationDuration: '550ms',
-                                                                                                                                                                                                          [`& .${circularProgressClasses.circle}`]: {
-                                                                                                                                                                                                              strokeLinecap: 'round',
-                                                                                                                                                                                                          },
-                                                                                                                                                                                                      }}
-                                                                                                                                                                                                      size={40}
-                                                                                                                                                                                                      thickness={4}
-                                                                                                                                                                                                      {...props}/> </Box>}
+                                              disableShrink
+                                              sx={{
+                                                  color: '#4FB3EAFF',
+                                                  animationDuration: '550ms',
+                                                  [`& .${circularProgressClasses.circle}`]: {
+                                                      strokeLinecap: 'round',
+                                                  },
+                                              }}
+                                              size={40}
+                                              thickness={4}
+                                              {...props}/> </Box>}
                     </Card>
                 </Grid>
-                <Grid item>
+                <Grid component={""} item>
                     <Card
-                        // className={this.props.className}
                         style={styles.cardStyle.style}
-                        sx={{boxShadow:3, width:400, minHeight:300}}
+                        sx={{width: 400, minHeight: 300}}
                         containerStyle={Object.assign(styles.cardStyle.containerStyle, props.containerStyle)}>
-                        {(link2.split('.')[1] === 'tiff' || link2.split('.')[1] === 'tif') &&<TiffImageComponent url={props.url} img={link2} ref={segSwiperRef} />}
-                        {link2.split('.')[1] === 'png' &&<ImageComponent url={props.url} img={link2} number={props.number} type={props.type}/>}
-                        {link2 === "" && <Box display={'flex'} dir={'column'} alignItems={'center'} justifyItems={'center'} justifyContent={'center'} alignContent={'center'} sx={{minHeight:300}}>
+                        {(link2.split('.')[1] === 'tiff' || link2.split('.')[1] === 'tif') &&
+                            <TiffImageComponent url={props.url} img={link2} ref={segSwiperRef}/>}
+                        {link2.split('.')[1] === 'png' &&
+                            <ImageComponent url={props.url} img={link2} number={props.number} type={props.type}/>}
+                        {link2 === "" &&
+                            <Box component={""} display={'flex'} dir={'column'} alignItems={'center'} justifyItems={'center'}
+                                 justifyContent={'center'} alignContent={'center'} sx={{minHeight: 300}}>
 
-                            <CircularProgress variant="indeterminate"
-                                                                                                                                                                                                      disableShrink
-                                                                                                                                                                                                      sx={{
-                                                                                                                                                                                                          marginInline: 2,
-                                                                                                                                                                                                          color: '#4FB3EAFF',
-                                                                                                                                                                                                          animationDuration: '550ms',
-                                                                                                                                                                                                          [`& .${circularProgressClasses.circle}`]: {
-                                                                                                                                                                                                              strokeLinecap: 'round',
-                                                                                                                                                                                                          },
-                                                                                                                                                                                                      }}
-                                                                                                                                                                                                      size={40}
-                                                                                                                                                                                                      thickness={4}
-                                                                                                                                                                                                      {...props}/> <Typography variant="h7" color="text.secondary">{'Снимок анализируется'}</Typography> </Box>}
+                                <CircularProgress variant="indeterminate"
+                                                  disableShrink
+                                                  sx={{
+                                                      marginInline: 2,
+                                                      color: '#4FB3EAFF',
+                                                      animationDuration: '550ms',
+                                                      [`& .${circularProgressClasses.circle}`]: {
+                                                          strokeLinecap: 'round',
+                                                      },
+                                                  }}
+                                                  size={40}
+                                                  thickness={4}
+                                                  {...props}/> <Typography component={""} variant="h7"
+                                                                           color="text.secondary">{'Снимок анализируется'}</Typography>
+                            </Box>}
                     </Card>
                 </Grid>
-                <Grid item>
+                <Grid component={""} item>
                     <Card
-                        // className={this.props.className}
                         style={styles.cardStyle.style}
-                        sx={{boxShadow:3, width:400, minHeight:300}}
+                        sx={{width: 400, minHeight: 300}}
                         containerStyle={Object.assign(styles.cardStyle.containerStyle, props.containerStyle)}>
-                        {(link3.split('.')[1] === 'tiff' || link3.split('.')[1] === 'tif') && <TiffImageComponent url={props.url} img={link3} ref={boxSwiperRef} />}
-                        {link3.split('.')[1] === 'png' &&<ImageComponent url={props.url} img={link3} number={props.number} type={props.type}/>}
-                        {link3 === "" && <Box display={'flex'} alignItems={'center'} justifyItems={'center'} justifyContent={'center'} alignContent={'center'} sx={{minHeight:300}}>
+                        {(link3.split('.')[1] === 'tiff' || link3.split('.')[1] === 'tif') &&
+                            <TiffImageComponent url={props.url} img={link3} ref={boxSwiperRef}/>}
+                        {link3.split('.')[1] === 'png' &&
+                            <ImageComponent url={props.url} img={link3} number={props.number} type={props.type}/>}
+                        {link3 === "" && <Box component={""} display={'flex'} alignItems={'center'} justifyItems={'center'}
+                                              justifyContent={'center'} alignContent={'center'} sx={{minHeight: 300}}>
                             <CircularProgress variant="indeterminate"
-                                                                                                                                                                                                      disableShrink
-                                                                                                                                                                                                      sx={{
-                                                                                                                                                                                                          marginInline: 2,
-                                                                                                                                                                                                          color: '#4FB3EAFF',
-                                                                                                                                                                                                          animationDuration: '550ms',
-                                                                                                                                                                                                          [`& .${circularProgressClasses.circle}`]: {
-                                                                                                                                                                                                              strokeLinecap: 'round',
-                                                                                                                                                                                                          },
-                                                                                                                                                                                                      }}
-                                                                                                                                                                                                      size={40}
-                                                                                                                                                                                                      thickness={4}
-                                                                                                                                                                                                      {...props}/> <Typography variant="h7" color="text.secondary">{'Снимок анализируется'}</Typography></Box>}
+                                              disableShrink
+                                              sx={{
+                                                  marginInline: 2,
+                                                  color: '#4FB3EAFF',
+                                                  animationDuration: '550ms',
+                                                  [`& .${circularProgressClasses.circle}`]: {
+                                                      strokeLinecap: 'round',
+                                                  },
+                                              }}
+                                              size={40}
+                                              thickness={4}
+                                              {...props}/> <Typography component={""} variant="h7"
+                                                                       color="text.secondary">{'Снимок анализируется'}</Typography></Box>}
                     </Card>
                 </Grid>
 

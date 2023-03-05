@@ -28,7 +28,7 @@ export const TextFieldWrapper = styled(TextField)`
   fieldset {
     border-radius: 10px;
     border-color: #4FB3EAFF;
-    border-width: 2px;
+    border-width: 1px;
   }
 `;
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -40,17 +40,17 @@ class UploadPage extends React.Component {
         super(props);
         this.state = {
             originalImage: "",
-            uziDevice: null,
+            uziDevice: "",
             deviceName:{id: 0, name: ""},
-            projectionType: null,
-            patientCard: null,
+            projectionType: "",
+            patientCard: "",
             clicked: false,
             uploadImage: false,
             deviceChosen: false,
             projectionChosen: false,
             patientChosen: false,
             typeText: "Выберите файл в формате .png или .tiff",
-            imageFile: null,
+            imageFile: "",
             imageChoosen: false,
             patients: [],
             patientPolicy: null,
@@ -120,11 +120,17 @@ class UploadPage extends React.Component {
     };
     handlePatientList = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(this.props.url + "/api/v2/patient/list/?format=json")
+        axios.get(this.props.url + '/api/v2/med_worker/patients/'+localStorage.getItem('id'))
             .then((response) => {
-                this.setState({patients: response.data.results})
-                    console.log(response.data.results)
-            }
+                const tmp = []
+                for (let cur of response.data.results.cards){
+                    tmp.push(cur.patient)
+                }
+                this.setState({
+                    patients: tmp
+                })
+
+                }
             )
     };
     handleDevicesList = () => {
@@ -144,7 +150,7 @@ class UploadPage extends React.Component {
         formData.append("patient_card", this.state.patientCard);
 
         formData.append("original_image", this.state.imageFile);
-        const response = axios.post(this.props.url + "/api/v2/uzi/create/", formData).catch( () => {
+        const response = axios.post(this.props.url + "/api/v2/uzi/create/2/", formData).catch( () => {
                 this.setState({
                     openError: true,
                     loading: false
@@ -233,13 +239,11 @@ class UploadPage extends React.Component {
                                </IconButton>}>
                     <Alert severity="error" sx={{width:'100%',backgroundColor: '#d9007b'}} onClose={this.handleClose}>Снимок не загружен. Проверьте формат загружаемого файла.</Alert>
                 </Snackbar>
-                <Box sx={{
+                <Box component={""} sx={{
                     backgroundColor: '#ffffff',
-                    paddingLeft: 40,
-                    paddingTop: 10,
+                    paddingLeft: 20,
+                    paddingTop: 15,
                     borderTopLeftRadius: 130,
-                    elevation: 10,
-                    boxShadow: 2,
                     height: 'auto',
                     minHeight: 600,
                     width: 'auto',
@@ -248,14 +252,15 @@ class UploadPage extends React.Component {
                         backgroundColor: "#ffffff",
                     }
                 }} display={'flex'} color={theme.palette.secondary.contrastText}>
-                    <Grid container direction={'row'} spacing={5}>
-                        <Grid item  xs>
+                    <Grid component={""} container direction={'row'} spacing={5}>
+                        <Grid component={""} item  xs justifyItems={'center'}>
+                            <Box component={""} sx={{display: 'flex', flexDirection: 'column', justifyItems: 'center', alignItems: 'center'}}>
                             <GlobalStyles styles={{
-                                h1: {color: 'dimgray', fontSize: 40, fontFamily: "Roboto"},
+                                h1: {color: 'dimgray', fontSize: 40, fontFamily: "Roboto", fontWeight: 'lighter',},
                                 h5: {color: 'dimgray', fontSize: 10, fontFamily: "Roboto"}
                             }}/>
                             <h1>Новый снимок УЗИ</h1>
-                            <Box sx={{width: 400, borderRadius: 3, boxShadow: 1}}>
+                            <Box component={""} sx={{width: 400, borderRadius: 3}}>
                                 <FormControl variant={'outlined'} fullWidth >
                                     <Autocomplete
                                         id="devices"
@@ -299,11 +304,10 @@ class UploadPage extends React.Component {
                                     />
                                 </FormControl>
                             </Box>
-                            <Box sx={{width: 300, paddingBottom: 5}}></Box>
-                            <Box sx={{width: 400, borderRadius: 3, boxShadow: 1}}>
+                            <Box component={""} sx={{width: 300, paddingBottom: 5}}></Box>
+                            <Box component={""} sx={{width: 400, borderRadius: 3}}>
                                 <FormControl variant={'outlined'} fullWidth>
                                     <TextFieldWrapper
-                                        labelId="device"
                                         value={this.state.projectionType}
                                         label="Тип проекции"
                                         onChange={this.handleChooseProjection}
@@ -315,10 +319,10 @@ class UploadPage extends React.Component {
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                            <Box sx={{width: 300, paddingBottom: 5}}></Box>
+                            <Box component={""} sx={{width: 300, paddingBottom: 5}}></Box>
 
 
-                            <Box sx={{width: 400, borderRadius: 3, boxShadow: 1}}>
+                            <Box component={""} sx={{width: 400, borderRadius: 3}}>
                                 <FormControl variant={'outlined'} fullWidth>
                                     <Autocomplete
                                         id="country-select-demo"
@@ -326,6 +330,7 @@ class UploadPage extends React.Component {
                                         options={this.state.patients}
                                         value={this.state.patient}
                                         autoHighlight
+                                        disableClearable
                                         onChange={this.handleChoosePatient}
                                         style={{whiteSpace: 'normal'}}
                                         getOptionLabel={(option) => this.state.patient.personal_policy === ""? "" : option.last_name + ' ' + option.first_name + ' ' + option.fathers_name + ' ' + option.personal_policy}
@@ -372,7 +377,7 @@ class UploadPage extends React.Component {
                                     />
                                 </FormControl>
                             </Box>
-                            <Box sx={{width: 400, paddingTop: 3}}>
+                            <Box component={""} sx={{width: 400, paddingTop: 3}}>
                                 <FormControl fullWidth>
                                     <Button component={Link} to={`/patient/create`}
                                             sx={{color: '#4fb3ea',
@@ -384,17 +389,18 @@ class UploadPage extends React.Component {
                                     </Button>
                                 </FormControl>
                             </Box>
+                            </Box>
                         </Grid>
-                        <Grid item xs container direction={'column'}
+                        <Grid component={""} item xs container direction={'column'}
                               alignItems="center" sx={{paddingRight: 10}}>
 
-                            <Box display="flex"
+                            <Box component={""} display="flex"
                                  justifyContent="center"
                                  alignItems="center"
                                  sx={{height: 400}}>
-                                <Grid alignItems={'center'} justify={'center'} container direction={'column'}
+                                <Grid component={""} alignItems={'center'} justify={'center'} container direction={'column'}
                                       spacing={0}>
-                                    <Grid item xs justify="center">
+                                    <Grid component={""} item xs justify="center">
                                         <input type='file'
                                                ref={'fileInput'}
                                                onChange={this.handleUploadFile}
@@ -404,7 +410,9 @@ class UploadPage extends React.Component {
                                                     onClick={() => this.refs.fileInput.click()} sx={{
                                             '& svg': {
                                                 fontSize: 100
-                                            }, boxShadow: 10
+                                            }, '&:hover': {
+                                                color: '#4fb3ea'
+                                            }
                                         }
                                         }>
                                             {this.state.loading && (
@@ -422,44 +430,39 @@ class UploadPage extends React.Component {
                                             <AddCircleOutlineIcon></AddCircleOutlineIcon>
                                         </IconButton>
                                     </Grid>
-                                    <Grid item justify="center">
+                                    <Grid component={""} item justify="center">
                                         <GlobalStyles styles={{
                                             h1: {color: 'dimgray', fontSize: 40, fontFamily: "Roboto"},
                                             h5: {color: 'lightgray', fontSize: 14, fontFamily: "Roboto"}
                                         }}/>
-                                        <Box display="flex"
+                                        <Box component={""} display="flex"
                                              justifyContent="center"
                                              alignItems="center"
 
                                         >
-                                            <h5 align={'right'}>{this.state.typeText}</h5>
+                                            <h5 style={{fontWeight: 'lighter'}} align={'right'}>{this.state.typeText}</h5>
                                         </Box>
                                     </Grid>
-                                    <Grid item container direction={'column'}>
+                                    <Grid component={""} item container direction={'column'}>
                                         <GlobalStyles styles={{
                                             h1: {color: 'dimgray', fontSize: 40, fontFamily: "Roboto"},
                                             h5: {color: 'lightgray', fontSize: 14, fontFamily: "Roboto"}
                                         }}/>
-                                        <Box
+                                        <Box component={""}
                                             display={'inline-flex'}
                                         >
                                             <Button sx={{
-                                                backgroundColor: '#4fb3ea',
+                                                color: '#4fb3ea',
                                                 '&:focus': {backgroundColor: '#4fb3ea'},
-                                                '&:hover': {
-                                                    backgroundColor: '#2c608a'
-                                                }
-                                            }} onClick={this.handleResult} variant={'contained'} disabled={!this.state.deviceChosen||!this.state.patientChosen||!this.state.projectionChosen||!this.state.imageChoosen}>
+                                            }} onClick={this.handleResult} variant={'outlined'} disabled={!this.state.deviceChosen||!this.state.patientChosen||!this.state.projectionChosen||!this.state.imageChoosen}>
                                                 Провести диагностику
                                             </Button>
-                                            <Box sx={{width: 10}}></Box>
+                                            <Box component={""} sx={{width: 10}}></Box>
                                             <Button component={Link} to={`/result/${this.state.resultid}`} sx={{
-                                                backgroundColor: '#4fb3ea',
+                                                color: '#4fb3ea',
                                                 '&:focus': {backgroundColor: '#4fb3ea'},
-                                                '&:hover': {
-                                                    backgroundColor: '#2c608a'
-                                                }
-                                            }} variant={'contained'} disabled={!this.state.result}>
+
+                                            }} variant={'outlined'} disabled={!this.state.result}>
                                                 {this.state.loading && (
                                                     <CircularProgress
                                                         size={24}

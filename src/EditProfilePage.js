@@ -18,7 +18,6 @@ import {
     TextField,
 } from "@mui/material";
 
-import isEmail from 'validator/lib/isEmail';
 
 import Grid from '@mui/material/Grid';
 
@@ -30,13 +29,12 @@ import MuiAlert from '@mui/material/Alert';
 import CloseIcon from '@mui/icons-material/Close';
 import DoneSharpIcon from '@mui/icons-material/DoneSharp';
 
-const regex = new RegExp('\\d+');
 
-const EditPatientPageInterface = (props) => {
+const EditProfileInterface = (props) => {
     const {number} = useParams();
     return (
 
-        <EditPatientPage props={number} url={props.url}></EditPatientPage>
+        <EditProfilePage props={number} url={props.url}></EditProfilePage>
 
     )
 }
@@ -63,7 +61,7 @@ export const TextFieldWrapper = styled(TextField)`
 }
 `;
 
-class EditPatientPage extends React.Component {
+class EditProfilePage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -73,17 +71,13 @@ class EditPatientPage extends React.Component {
             firstNameEntered: false,
             fathersName: "",
             fathersNameEntered: false,
-            email: "",
-            emailEntered: false,
-            policy: "",
-            policyEntered: false,
-            active: false,
-            doctorEmailEntered: false,
-            diagnosis: "",
-            doctorName: "",
-            doctorEmail: "",
-            doctorSp: "",
-            ill: false,
+            job: "",
+            jobEntered: false,
+            expertDetails: "",
+            expertDetailEntered: false,
+            medOrganization: "",
+            medOrganizationEntered: false,
+            is_remote_worker: false,
             openSuccess: false,
             openError: false,
         };
@@ -91,21 +85,21 @@ class EditPatientPage extends React.Component {
     }
     handleStartPage = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(this.props.url + '/api/v2/patient/update/'+this.props.props +'/?format=json', ).then((response)=>{
+        axios.get(this.props.url + '/api/v2/med_worker/update/'+localStorage.getItem('id'), ).then((response)=>{
             this.setState({
-                lastName: response.data.patient.last_name,
+                lastName: response.data.last_name,
                 lastNameEntered: true,
-                firstName: response.data.patient.first_name,
+                firstName: response.data.first_name,
                 firstNameEntered: true,
-                fathersName: response.data.patient.fathers_name,
+                fathersName: response.data.fathers_name,
                 fathersNameEntered: true,
-                email: response.data.patient.email,
-                emailEntered: true,
-                policy: response.data.patient.personal_policy,
-                policyEntered: true,
-                active: response.data.patient.is_active,
-                diagnosis: response.data.card.diagnosis,
-                ill: response.data.card.has_nodules === 'T',
+                job: response.data.job !== null ? response.data.job : "",
+                jobEntered: true,
+                expertDetails: response.data.expert_details,
+                expertDetailEntered: true,
+                medOrganization: response.data.med_organization,
+                medOrganizationEntered: true,
+                is_remote_worker: response.data.is_remote_worker,
             })
         })
     }
@@ -125,64 +119,43 @@ class EditPatientPage extends React.Component {
             fathersName: event.target.value, fathersNameEntered: true,
         });
     };
-    handleEmail = (event) => {
+    handleJob = (event) => {
         this.setState({
-            email: event.target.value, emailEntered: isEmail(event.target.value),
+            job: event.target.value, jobEntered: true,
         });
     };
-    handlePolicy = (event) => {
+    handleMedOrganization = (event) => {
         this.setState({
-            policy: event.target.value,
+            medOrganization: event.target.value,
         });
         this.setState({
-            policyEntered: event.target.value.length === 16 && regex.exec(event.target.value),
-        });
-    };
-    handleDiagnosis = (event) => {
-        this.setState({
-            diagnosis: event.target.value,
+            medOrganizationEntered: true,
         });
     };
-    handleActive = () => {
+    handleExpertDetails = (event) => {
         this.setState({
-            active: !this.state.active,
+            expertDetails: event.target.value,
         });
     };
-    handleIll = () => {
+    handleRemote = () => {
         this.setState({
-            ill: !this.state.ill,
+            is_remote_worker: !this.state.is_remote_worker,
         });
     };
-    handleDoctorName = (event) => {
-        this.setState({
-            doctorName: event.target.value,
-        });
-    };
-    handleDoctorSp = (event) => {
-        this.setState({
-            doctorSp: event.target.value,
-        });
-    };
-    handleDoctorEmail = (event) => {
-        this.setState({
-            doctorEmail: event.target.value, doctorEmailEntered: isEmail(event.target.value),
-        });
-    };
+
 
 
     handleResponse = () => {
         const formData = new FormData();
-
-        formData.append("patient.first_name", this.state.firstName);
-        formData.append("patient.last_name", this.state.lastName);
-        formData.append("patient.fathers_name", this.state.fathersName);
-        formData.append("patient.personal_policy", this.state.policy);
-        formData.append("patient.email", this.state.email);
-        formData.append("patient.is_active", this.state.active);
-        formData.append("card.has_nodules", this.state.ill ? "T" : "F");
-        formData.append("card.diagnosis", this.state.diagnosis);
+        formData.append("first_name", this.state.firstName);
+        formData.append("last_name", this.state.lastName);
+        formData.append("fathers_name", this.state.fathersName);
+        formData.append("is_remote_worker", this.state.is_remote_worker);
+        formData.append("job", this.state.job);
+        formData.append("expert_details", this.state.expertDetails);
+        formData.append("med_organization", this.state.medOrganization);
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.put(this.props.url + "/api/v2/patient/update/"+this.props.props+'/', formData, )
+        axios.put(this.props.url + "/api/v2/med_worker/update/"+localStorage.getItem('id'), formData, )
             .then(() => this.setState({
                 openSuccess: true
             }))
@@ -206,7 +179,7 @@ class EditPatientPage extends React.Component {
     render() {
         return (
 
-            <FormControl fullWidth fullHeight sx={{height: '100%', width: '100%'}}>
+            <FormControl sx={{height: '100%', width: '100%'}}>
                 <Snackbar open={this.state.openSuccess} autoHideDuration={6000} onClose={this.handleClose}
                           TransitionComponent={Slide}
                           action={<IconButton
@@ -245,11 +218,11 @@ class EditPatientPage extends React.Component {
                         h1: {color: 'dimgray', fontSize: 30, fontFamily: "Roboto", fontWeight: 'normal'},
                         h5: {color: 'dimgray', fontSize: 20, fontFamily: "Roboto"}
                     }}/>
-                    <h1>Изменение карты пациента</h1>
+                    <h1>Профиль</h1>
                     <Grid component={""} container direction={'row'} spacing={1}>
-                        <Grid component={""} item xs>
+                        <Grid component={""} xs item>
                             <Box component={""} sx={{width: 500, paddingBottom: 3, paddingTop: 3}}>
-                                <FormControl fullWidth>
+                                <FormControl sx={{height: '100%', width: '100%'}}>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
                                         Фамилия
                                     </InputLabel>
@@ -258,14 +231,14 @@ class EditPatientPage extends React.Component {
                                         value={this.state.lastName}
                                         onChange={this.handleLastName}
                                         variant='outlined'
-                                        helperText="Введите фамилию пациента"
+                                        helperText="Введите Вашу фамилию"
                                         sx={{marginBlockStart: 1}}
                                     >
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
                             <Box component={""} sx={{width: 500, paddingBottom: 3}}>
-                                <FormControl fullWidth>
+                                <FormControl sx={{height: '100%', width: '100%'}}>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
                                         Имя
                                     </InputLabel>
@@ -274,14 +247,14 @@ class EditPatientPage extends React.Component {
                                         value={this.state.firstName}
                                         onChange={this.handleFirstName}
                                         variant='outlined'
-                                        helperText="Введите имя пациента"
+                                        helperText="Введите Ваше имя"
                                         sx={{marginBlockStart: 1}}
                                     >
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
                             <Box component={""} sx={{width: 500, paddingBottom: 3}}>
-                                <FormControl fullWidth>
+                                <FormControl sx={{height: '100%', width: '100%'}}>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
                                         Отчество
                                     </InputLabel>
@@ -290,39 +263,39 @@ class EditPatientPage extends React.Component {
                                         onChange={this.handleFathersName}
                                         error={this.state.fathersName.length === 0 && this.state.fathersNameEntered}
                                         variant='outlined'
-                                        helperText="Введите отчество пациента"
+                                        helperText="Введите Ваше отчество"
                                         sx={{marginBlockStart: 1}}
                                     >
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
                             <Box component={""} sx={{width: 500, paddingBottom: 3}}>
-                                <FormControl fullWidth>
+                                <FormControl sx={{height: '100%', width: '100%'}}>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
-                                        Эл. почта
+                                        Должность
                                     </InputLabel>
                                     <TextFieldWrapper
-                                        value={this.state.email}
-                                        onChange={this.handleEmail}
-                                        error={!this.state.emailEntered && this.state.email.length !== 0}
+                                        value={this.state.job}
+                                        onChange={this.handleJob}
+                                        error={!this.state.jobEntered && this.state.job.length !== 0}
                                         variant='outlined'
-                                        helperText="Введите электронную почту пациента"
+                                        helperText="Введите занимаемую Вами должность"
                                         sx={{marginBlockStart: 1}}
                                     >
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
                             <Box component={""} sx={{width: 500, paddingBottom: 3}}>
-                                <FormControl fullWidth>
+                                <FormControl sx={{height: '100%', width: '100%'}}>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
-                                        Полис
+                                        Место работы
                                     </InputLabel>
                                     <TextFieldWrapper
-                                        value={this.state.policy}
-                                        onChange={this.handlePolicy}
-                                        error={!this.state.policyEntered && this.state.policy.length !== 0}
+                                        value={this.state.medOrganization}
+                                        onChange={this.handleMedOrganization}
+                                        error={!this.state.medOrganizationEntered && this.state.medOrganization.length !== 0}
                                         variant='outlined'
-                                        helperText={!this.state.policyEntered && this.state.policy.length !== 0 ? "Номер полиса должен содержать только цифры и состоять из 16 знаков" : "Введите полис пациента"}
+                                        helperText={"Введите название медицинской организации"}
                                         sx={{marginBlockStart: 1}}
                                     >
                                     </TextFieldWrapper>
@@ -332,127 +305,47 @@ class EditPatientPage extends React.Component {
                                 <FormLabel component="legend"></FormLabel>
                                 <FormGroup aria-label="position" row>
                                     <FormControlLabel
-                                        control={<Checkbox checked={this.state.active} sx={{
+                                        control={<Checkbox checked={this.state.is_remote_worker} sx={{
                                             '&.Mui-checked': {
                                                 color: '#4FB3EAFF',
                                             }
                                         }}
                                                            icon={<DoneSharpIcon/>}
                                                            checkedIcon={<DoneSharpIcon/>}
-                                                           onChange={this.handleActive}
+                                                           onChange={this.handleRemote}
                                         />}
                                         labelPlacement="end"
-                                        label={"Пациент активен"}
+                                        label={"Я хочу давать экспертное заключение"}
                                         sx={{color: 'dimgray', fontWeight: 'lighter'}}
                                     />
                                 </FormGroup>
                             </Box>
                         </Grid>
-                        <Grid component={""} item xs>
-                            <Box component={""} sx={{width: 500, height: 98, paddingBottom: 7, paddingTop: 3}}>
+                        <Grid component={""} xs item>
+                            <Box component={""} sx={{width: 500, height: 200, paddingBottom: 7, paddingTop: 3}}>
                                 <FormControl>
                                     <InputLabel required={true} shrink sx={{marginBlockEnd: 5}}>
-                                        Диагноз
+                                        Профессиональный опыт
                                     </InputLabel>
                                     <TextFieldWrapper
-                                        value={this.state.diagnosis}
-                                        onChange={this.handleDiagnosis}
+                                        value={this.state.expertDetails}
+                                        onChange={this.handleExpertDetails}
                                         variant='outlined'
-                                        sx={{marginBlockStart: 1, width: 500, height: 98}}
+                                        sx={{marginBlockStart: 1, width: 500, height: 200}}
                                         multiline
                                         inputProps={{
                                             style: {
-                                                height: 98, borderRadius: 3
+                                                height: 200, borderRadius: 3
                                             }
                                         }}
                                     >
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                            <Box component={""} sx={{width: 600, paddingBottom: 3}}>
-                                <FormLabel component="legend"></FormLabel>
-                                <FormGroup aria-label="position" row>
-                                    <FormControlLabel
 
-                                        control={<Checkbox checked={this.state.ill} sx={{
-                                            '&.Mui-checked': {
-                                                color: '#4FB3EAFF',
-                                            }
-                                        }}
-                                                           icon={<DoneSharpIcon/>}
-                                                           checkedIcon={<DoneSharpIcon/>}
-                                                           onClick={this.handleIll}
-                                        />}
-                                        labelPlacement="end"
-                                        label={"Обнаружено новообразование"}
-                                        sx={{color: 'dimgray', fontWeight: 'lighter'}}
-                                    />
-                                    <FormControlLabel
-                                        control={<Checkbox checked={!this.state.ill} sx={{
-                                            '&.Mui-checked': {
-                                                color: '#4FB3EAFF',
-                                            }
-                                        }}
-                                                           icon={<DoneSharpIcon/>}
-                                                           checkedIcon={<DoneSharpIcon/>}
-                                                           onClick={this.handleIll}
-                                        />}
-                                        labelPlacement="end"
-                                        label={"Без патологий"}
-                                        sx={{color: 'dimgray', fontWeight: 'lighter'}}
-                                    />
-                                </FormGroup>
-                            </Box>
                             <Box component={""} sx={{width: 500, paddingBottom: 3}}>
-                                <FormControl fullWidth>
-                                    <InputLabel shrink sx={{marginBlockEnd: 5}}>
-                                        ФИО лечащего врача
-                                    </InputLabel>
-                                    <TextFieldWrapper
-                                        value={this.state.doctorName}
-                                        onChange={this.handleDoctorName}
-                                        variant='outlined'
-                                        helperText="Введите ФИО лечащего врача"
-                                        sx={{marginBlockStart: 1}}
-                                    >
-                                    </TextFieldWrapper>
-                                </FormControl>
-                            </Box>
-                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
-                                <FormControl fullWidth>
-                                    <InputLabel shrink sx={{marginBlockEnd: 5}}>
-                                        Специальность
-                                    </InputLabel>
-                                    <TextFieldWrapper
-                                        value={this.state.doctorSp}
-                                        onChange={this.handleDoctorSp}
-                                        variant='outlined'
-                                        helperText="Введите специальность лечащего врача"
-                                        sx={{marginBlockStart: 1}}
-                                    >
-                                    </TextFieldWrapper>
-                                </FormControl>
-                            </Box>
-                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
-                                <FormControl fullWidth>
-                                    <InputLabel shrink sx={{marginBlockEnd: 5}}>
-                                        Эл. почта
-                                    </InputLabel>
-                                    <TextFieldWrapper
-                                        value={this.state.doctorEmail}
-                                        onChange={this.handleDoctorEmail}
-                                        variant='outlined'
-                                        error={!this.state.doctorEmailEntered && this.state.doctorEmail.length !== 0}
-                                        helperText="Введите электронную почту лечащего врача"
-                                        sx={{marginBlockStart: 1}}
-                                    >
-                                    </TextFieldWrapper>
-                                </FormControl>
-                            </Box>
-                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
-                                <FormControl fullWidth>
-                                    <Button disabled={!(this.state.lastNameEntered &&
-                                        this.state.firstNameEntered && this.state.fathersNameEntered && this.state.emailEntered && this.state.policyEntered)}
+                                <FormControl>
+                                    <Button
                                             sx={{
                                                 color: '#4fb3ea',
                                                 '&:focus': {backgroundColor: '#4fb3ea'},
@@ -471,4 +364,4 @@ class EditPatientPage extends React.Component {
     }
 }
 
-export default EditPatientPageInterface;
+export default EditProfileInterface;

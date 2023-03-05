@@ -161,35 +161,35 @@ class SignInPage extends React.Component {
                     <Alert severity="error" sx={{width: '100%', backgroundColor: '#d9007b'}} onClose={this.handleClose}>Не удается войти в аккаунт</Alert>
                 </Snackbar>
                 <GlobalStyles styles={{
-                    h1: {color: 'white', fontSize: 50, fontFamily: "Roboto"},
+                    h1: {color: '#4fb3ea', fontSize: 50, fontFamily: "Roboto"},
                     h5: {color: 'dimgray', fontSize: 30, fontFamily: "Roboto", marginBlockEnd: 30},
                     h3: {color: 'dimgray', fontSize: 15, fontFamily: "Roboto",fontWeight: 'normal', marginBlockEnd: 15}
                 }}/>
 
-                <Grid container spacing={1}>
-                    <Grid item xs>
-                        <Box sx={{width:'auto', marginBlock: 15, marginInlineStart:10, marginInlineEnd:10}}>
-                            <FormControl fullWidth fullHeight >
-                                <h1>Интеллектуальный ассистент слепой диагностики узловых образований щитовидной железы</h1>
+                <Grid component={""} container spacing={1}>
+                    <Grid component={""} item xs>
+                        <Box component={""} sx={{width:'auto', marginBlock: 15, marginInlineStart:10, marginInlineEnd:10}}>
+                            <FormControl>
+                                <h1 >Интеллектуальный ассистент слепой диагностики узловых образований щитовидной железы</h1>
                             </FormControl>
                         </Box>
                     </Grid>
-                    <Grid item xs>
-                        <Box sx={{
+                    <Grid component={""} item xs>
+                        <Box component={""} sx={{
                             backgroundColor: '#ffffff',
                             paddingLeft: 20,
                             paddingTop: 10,
                             borderTopLeftRadius: 130,
                             elevation: 10,
-                            boxShadow: 2,
-                            height: 'auto',
+                            boxShadow: "0px 0px 20px gainsboro",
+                            height: '100%',
                             minHeight: 600,
                             '&:hover': {
                                 backgroundColor: "#ffffff",
                             },
                         }} color={theme.palette.secondary.contrastText} >
                             <h5>Войти</h5>
-                            <Box sx={{width: 500, paddingBottom: 3}}>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                 <FormControl fullWidth>
                                     <InputLabel shrink sx={{marginBlockEnd: 5}}>
                                         Эл. почта
@@ -204,7 +204,7 @@ class SignInPage extends React.Component {
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                            <Box sx={{width: 500, paddingBottom: 3}}>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                 <FormControl fullWidth>
                                     <InputLabel shrink sx={{marginBlockEnd: 5}}>
                                         Пароль
@@ -233,22 +233,21 @@ class SignInPage extends React.Component {
                                     </TextFieldWrapper>
                                 </FormControl>
                             </Box>
-                            <Box sx={{width: 500, paddingBottom: 3}}>
+                            <Box component={""} sx={{width: 500, paddingBottom: 3}}>
                                 <FormControl fullWidth>
                                     <Button disabled={!(this.state.emailEntered && this.state.passwordEntered && this.state.email.length !== 0 && this.state.password.length)}
                                             sx={{
-                                                backgroundColor: '#4fb3ea',
+                                                color: '#4fb3ea',
                                                 '&:focus': {backgroundColor: '#4fb3ea'},
                                                 '&:hover': {
-                                                    backgroundColor: '#2c608a'
                                                 },
                                                 fontFamily: 'Roboto'
-                                            }} variant={'contained'} onClick={this.handleResponse}>
+                                            }} variant={'outlined'} onClick={this.handleResponse}>
                                         Войти
                                     </Button>
                                 </FormControl>
                             </Box>
-                            <Box sx={{paddingBottom: 3}} display={'flex'}>
+                            <Box component={""} sx={{paddingBottom: 3}} display={'flex'}>
                                 <h3>У Вас нет аккаунта?</h3>
                                 <Button component={Link} to={`/sign_up`}
                                         sx={{ textTransform: 'none', width: 'auto', fontStyle: {color: '#4FB3EAFF'},
