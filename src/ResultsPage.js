@@ -402,9 +402,9 @@ class ResultsPage extends React.Component {
                     rln: response.data.info.details.rln,
                     structure: response.data.info.details.structure,
                     additional_data: response.data.info.details.additional_data,
-                    right_volume: 0.479 * response.data.info.details.right_depth * response.data.info.details.right_length * response.data.info.details.right_width,
-                    left_volume: 0.479 * response.data.info.details.left_depth * response.data.info.details.left_length * response.data.info.details.left_width,
-                    volume: 0.479 * response.data.info.details.left_depth * response.data.info.details.left_length * response.data.info.details.left_width + 0.479 * response.data.info.details.right_depth * response.data.info.details.right_length * response.data.info.details.right_width,
+                    right_volume: !isNaN(0.479 * response.data.info.details.right_depth * response.data.info.details.right_length * response.data.info.details.right_width)? (0.479 * response.data.info.details.right_depth * response.data.info.details.right_length * response.data.info.details.right_width) : 0,
+                    left_volume: !isNaN(0.479 * response.data.info.details.left_depth * response.data.info.details.left_length * response.data.info.details.left_width)? (0.479 * response.data.info.details.left_depth * response.data.info.details.left_length * response.data.info.details.left_width) : 0,
+                    volume: !isNaN(0.479 * response.data.info.details.left_depth * response.data.info.details.left_length * response.data.info.details.left_width + 0.479 * response.data.info.details.right_depth * response.data.info.details.right_length * response.data.info.details.right_width)? (0.479 * response.data.info.details.left_depth * response.data.info.details.left_length * response.data.info.details.left_width + 0.479 * response.data.info.details.right_depth * response.data.info.details.right_length * response.data.info.details.right_width):0,
                 })
             })
 
@@ -420,7 +420,7 @@ class ResultsPage extends React.Component {
             formData.patient_card.patient = response.data.info.patient.id
             formData.acceptance_datetime = this.state.uziDate
             formData.patient_card.has_nodules = this.state.shortResult ? 'T' : 'F'
-            formData.patient_card.diagnosis = response.data.info.patient.diagnosis
+            formData.patient_card.diagnosis = this.state.diagnosis
             formData.details.projection_type = this.state.projectionType
             formData.details.nodule_type = this.state.tiradsType
             formData.uzi_device = this.state.uziDevice.id
@@ -440,7 +440,7 @@ class ResultsPage extends React.Component {
             formData.details.structure = this.state.structure
             formData.details.additional_data = this.state.additional_data
             console.log(formData)
-            axios.put(this.props.url + "/api/v2/uzi/" + this.props.props + '/update/2/', formData).then(() => {
+            axios.put(this.props.url + "/api/v2/uzi/" + this.props.props + '/update/', formData).then(() => {
                 this.setState({
                     openSuccess: true,
                 })

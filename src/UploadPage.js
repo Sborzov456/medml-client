@@ -150,7 +150,7 @@ class UploadPage extends React.Component {
         formData.append("patient_card", this.state.patientCard);
 
         formData.append("original_image", this.state.imageFile);
-        const response = axios.post(this.props.url + "/api/v2/uzi/create/2/", formData).catch( () => {
+        const response = axios.post(this.props.url + "/api/v2/uzi/create/", formData).catch( () => {
                 this.setState({
                     openError: true,
                     loading: false
