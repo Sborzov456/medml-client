@@ -55,7 +55,7 @@ class MaskPage extends React.Component {
     render() {
         return (
             <FormControl fullWidth fullHeight sx={{height: '100%', width:'100%'}}>
-                <Box sx={{backgroundColor: '#ffffff', paddingLeft: 15,paddingTop: 3,paddingBottom: 10,borderTopLeftRadius:130, elevation:10, boxShadow: 2, '&:hover': {
+                <Box sx={{backgroundColor: '#ffffff', paddingLeft: 15,paddingTop: 10,paddingBottom: 10,borderTopLeftRadius:130, elevation:10, boxShadow: 2, '&:hover': {
                         backgroundColor: "#ffffff",
                     },}} >
             <Grid container={true} direction={'row'} justify = "center">

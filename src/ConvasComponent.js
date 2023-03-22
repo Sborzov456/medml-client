@@ -219,8 +219,8 @@ const ConvasComponent = (props) => {
                 </FormControl>
             </Box>
             <Stage
-                width={window.innerWidth - 300}
-                height={window.innerHeight}
+                width={image.width}
+                height={image.height}
                 onMouseDown={handleMouseDown}
                 onMousemove={handleMouseMove}
                 onMouseup={handleMouseUp}
