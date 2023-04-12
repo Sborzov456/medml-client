@@ -37,6 +37,7 @@ import Gallery from "./Gallery";
 import DoneSharpIcon from "@mui/icons-material/DoneSharp";
 import Typography from "@mui/material/Typography";
 import {Document, Font, Page, PDFDownloadLink, StyleSheet, Text, View} from '@react-pdf/renderer';
+import TabsComponent from "./TabsComponent";
 
 const styles = StyleSheet.create({
     page: {
@@ -727,11 +728,12 @@ class ResultsPage extends React.Component {
                                 </Box>
                             </Grid>
                         </Grid>
-                        <Grid component={""} item alignItems={'center'} justifyContent={'center'} sx={{paddingTop: 0}}>
-                            <Gallery url={this.props.url} props={this.props.props} link1={this.state.originalImage}
-                                     link2={this.state.segmentedImage} link3={this.state.boxImage}
-                                     number={this.props.props} type={this.state.tiradsType}></Gallery>
-                        </Grid>
+                        {/*<Grid component={""} item alignItems={'center'} justifyContent={'center'} sx={{paddingTop: 0}}>*/}
+                            {/*<Gallery url={this.props.url} props={this.props.props} link1={this.state.originalImage}*/}
+                            {/*         link2={this.state.segmentedImage} link3={this.state.boxImage}*/}
+                            {/*         number={this.props.props} type={this.state.tiradsType}></Gallery>*/}
+                            <TabsComponent></TabsComponent>
+                        {/*</Grid>*/}
                         <Box component={""} sx={{display: 'flex', flexDirection: 'row', paddingTop: 2}}>
                             <Box component={""} sx={{flexDirection: 'column', paddingTop: 2, paddingLeft: 2}}>
                                 <Box component={""} sx={{width: 300, borderRadius: 3, paddingBottom: 2}}>

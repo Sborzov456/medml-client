@@ -11,6 +11,8 @@ export default function CustomizedAccordions() {
         setExpanded(newExpanded ? panel : false);
     };
 
+
+
     return (
         <Box component={""} sx={{
             backgroundColor: '#ffffff',
