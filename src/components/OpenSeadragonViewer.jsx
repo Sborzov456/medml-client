@@ -4,6 +4,8 @@ import OpenSeaDragon from "openseadragon";
 import '../styles/style.css'
 import {Button} from "@mui/material";
 
+const boxColor = {A: 'green', B: 'blue', C: 'pink', D: 'yellow', E: 'orange'}
+
 const OpenSeadragonViewer = ({image, boxes}) => {
 
     const [viewer, setViewer] = useState( null);
@@ -36,18 +38,15 @@ const OpenSeadragonViewer = ({image, boxes}) => {
     }
 
     const handleNewOverlay = () => {
-        // for (let i = viewer.overlays.length; i === 0; i--){
-        //     viewer.removeOverlay(viewer.overlays[i].id);
-        // }
         if(viewer){
             viewer.clearOverlays()
             const boxCategory = boxes.category
             boxes.boxes.forEach((box, index) => {
                     const elt = document.createElement("div");
-                    elt.id = "category " + boxCategory + index;
+                    elt.id = "category " + boxCategory + '_' + index;
                     elt.className = "highlight";
                     elt.style.border = 'solid'
-                    elt.style.borderColor = 'green'
+                    elt.style.borderColor = boxColor[boxCategory]
                     elt.style.position = 'static'
                     elt.style.width = box.w +'px'
                     elt.style.height = box.h+'px'

@@ -91,8 +91,8 @@ const categories = [
             {
                 x: 0.7,
                 y: 0.2,
-                w: 500,
-                h: 500,
+                w: 170,
+                h: 150,
             },
             {
                 x: 0.3,
@@ -109,11 +109,11 @@ const categories = [
         ]
     },
     {
-        category: 'D',
+        category: 'E',
         boxes: [
             {
                 x: 0.4,
-                y: 0.9,
+                y: 0.4,
                 w: 100,
                 h: 100,
             },
@@ -158,12 +158,12 @@ const TabsComponent = (props) => {
             variant="scrollable"
             scrollButtons={false}
             TabIndicatorProps={{sx: {backgroundColor: '#ffffff'}}}
-            aria-label="scrollable prevent tabs example" sx={{'& button:active': {color: '#4fb3ea'}, '& button':{textTransform: 'none'}, '& button:focus': {color: '#4fb3ea'}, '& button:hover': {color: '#4fb3ea'}, '& button.Mui-selected': {color: '#4fb3ea', boxShadow: '0 10px 10px rgba(50, 50, 93, 0.3)', borderTopRightRadius: 30, borderTopLeftRadius: value !== 0? 30:0}}}>
+            aria-label="scrollable prevent tabs example" sx={{width: '1000px','& button:active': {color: '#4fb3ea'}, '& button':{textTransform: 'none'}, '& button:focus': {color: '#4fb3ea'}, '& button:hover': {color: '#4fb3ea'}, '& button.Mui-selected': {color: '#4fb3ea', boxShadow: '0 10px 10px rgba(50, 50, 93, 0.3)', borderTopRightRadius: 30, borderTopLeftRadius: value !== 0? 30:0}}}>
             <Tab label="Адекватность материала" sx={{fontWeight: 'lighter'}}/>
             <Tab label="Клеточность" sx={{fontWeight: 'lighter'}}/>
             <Tab label="Лимфоцитарная инфильтрация скоплений тиреоцитов" sx={{fontWeight: 'lighter'}}/>
             <Tab label="Онкоциты" sx={{fontWeight: 'lighter'}}/>
-            {/*<Tab label="Тиреоциты" sx={{fontWeight: 'lighter'}}/>*/}
+            <Tab label="Тиреоциты" sx={{fontWeight: 'lighter'}}/>
             </Tabs>
             <OpenSeadragonViewer image={image} boxes={boxes}/>
             <UploadImage sendImage={getImage}></UploadImage>
