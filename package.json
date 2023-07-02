@@ -18,6 +18,8 @@
     "@mui/x-date-pickers": "^5.0.4",
     "@react-pdf/renderer": "^3.1.6",
     "@reactivers/use-auth": "^1.0.2",
+    "@recogito/annotorious": "^2.7.10",
+    "@recogito/annotorious-openseadragon": "^2.4.2",
     "@rgba-image/png": "^0.1.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -32,8 +34,6 @@
     "moment": "^2.29.4",
     "mui-image": "^1.0.7",
     "open-slide": "^0.2.0",
-    "openseadragon": "^4.0.0",
-    "openseadragon-react-viewer": "^3.6.0",
     "react": "^18.2.0",
     "react-data-grid": "^7.0.0-beta.20",
     "react-data-table-component": "^7.5.3",
@@ -41,10 +41,12 @@
     "react-infinite-scroll-component": "^6.1.0",
     "react-konva": "^18.2.3",
     "react-layered-image": "^2.0.9",
+    "react-redux": "^8.1.1",
     "react-router-dom": "^6.4.1",
     "react-scripts": "^5.0.1",
     "react-tabs": "^6.0.0",
     "react-tabs-with-components": "^1.0.1",
+    "redux": "^4.2.1",
     "run": "^1.4.0",
     "sass": "^1.55.0",
     "styled": "^1.0.0",
@@ -83,6 +85,7 @@
   },
   "devDependencies": {
     "@iconify/react": "^4.0.0",
+    "openseadragon": "^2.4.2",
     "react-scripts": "latest"
   }
 }

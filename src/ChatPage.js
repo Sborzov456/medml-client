@@ -56,7 +56,7 @@ const MyGrid = (props) => {
     useEffect(() => {
         const tmpAr = new Set([])
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(props.url + "/api/v2/inner_mail/notifications/all/" + localStorage.getItem('id') + "/?status=0").then((response) => {
+        axios.get(props.url + "/api/v3/inner_mail/notifications/all/" + localStorage.getItem('id') + "/?status=0").then((response) => {
             for (let cur of response.data.results) {
                 tmpAr.add(cur.mail.id)
             }
@@ -68,7 +68,7 @@ const MyGrid = (props) => {
         const tmpAr = []
         const unread=[]
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(props.url + "/api/v2/inner_mail/notifications/group/"+props.number+'/?limit=5').then((response) => {
+        axios.get(props.url + "/api/v3/inner_mail/notifications/group/"+props.number+'/?limit=5').then((response) => {
             setNext(response.data.next)
             for (let cur of response.data.results) {
                 if (cur.notification_author.id === parseInt(localStorage.getItem('id'))) {
@@ -91,7 +91,7 @@ const MyGrid = (props) => {
             formData.mail = unread
             formData.user = parseInt(localStorage.getItem('id'))
             if(unread.length !== 0){
-            axios.post(props.url + "/api/v2/inner_mail/notifications/mark/viewed/", formData).then(() => {})
+            axios.post(props.url + "/api/v3/inner_mail/notifications/mark/viewed/", formData).then(() => {})
         }
         })
 
@@ -109,12 +109,12 @@ const MyGrid = (props) => {
             const formData = new FormData();
             formData.append("msg", massage);
             formData.append("nodule_type", tiradsType.toString());
-            axios.post(props.url+"/api/v2/inner_mail/mail/create/expert/", formData).then((response) => {
+            axios.post(props.url+"/api/v3/inner_mail/mail/create/expert/", formData).then((response) => {
                 const formData = new FormData();
                 formData.append("notification_group", props.number);
                 formData.append("notification_author", localStorage.getItem('id'));
                 formData.append("details", response.data.id);
-                axios.post(props.url+"/api/v2/inner_mail/notifications/reply/", formData).then(() => {
+                axios.post(props.url+"/api/v3/inner_mail/notifications/reply/", formData).then(() => {
                     setReload(!reload)
                     setMassage("")
                 })
@@ -123,12 +123,12 @@ const MyGrid = (props) => {
         else{
             const formData = new FormData();
             formData.append("msg", massage);
-            axios.post(props.url+"/api/v2/inner_mail/mail/create/simple/", formData).then((response) => {
+            axios.post(props.url+"/api/v3/inner_mail/mail/create/simple/", formData).then((response) => {
                 const formData = new FormData();
                 formData.append("notification_group",props.number);
                 formData.append("notification_author", localStorage.getItem('id'));
                 formData.append("details", response.data.id);
-                axios.post(props.url+"/api/v2/inner_mail/notifications/reply/", formData).then(() => {
+                axios.post(props.url+"/api/v3/inner_mail/notifications/reply/", formData).then(() => {
                     setReload(!reload)
                     setMassage("")
                 })
@@ -171,7 +171,7 @@ const MyGrid = (props) => {
             formData.mail = unread
             formData.user = parseInt(localStorage.getItem('id'))
             if(unread.length !== 0) {
-                axios.post(props.url + "/api/v2/inner_mail/notifications/mark/viewed/", formData).then(() => {})
+                axios.post(props.url + "/api/v3/inner_mail/notifications/mark/viewed/", formData).then(() => {})
             }
         })
     }
@@ -320,7 +320,7 @@ class ChatPage extends React.Component {
     handleStart = () => {
         let info={pat: 0, members: []}
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(this.props.url + "/api/v2/inner_mail/notifications/groups/").then((response) => {
+        axios.get(this.props.url + "/api/v3/inner_mail/notifications/groups/").then((response) => {
             for (let cur of response.data.results) {
                 if (cur.id === parseInt(this.props.props)) {
                     info.pat = cur.uzi_patient_card
@@ -334,7 +334,7 @@ class ChatPage extends React.Component {
                 patientId: ret.pat,
             })
             const tmpAr = []
-            axios.get(this.props.url + "/api/v2/patient/shots/" + ret.pat).then((response) => {
+            axios.get(this.props.url + "/api/v3/patient/shots/" + ret.pat).then((response) => {
                 this.setState({
                     patientLastName: response.data.results.patient.last_name,
                     patientFirstName: response.data.results.patient.first_name,
@@ -360,13 +360,13 @@ class ChatPage extends React.Component {
     handleMembers = () => {
         const urls = []
         for (let id of this.state.members){
-            urls.push(this.props.url + '/api/v2/med_worker/update/'+ id)
+            urls.push(this.props.url + '/api/v3/med_worker/update/'+ id)
         }
         axios.all(urls.map(url => axios.get(url)))
             .then((cur3) => this.setState({
                 members: cur3
             }));
-        axios.get(this.props.url + '/api/v2/med_worker/update/'+ localStorage.getItem('id')).then((response) => {
+        axios.get(this.props.url + '/api/v3/med_worker/update/'+ localStorage.getItem('id')).then((response) => {
             this.setState({
                 is_expert: response.data.is_remote_worker
             })

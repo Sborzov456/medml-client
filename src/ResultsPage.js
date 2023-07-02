@@ -315,7 +315,7 @@ class ResultsPage extends React.Component {
     }
     handleDoctor = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(this.props.url+ '/api/v2/med_worker/update/' + localStorage.getItem('id')).then((response) => {
+        axios.get(this.props.url+ '/api/v3/med_worker/update/' + localStorage.getItem('id')).then((response) => {
             console.log(response.data)
             this.setState({
                 doctorName: response.data.last_name+" "+ response.data.first_name+" "+response.data.fathers_name,
@@ -328,7 +328,7 @@ class ResultsPage extends React.Component {
     };
     handleStartPage = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(this.props.url + "/api/v2/uzi/" + this.props.props + "/?format=json")
+        axios.get(this.props.url + "/api/v3/uzi/" + this.props.props + "/?format=json")
             .then((response) => {
                 this.setState({startData: response.data.info})
                 console.log(response.data)
@@ -359,7 +359,7 @@ class ResultsPage extends React.Component {
                     }
                 }
                 axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-                axios.get(this.props.url + "/api/v2/uzi/devices/?format=json")
+                axios.get(this.props.url + "/api/v3/uzi/devices/?format=json")
                     .then((res) => {
                         this.setState({devices: res.data.results})
                         const tmp = res.data.results
@@ -414,7 +414,7 @@ class ResultsPage extends React.Component {
     handleExport = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         console.log(this.state)
-        axios.get(this.props.url + "/api/v2/uzi/" + this.props.props + "/?format=json").then((response) => {
+        axios.get(this.props.url + "/api/v3/uzi/" + this.props.props + "/?format=json").then((response) => {
             console.log(response.data)
             const formData = {patient_card: {}, details: {}}
             formData.id = response.data.images.box.image_group
@@ -441,7 +441,7 @@ class ResultsPage extends React.Component {
             formData.details.structure = this.state.structure
             formData.details.additional_data = this.state.additional_data
             console.log(formData)
-            axios.put(this.props.url + "/api/v2/uzi/" + this.props.props + '/update/', formData).then(() => {
+            axios.put(this.props.url + "/api/v3/uzi/" + this.props.props + '/update/', formData).then(() => {
                 this.setState({
                     openSuccess: true,
                 })

@@ -41,7 +41,7 @@ class MaskPage extends React.Component {
     }
     handleStartPage = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(this.props.url+"/api/v2/uzi/"+this.props.props+"/?format=json")
+        axios.get(this.props.url+"/api/v3/uzi/"+this.props.props+"/?format=json")
             .then((response) => {
                 this.setState({ startData: response.data.info})
                 this.setState({

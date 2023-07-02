@@ -93,7 +93,7 @@ const ConvasComponent = (props) => {
             let token = localStorage.getItem('access')
             console.log(token)
             axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-            axios.put(props.url+"/api/v2/uzi/update/seg_group/" + props.number, formData,).then(() => setSuc(true)).catch(() => {
+            axios.put(props.url+"/api/v3/uzi/update/seg_group/" + props.number, formData,).then(() => setSuc(true)).catch(() => {
                 setEr(true)
                 imageRef.current.cache()
                 imageRef.current.filters([Konva.Filters.Brighten]);

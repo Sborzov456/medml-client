@@ -81,11 +81,11 @@ function App(props) {
         } else {
             const formData = new FormData()
             formData.append('refresh', localStorage.getItem('refresh'))
-            axios.post(props.url + "/api/v2/auth/token/refresh/?format=json", formData).then((response) => {
+            axios.post(props.url + "/api/v3/auth/token/refresh/?format=json", formData).then((response) => {
                 localStorage.setItem('access', response.data.access.toString())
                 setSignIn(false)
                 localStorage.setItem('id', jwt_decode(response.data.access.toString()).user_id)
-                axios.get(props.url+'/api/v2/inner_mail/notifications/all/'+ localStorage.getItem('id')+'/?status=0').then((response) => {
+                axios.get(props.url+'/api/v3/inner_mail/notifications/all/'+ localStorage.getItem('id')+'/?status=0').then((response) => {
                     setMesAm(response.data.count)
                 })
             }).catch(() => {

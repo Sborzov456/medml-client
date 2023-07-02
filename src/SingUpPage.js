@@ -150,7 +150,7 @@ class SignUpPage extends React.Component {
         formData.append("med_organization", this.state.hospital);
         formData.append("password1", this.state.password1);
         formData.append("password2", this.state.password2);
-        axios.post(this.props.url + "/api/v2/auth/register/", formData)
+        axios.post(this.props.url + "/api/v3/auth/register/", formData)
             .then(() => this.setState({
                 openSuccess: true
             }))

@@ -102,7 +102,7 @@ class SignInPage extends React.Component {
         const formData = new FormData();
         formData.append("email", this.state.email);
         formData.append("password", this.state.password);
-        axios.post(this.props.url + "/api/v2/auth/login/", formData)
+        axios.post(this.props.url + "/api/v3/auth/login/", formData)
             .then((response) => {
                 this.setState({
                     openSuccess: true,

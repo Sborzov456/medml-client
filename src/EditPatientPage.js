@@ -91,7 +91,7 @@ class EditPatientPage extends React.Component {
     }
     handleStartPage = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(this.props.url + '/api/v2/patient/update/'+this.props.props +'/?format=json', ).then((response)=>{
+        axios.get(this.props.url + '/api/v3/patient/update/'+this.props.props +'/?format=json', ).then((response)=>{
             this.setState({
                 lastName: response.data.patient.last_name,
                 lastNameEntered: true,
@@ -182,7 +182,7 @@ class EditPatientPage extends React.Component {
         formData.append("card.has_nodules", this.state.ill ? "T" : "F");
         formData.append("card.diagnosis", this.state.diagnosis);
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.put(this.props.url + "/api/v2/patient/update/"+this.props.props+'/', formData, )
+        axios.put(this.props.url + "/api/v3/patient/update/"+this.props.props+'/', formData, )
             .then(() => this.setState({
                 openSuccess: true
             }))

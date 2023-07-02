@@ -161,7 +161,7 @@ class NewPatientPage extends React.Component {
         formData.append("card.has_nodules", this.state.ill ? "T" : "F");
         formData.append("card.diagnosis", this.state.diagnosis);
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.post(this.props.url + "/api/v2/patient/create/"+localStorage.getItem('id'), formData)
+        axios.post(this.props.url + "/api/v3/patient/create/"+localStorage.getItem('id'), formData)
             .then(() => this.setState({
                 openSuccess: true
             }))

@@ -49,7 +49,7 @@ const MyGrid = (props) => {
     useEffect(() => {
         const tmpAr = []
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(props.url + "/api/v2/med_worker/list/").then((response) => {
+        axios.get(props.url + "/api/v3/med_worker/list/").then((response) => {
             for (let cur of response.data.results){
                 tmpAr.push(createData(cur.id, cur.last_name + " " + cur.first_name + " " + cur.fathers_name, cur.med_organization + ", " + cur.job, cur.expert_details))
             }
@@ -125,7 +125,7 @@ class ExpertPage extends React.Component {
 
     handleStartPage = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(this.props.url+"/api/v2/uzi/" + this.props.props + "/?format=json")
+        axios.get(this.props.url+"/api/v3/uzi/" + this.props.props + "/?format=json")
             .then((response) => {
                 this.setState({
                     patientLastName: response.data.info.patient.last_name,
@@ -149,7 +149,7 @@ class ExpertPage extends React.Component {
             formData.append("mail.notification_group.members", this.state.docAr.toString());
             formData.append("mail.notification_group.title", this.state.title);
             formData.append("mail.notification_group.uzi_patient_card", this.state.patientId);
-            axios.post(this.props.url+"/api/v2/inner_mail/notifications/create/", formData).then(() => {
+            axios.post(this.props.url+"/api/v3/inner_mail/notifications/create/", formData).then(() => {
             })
         this.handleResponse()
 

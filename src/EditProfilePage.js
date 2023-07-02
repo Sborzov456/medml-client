@@ -85,7 +85,7 @@ class EditProfilePage extends React.Component {
     }
     handleStartPage = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(this.props.url + '/api/v2/med_worker/update/'+localStorage.getItem('id'), ).then((response)=>{
+        axios.get(this.props.url + '/api/v3/med_worker/update/'+localStorage.getItem('id'), ).then((response)=>{
             this.setState({
                 lastName: response.data.last_name,
                 lastNameEntered: true,
@@ -155,7 +155,7 @@ class EditProfilePage extends React.Component {
         formData.append("expert_details", this.state.expertDetails);
         formData.append("med_organization", this.state.medOrganization);
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.put(this.props.url + "/api/v2/med_worker/update/"+localStorage.getItem('id'), formData, )
+        axios.put(this.props.url + "/api/v3/med_worker/update/"+localStorage.getItem('id'), formData, )
             .then(() => this.setState({
                 openSuccess: true
             }))

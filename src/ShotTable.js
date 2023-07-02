@@ -72,7 +72,7 @@ const MyGrid = (props) => {
         storedNames.reverse()
         var tmpAr = [];
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(props.url + "/api/v2/patient/shots/"+ props.number + "/?format=json").then((response) => {
+        axios.get(props.url + "/api/v3/patient/shots/"+ props.number + "/?format=json").then((response) => {
             console.log(response.data.results)
             for (let cur of response.data.results.shots) {
                 if(cur.id !== null) {
@@ -118,7 +118,7 @@ const MyGrid = (props) => {
         }
         handlePatient = () => {
             axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-            axios.get(this.props.url + "/api/v2/patient/update/"+ this.props.props + "?format=json").then((response) => {
+            axios.get(this.props.url + "/api/v3/patient/update/"+ this.props.props + "?format=json").then((response) => {
                 console.log(response)
                 this.setState({
                     lastName: response.data.patient.last_name,

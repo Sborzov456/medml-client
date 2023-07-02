@@ -65,7 +65,7 @@ const MyGrid = (props) => {
     useEffect(() => {(async () => {
         const tmpAr = []
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(props.url + "/api/v2/inner_mail/notifications/all/" + localStorage.getItem('id') + "/?status=0").then((response) => {
+        axios.get(props.url + "/api/v3/inner_mail/notifications/all/" + localStorage.getItem('id') + "/?status=0").then((response) => {
             console.log(response)
             for (let cur of response.data.results) {
                 if (!groupsUnread.has(cur.mail.notification_group.id)) {
@@ -74,7 +74,7 @@ const MyGrid = (props) => {
             }
             return groupsUnread
         }).then((ret) => {
-            axios.get(props.url + "/api/v2/inner_mail/notifications/groups/?limit=5").then((response) => {
+            axios.get(props.url + "/api/v3/inner_mail/notifications/groups/?limit=5").then((response) => {
                 setNext(response.data.next)
                 setPrevious(response.data.previous)
                 for (let cur of response.data.results) {
@@ -101,7 +101,7 @@ const MyGrid = (props) => {
         }
         const urls = []
         for (let id of members) {
-            urls.push(props.url + '/api/v2/med_worker/update/' + id)
+            urls.push(props.url + '/api/v3/med_worker/update/' + id)
         }
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         axios.all(urls.map(url => axios.get(url)))
@@ -150,7 +150,7 @@ const MyGrid = (props) => {
     const handlePrev = () => {
         const tmpAr = []
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(props.url + "/api/v2/inner_mail/notifications/all/" + localStorage.getItem('id') + "/?status=0").then((response) => {
+        axios.get(props.url + "/api/v3/inner_mail/notifications/all/" + localStorage.getItem('id') + "/?status=0").then((response) => {
             for (let cur of response.data.results) {
                 if (!groupsUnread.has(cur.mail.id)) {
                     groupsUnread.add(cur.mail.id)
@@ -181,7 +181,7 @@ const MyGrid = (props) => {
     const handleNext = () => {
         const tmpAr = []
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(props.url + "/api/v2/inner_mail/notifications/all/" + localStorage.getItem('id') + "/?status=0").then((response) => {
+        axios.get(props.url + "/api/v3/inner_mail/notifications/all/" + localStorage.getItem('id') + "/?status=0").then((response) => {
             for (let cur of response.data.results) {
                 if (!groupsUnread.has(cur.mail.id)) {
                     groupsUnread.add(cur.mail.id)

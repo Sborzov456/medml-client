@@ -252,7 +252,7 @@ const Gallery = (props) => {
         if (link2 === "" || link2 === null || link3 === "" || link3 === null) {
             const interval = setInterval(() => {
                 axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-                axios.get(props.url + "/api/v2/uzi/" + props.props + "/?format=json").then(
+                axios.get(props.url + "/api/v3/uzi/" + props.props + "/?format=json").then(
                     (response) => {
                         setLink2(response.data.images.segmentation.image !== null && response.data.images.segmentation.image !== "" ? response.data.images.segmentation.image : "")
                         setLink3(response.data.images.box.image !== null && response.data.images.box.image !== "" ? response.data.images.box.image : "")

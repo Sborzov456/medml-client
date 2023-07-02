@@ -2,84 +2,43 @@ import React from 'react';
 import { useEffect, useState } from "react";
 import OpenSeaDragon from "openseadragon";
 import '../styles/style.css'
-import {Button} from "@mui/material";
+import { useDispatch, useSelector } from 'react-redux';
+const OpenSeadragonViewer = () => {
 
-const boxColor = {A: 'green', B: 'blue', C: 'pink', D: 'yellow', E: 'orange'}
+    const [viewer, setViewer] = useState(null);
+    const image = useSelector(state => state.image)
+    const dispatch = useDispatch()
 
-const OpenSeadragonViewer = ({image, boxes}) => {
 
-    const [viewer, setViewer] = useState( null);
-
-    const initOpenseadragon = () => {
+    const initializeViewer = () => {
         viewer && viewer.destroy()
-        setViewer(
-            OpenSeaDragon({
+        const viewerState = OpenSeaDragon({
                 id: "openseadragon",
-                prefixUrl: "http://localhost:3000/home/openseadragon-images/",
-                tileSources: `http://localhost:8000/${image}.dzi`,
-                zoomPerScroll: 1.2,
+                prefixUrl: "openseadragon-images/",
+                tileSources: `http://localhost:8005/${image}.dzi`,
                 showNavigator: true,
+                animationTime: 0.5,
+                blendTime: 0.1,
+                constrainDuringPan: true,
+                maxZoomPixelRatio: 2,
+                minZoomLevel: 1,
+                visibilityRatio: 1,
+                zoomPerScroll: 1.2
             })
-        );
-    };
+        dispatch({type: 'SET_VIEWER', payload: viewerState})
+        setViewer(viewerState)
+        return viewerState
+    }
 
     useEffect(() => {
-        console.log(image)
-        if (image !== null){
-            initOpenseadragon()
+        if (image) {
+            console.log('INIT VIEWER', image, typeof(image))
+            initializeViewer()
         }
     },[image]);
-    var overlay = false;
-    const handleOverlay = () => {
-        setTimeout(() => {
-            handleNewOverlay()
-        }, 0)
-
-    }
-
-    const handleNewOverlay = () => {
-        if(viewer){
-            viewer.clearOverlays()
-            const boxCategory = boxes.category
-            boxes.boxes.forEach((box, index) => {
-                    const elt = document.createElement("div");
-                    elt.id = "category " + boxCategory + '_' + index;
-                    elt.className = "highlight";
-                    elt.style.border = 'solid'
-                    elt.style.borderColor = boxColor[boxCategory]
-                    elt.style.position = 'static'
-                    elt.style.width = box.w +'px'
-                    elt.style.height = box.h+'px'
-                    viewer.addOverlay({
-                        element: elt,
-                        location: new OpenSeaDragon.Point(box.x, box.y),
-                        checkResize: false
-                    });
-                }
-            )
-        }
-
-    }
-
-    useEffect(() => {
-        if (viewer){
-            handleOverlay()
-        }
-    }, [viewer])
-
-    useEffect(() => {
-        if (viewer){
-            handleNewOverlay()
-        }
-    }, [boxes])
-
+    
     return (
-        <div>
-            <div id="openseadragon">
-
-            </div>
-        </div>
-
+        <div id="openseadragon"> </div> 
     );
 }
 

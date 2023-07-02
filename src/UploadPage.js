@@ -20,6 +20,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import CloseIcon from '@mui/icons-material/Close';
+import { connect } from 'react-redux';
 
 
 
@@ -67,17 +68,33 @@ class UploadPage extends React.Component {
     }
 
     handleUploadFile = event => {
-        var imageFile = event.target.files[0];
-        const reader = new FileReader();
-        reader.readAsDataURL(imageFile)
-        reader.addEventListener("load", () => {
-            this.setState({
-                originalImage: reader.result,
-                typeText: imageFile.name,
-                imageFile: event.target.files[0],
-                imageChoosen: true
-            });
-        }, false)
+        // var imageFile = event.target.files[0];
+        // const reader = new FileReader();
+        // reader.readAsDataURL(imageFile)
+        // reader.addEventListener("load", () => {
+        //     this.setState({
+        //         originalImage: reader.result,
+        //         typeText: imageFile.name,
+        //         imageFile: event.target.files[0],
+        //         imageChoosen: true
+        //     });
+        // }, false)
+        console.log('UPLOADING.......')
+        const file = event.target.files[0]
+        const formData = new FormData()
+        formData.append('image_file', file)
+        formData.append('image_file_name', file.name)
+        fetch('http://localhost:8007/api/v1/cytology/upload', {
+            method: 'POST',
+            "Content-Type": "multipart/form-data",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(result => {
+            console.log(result['image_file'])
+            this.props.updateImage(result['image_file_name'])
+            this.props.updateSegments(result['segmentations'])
+        })
     }
     handleChooseDevice = (object, value) => {
         object.preventDefault()
@@ -120,7 +137,7 @@ class UploadPage extends React.Component {
     };
     handlePatientList = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(this.props.url + '/api/v2/med_worker/patients/'+localStorage.getItem('id'))
+        axios.get(this.props.url + '/api/v3/med_worker/patients/'+localStorage.getItem('id'))
             .then((response) => {
                 const tmp = []
                 for (let cur of response.data.results.cards){
@@ -135,7 +152,7 @@ class UploadPage extends React.Component {
     };
     handleDevicesList = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(this.props.url + "/api/v2/uzi/devices/?format=json")
+        axios.get(this.props.url + "/api/v3/uzi/devices/?format=json")
             .then((response) => this.setState({devices: response.data.results}))
     };
 
@@ -148,50 +165,50 @@ class UploadPage extends React.Component {
         formData.append("uzi_device", this.state.uziDevice);
         formData.append("projection_type", this.state.projectionType);
         formData.append("patient_card", this.state.patientCard);
+        this.handleWhat()
+        // formData.append("original_image", this.state.imageFile);
+        // const response = axios.post(this.props.url + "/api/v3/uzi/create/", formData).catch( () => {
+        //         this.setState({
+        //             openError: true,
+        //             loading: false
+        //         })
+        // }
+        // )
+        // response.then((response) => {
+        //     this.setState({
+        //         resultid: response.data.image_group_id,
+        //     })
 
-        formData.append("original_image", this.state.imageFile);
-        const response = axios.post(this.props.url + "/api/v2/uzi/create/", formData).catch( () => {
-                this.setState({
-                    openError: true,
-                    loading: false
-                })
-        }
-    )
-        response.then((response) => {
-            this.setState({
-                resultid: response.data.image_group_id,
-            })
+        //     var storedNames = JSON.parse(localStorage.getItem("names"));
+        //     if (storedNames === null) {
+        //         storedNames = []
+        //     }
+        //     for (let tmp of storedNames) {
+        //         if (tmp === response.data.image_group_id) {
+        //             return;
+        //         }
+        //     }
+        //     if (response.data.image_group_id !== 0){
+        //         storedNames.push(response.data.image_group_id)
+        //     console.log(storedNames)
+        //     localStorage.setItem("names", JSON.stringify(storedNames))
+        //     this.handleWhat();
+        //         this.setState({
+        //             uziDevice: null,
+        //             projectionType: null,
+        //             patientCard: null,
+        //             imageFile: null,
+        //             typeText: "Выберите файл в формате .png или .tiff",
+        //             deviceName: {id: 0, name: ""},
+        //             patient:{id:0, last_name: "", first_name: "", fathers_name:"", personal_policy: ""},
+        //             deviceChosen: false,
+        //             projectionChosen: false,
+        //             patientChosen: false,
+        //             imageChoosen: false
+        //         })
+        // }
 
-            var storedNames = JSON.parse(localStorage.getItem("names"));
-            if (storedNames === null) {
-                storedNames = []
-            }
-            for (let tmp of storedNames) {
-                if (tmp === response.data.image_group_id) {
-                    return;
-                }
-            }
-            if (response.data.image_group_id !== 0){
-                storedNames.push(response.data.image_group_id)
-            console.log(storedNames)
-            localStorage.setItem("names", JSON.stringify(storedNames))
-            this.handleWhat();
-                this.setState({
-                    uziDevice: null,
-                    projectionType: null,
-                    patientCard: null,
-                    imageFile: null,
-                    typeText: "Выберите файл в формате .png или .tiff",
-                    deviceName: {id: 0, name: ""},
-                    patient:{id:0, last_name: "", first_name: "", fathers_name:"", personal_policy: ""},
-                    deviceChosen: false,
-                    projectionChosen: false,
-                    patientChosen: false,
-                    imageChoosen: false
-                })
-        }
-
-        })
+        // })
     };
 
     handleWhat = () => {
@@ -454,7 +471,8 @@ class UploadPage extends React.Component {
                                             <Button sx={{
                                                 color: '#4fb3ea',
                                                 '&:focus': {backgroundColor: '#4fb3ea'},
-                                            }} onClick={this.handleResult} variant={'outlined'} disabled={!this.state.deviceChosen||!this.state.patientChosen||!this.state.projectionChosen||!this.state.imageChoosen}>
+                                            }} onClick={this.handleResult} variant={'outlined'} >
+                                                {/* disabled={!this.state.deviceChosen||!this.state.patientChosen||!this.state.projectionChosen||!this.state.imageChoosen} */}
                                                 Провести диагностику
                                             </Button>
                                             <Box component={""} sx={{width: 10}}></Box>
@@ -492,4 +510,12 @@ class UploadPage extends React.Component {
     }
 }
 
-export default UploadPage;
+const mapDispatchToProps = (dispatch) => {
+    console.log('DISPATCHIIIIING')
+    return {
+        updateImage: (imageFileName) => dispatch({type: 'UPDATE_IMAGE', payload: imageFileName}),
+        updateSegments: (segments) => dispatch({type: 'UPDATE_SEGMENTS', payload: segments})
+    }
+}
+
+export default connect(null, mapDispatchToProps)(UploadPage);

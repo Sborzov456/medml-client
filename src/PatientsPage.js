@@ -125,7 +125,7 @@ const MyGrid = (props) => {
         storedNames.reverse()
         var tmpAr = [];
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(props.url + '/api/v2/med_worker/patients/'+localStorage.getItem('id')).then((response) => {
+        axios.get(props.url + '/api/v3/med_worker/patients/'+localStorage.getItem('id')).then((response) => {
             console.log(response.data.results)
             for (let cur of response.data.results.cards) {
                 tmpAr.push(createData(cur.id, cur.patient.last_name + " " + cur.patient.first_name + " " + cur.patient.fathers_name, cur.patient.personal_policy, cur.patient.email,  new Date(Date.parse(cur.acceptance_datetime)), cur.has_nodules === "T", cur.patient.is_active))
@@ -162,7 +162,7 @@ class PatientTable extends React.Component {
     }
     handleInformation = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(this.props.url + '/api/v2/med_worker/patients/'+localStorage.getItem('id'))
+        axios.get(this.props.url + '/api/v3/med_worker/patients/'+localStorage.getItem('id'))
             .then((response) => {
                     this.setState({
                         lastName: response.data.results.med_worker.last_name,
@@ -172,7 +172,7 @@ class PatientTable extends React.Component {
                         is_remote_worker: response.data.results.med_worker.is_remote_worker,
                         job: response.data.results.med_worker.job,
                     })
-                axios.get(this.props.url+'/api/v2/inner_mail/notifications/all/'+ localStorage.getItem('id')+'/?status=0').then((response) => {
+                axios.get(this.props.url+'/api/v3/inner_mail/notifications/all/'+ localStorage.getItem('id')+'/?status=0').then((response) => {
                     this.setState({
                         mesAm: response.data.count
                     })
