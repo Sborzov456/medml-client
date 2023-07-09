@@ -13,9 +13,8 @@ const Drawer = (props) => {
 
     const drawSegmentations = (annotator) => {
       
-        const imageURL = `api/v1/cytology/upload/${image}`
+        const imageURL = `api/v4/cytology/upload/${image}`
         const annotations = annotationCreator(segments, props.type, imageURL)
-        console.log('DRAW SEGMENTS', annotations)
         annotator.setAnnotations(annotations)
     }
 

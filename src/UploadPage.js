@@ -84,16 +84,17 @@ class UploadPage extends React.Component {
         const formData = new FormData()
         formData.append('image_file', file)
         formData.append('image_file_name', file.name)
-        fetch('http://localhost:8007/api/v1/cytology/upload', {
+        fetch('http://localhost:49118/api/v4/cytology/upload/', {
             method: 'POST',
             "Content-Type": "multipart/form-data",
             body: formData
         })
         .then(response => response.json())
         .then(result => {
-            console.log(result['image_file'])
+            console.log('RESULT: ', result)
             this.props.updateImage(result['image_file_name'])
             this.props.updateSegments(result['segmentations'])
+            this.setState({...this.state, resultid: result.id})
         })
     }
     handleChooseDevice = (object, value) => {
@@ -476,6 +477,7 @@ class UploadPage extends React.Component {
                                                 Провести диагностику
                                             </Button>
                                             <Box component={""} sx={{width: 10}}></Box>
+                                            {/* TODO: Переходить на страницу по номеру изображения */}
                                             <Button component={Link} to={`/result/${this.state.resultid}`} sx={{
                                                 color: '#4fb3ea',
                                                 '&:focus': {backgroundColor: '#4fb3ea'},
@@ -510,7 +512,7 @@ class UploadPage extends React.Component {
     }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
     console.log('DISPATCHIIIIING')
     return {
         updateImage: (imageFileName) => dispatch({type: 'UPDATE_IMAGE', payload: imageFileName}),
@@ -518,4 +520,10 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(UploadPage);
+const mapStateToProps = state => {
+    return {
+        image_id: state.image_id
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(UploadPage);

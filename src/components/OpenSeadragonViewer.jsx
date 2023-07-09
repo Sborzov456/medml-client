@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import OpenSeaDragon from "openseadragon";
 import '../styles/style.css'
 import { useDispatch, useSelector } from 'react-redux';
+
+
 const OpenSeadragonViewer = () => {
 
     const [viewer, setViewer] = useState(null);
@@ -15,7 +17,7 @@ const OpenSeadragonViewer = () => {
         const viewerState = OpenSeaDragon({
                 id: "openseadragon",
                 prefixUrl: "openseadragon-images/",
-                tileSources: `http://localhost:8005/${image}.dzi`,
+                tileSources: `http://localhost:8005/api/v1/bid/${image}.dzi`,
                 showNavigator: true,
                 animationTime: 0.5,
                 blendTime: 0.1,
