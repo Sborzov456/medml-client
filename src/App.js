@@ -30,6 +30,8 @@ import EditProfileInterface from "./EditProfilePage";
 import NotificationsPageInterface from "./NotificationsPage";
 import ChatPageInterface from "./ChatPage";
 
+import CorrectionPage from "./pages/CorrectionPage";
+
 function NoMatch() {
     let location = document.location.href;
     return (
@@ -168,6 +170,13 @@ function App(props) {
         return <PatientsPage url={props.url}/>;
     };
 
+    const Correction = (showSignIn, props) => {
+        if (showSignIn) {
+            return <Navigate to="/sign_in" replace />;
+        }
+        return <CorrectionPage/>
+    }
+
     return (
         <div>
                 <div>
@@ -231,6 +240,8 @@ function App(props) {
                         <Route exact path="inbox" element={ NotifPage(showSignIn, props)}/>
                         <Route exact path="inbox/msg/:number" element={ ChPage(showSignIn, props)}/>
                         <Route exact path="result/:number/expert" element={ ExpertPage(showSignIn, props)}/>
+                        {/* Страница коррекции  */}
+                        <Route exact path="result/:number/correction" element={ Correction(showSignIn, props) }/>
                         <Route path="home" element={Home(showSignIn, props)}/>
                         <Route exact path={'*'} element={<NoMatch />}/>
                     </Routes>

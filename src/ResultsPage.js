@@ -29,7 +29,7 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 
 import axios from "axios";
-import {Link, useParams} from "react-router-dom";
+import {Link, useParams, useLocation } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
@@ -38,6 +38,8 @@ import DoneSharpIcon from "@mui/icons-material/DoneSharp";
 import Typography from "@mui/material/Typography";
 import {Document, Font, Page, PDFDownloadLink, StyleSheet, Text, View} from '@react-pdf/renderer';
 import TabsComponent from "./TabsComponent";
+
+import { connect } from 'react-redux';
 
 const styles = StyleSheet.create({
     page: {
@@ -243,7 +245,7 @@ const ResultsPageInterface = (props) => {
     const {number} = useParams();
     return (
 
-        <ResultsPage props={number} url={props.url}></ResultsPage>
+        <ResultsPageRedux props={number} url={props.url}></ResultsPageRedux>
 
     )
 }
@@ -327,6 +329,7 @@ class ResultsPage extends React.Component {
         this.handleExport()
     };
     handleStartPage = () => {
+        console.log('Handle Start Page')
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         axios.get(this.props.url + "/api/v3/uzi/" + this.props.props + "/?format=json")
             .then((response) => {
@@ -359,19 +362,25 @@ class ResultsPage extends React.Component {
                     }
                 }
                 axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-                axios.get(this.props.url + "/api/v3/uzi/devices/?format=json")
-                    .then((res) => {
-                        this.setState({devices: res.data.results})
-                        const tmp = res.data.results
-                        for (let cur of tmp) {
-                            if (cur.name === response.data.info.uzi_device_name) {
-                                this.setState({
-                                    uziDevice: cur
-                                })
-                                console.log(cur)
-                            }
-                        }
-                    })
+                // axios.get(this.props.url + "/api/v3/uzi/devices/?format=json")
+                //     .then((res) => {
+                //         this.setState({devices: res.data.results})
+                //         const tmp = res.data.results
+                //         for (let cur of tmp) {
+                //             if (cur.name === response.data.info.uzi_device_name) {
+                //                 this.setState({
+                //                     uziDevice: cur
+                //                 })
+                //                 console.log(cur)
+                //             }
+                //         }
+                //     })
+                
+                axios.get(`${this.props.url}/api/v4/cytology/segmentation?image_id=${this.props.props}&type=all`)
+                .then(response => {
+                     this.props.updateImage(response.data.image)
+                     this.props.updateSegments(response.data.segmentations)
+                })
                 this.setState({
                     uziDate: response.data.info.acceptance_datetime,
                     predictedTypes: tmpTirads,
@@ -408,6 +417,7 @@ class ResultsPage extends React.Component {
                     volume: !isNaN(0.479 * response.data.info.details.left_depth * response.data.info.details.left_length * response.data.info.details.left_width + 0.479 * response.data.info.details.right_depth * response.data.info.details.right_length * response.data.info.details.right_width)? (0.479 * response.data.info.details.left_depth * response.data.info.details.left_length * response.data.info.details.left_width + 0.479 * response.data.info.details.right_depth * response.data.info.details.right_length * response.data.info.details.right_width):0,
                 })
             })
+
 
     }
 
@@ -1234,6 +1244,13 @@ class ResultsPage extends React.Component {
                             </Box>
                         </Box>
                     </Grid>
+                    <Button component={Link} to={`/result/${this.props.props}/correction`} sx={{
+                                                color: '#4fb3ea',
+                                                '&:focus': {backgroundColor: '#4fb3ea'},
+
+                                            }} variant={'outlined'} disabled={!this.state.result}>
+                                                Коррекция
+                    </Button>
                 </Box>
 
             </FormControl>
@@ -1241,5 +1258,20 @@ class ResultsPage extends React.Component {
 
     }
 }
+
+const mapDispatchToProps = dispatch => {
+    return {
+        updateImage: (imageFileName) => dispatch({type: 'UPDATE_IMAGE', payload: imageFileName}),
+        updateSegments: (segments) => dispatch({type: 'UPDATE_SEGMENTS', payload: segments})
+    }
+}
+
+const mapStateToProps = state => {
+    return {
+        image_id: state.image_id
+    };
+};
+
+const ResultsPageRedux = connect(mapStateToProps, mapDispatchToProps)(ResultsPage);
 
 export default ResultsPageInterface;

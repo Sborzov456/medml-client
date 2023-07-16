@@ -30,7 +30,6 @@ const Drawer = (props) => {
     }
     useEffect(() => {
         if (viewer) {
-            console.log("INIT ANNO")
             initializeAnnotations(viewer)
         }
     }, [viewer]);
