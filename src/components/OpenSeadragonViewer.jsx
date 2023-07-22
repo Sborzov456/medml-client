@@ -16,7 +16,7 @@ const OpenSeadragonViewer = () => {
         viewer && viewer.destroy()
         const viewerState = OpenSeaDragon({
                 id: "openseadragon",
-                prefixUrl: "openseadragon-images/",
+                prefixUrl: "http://localhost:3000/home/openseadragon-images/",
                 tileSources: `http://localhost:8005/api/v1/bid/${image}.dzi`,
                 showNavigator: true,
                 animationTime: 0.5,

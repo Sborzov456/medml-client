@@ -2,17 +2,16 @@ import React, {useState} from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import OpenSeadragonViewer from "./components/OpenSeadragonViewer";
-import Drawer from './components/Drawer';
 
 const TabsComponent = (props) => {
+    console.log(props.drawerComponent)
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event, newValue) => {
-        console.log('VAAAAALUE', newValue)
         setValue(newValue);
     };
     
-    return(
+    return (
         <div>
             <Tabs
                 value={value}
@@ -28,7 +27,7 @@ const TabsComponent = (props) => {
                 <Tab label="Тиреоциты" sx={{fontWeight: 'lighter'}}/>
             </Tabs>
             <OpenSeadragonViewer/>
-            <Drawer type={value}/>
+            {props.drawerComponent && props.drawerComponent({type: value})}
         </div>
 )
 }

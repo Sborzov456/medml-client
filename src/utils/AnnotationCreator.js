@@ -1,41 +1,43 @@
-const annotationCreator = (segments, type, source) => {
+const annotationCreator = (segments, source) => {
     const annotations = []
-    let id = 0
-    const typedSegments = segments[type]
-    console.log('TYYYYYPE', type)
-    console.log('SEGEEEENTS', typedSegments)
-    for (let polygon of typedSegments.polygons) {
-        const points = polygon.points
-        let HTMLPolygon = '<svg><polygon points=\" '
-        for (let point of points) {
-            HTMLPolygon += point.x + ',' + point.y + ' '
-        }
-        HTMLPolygon += '\"></polygon></svg>'
-        annotations.push({
-            type:"Annotation",
-            body: [
-                {
-                    "type": "TextualBody",
-                    "value": "comment",
-                    "purpose": "commenting"
+    let id = 23
+    let typeIndex = 0
+    for(let segmentation of segments) {
+        annotations.push([]) //создание массива, в который будут помещены все полигоны, принадлежащие к одному типу
+        for (let polygon of segmentation.polygons) {
+            const points = polygon.points
+            let HTMLPolygon = '<svg><polygon points=\" '
+            for (let point of points) {
+                HTMLPolygon += point.x + ',' + point.y + ' '
+            }
+            HTMLPolygon += '\"></polygon></svg>'
+            annotations[typeIndex].push({
+                type:"Annotation",
+                body: [
+                    {
+                        "type": "TextualBody",
+                        "value": "comment",
+                        "purpose": "commenting"
+                    },
+                    {
+                        "type": "TextualBody",
+                        "value": segmentation.type,
+                        "purpose": "tagging"
+                    }
+                ],
+                target: {
+                    "source": source,
+                    "selector": {
+                        "type": "SvgSelector",
+                        "value": HTMLPolygon
+                    }
                 },
-                {
-                    "type": "TextualBody",
-                    "value": type,
-                    "purpose": "tagging"
-                }
-            ],
-            target: {
-                "source": source,
-                "selector": {
-                    "type": "SvgSelector",
-                    "value": HTMLPolygon
-                }
-            },
-            "@context": "http://www.w3.org/ns/anno.jsonld",
-            id: id})
-        id += 1
-    } 
+                "@context": "http://www.w3.org/ns/anno.jsonld",
+                id: id})
+            id += 1
+        }
+        typeIndex += 1
+    }
     return annotations  
 }
 

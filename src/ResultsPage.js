@@ -40,6 +40,7 @@ import {Document, Font, Page, PDFDownloadLink, StyleSheet, Text, View} from '@re
 import TabsComponent from "./TabsComponent";
 
 import { connect } from 'react-redux';
+import Annotator from './components/Annotator';
 
 const styles = StyleSheet.create({
     page: {
@@ -742,7 +743,7 @@ class ResultsPage extends React.Component {
                             {/*<Gallery url={this.props.url} props={this.props.props} link1={this.state.originalImage}*/}
                             {/*         link2={this.state.segmentedImage} link3={this.state.boxImage}*/}
                             {/*         number={this.props.props} type={this.state.tiradsType}></Gallery>*/}
-                            <TabsComponent></TabsComponent>
+                            <TabsComponent drawerComponent={Annotator}></TabsComponent>
                         {/*</Grid>*/}
                         <Box component={""} sx={{display: 'flex', flexDirection: 'row', paddingTop: 2}}>
                             <Box component={""} sx={{flexDirection: 'column', paddingTop: 2, paddingLeft: 2}}>

@@ -5,39 +5,41 @@ import { useSelector } from 'react-redux';
 import annotationCreator from '../utils/AnnotationCreator';
 import './annotorious.min.css'
 
-const Drawer = (props) => {
+const Corrector = (props) => {
     const [anno, setAnno] = useState(null)
+    const [annotationsW3CState, setAnnotationW3CState] = useState(null)
+    
     const viewer = useSelector(state => state.viewer)
     const image = useSelector(state => state.image)
     const segments = useSelector(state => state.segments)
 
-    const drawSegmentations = (annotator) => {
-      
-        const imageURL = `api/v4/cytology/upload/${image}`
-        const annotations = annotationCreator(segments, props.type, imageURL)
-        annotator.setAnnotations(annotations)
+    const getAnnotationsW3C = () => {
+        return annotationCreator(segments, `api/v4/cytology/upload/${image}`)
     }
 
     const initializeAnnotations = (viewer) => {
+        console.log('initialize anno')
         anno && anno.destroy()
         const annotateState = Annotorious(viewer, {
-            locale: 'auto'
+            locale: 'auto',
         });
-        console.log('VIEWEEEER', viewer)
         annotateState.setDrawingTool('polygon')
-        drawSegmentations(annotateState)
+        const annotationsW3C = getAnnotationsW3C()
+        setAnnotationW3CState(getAnnotationsW3C())
+        annotateState.setAnnotations(annotationsW3C[0])
         setAnno(annotateState)
     }
     useEffect(() => {
         if (viewer) {
+            console.log('go to viewer effect')
             initializeAnnotations(viewer)
         }
     }, [viewer]);
 
     useEffect(() => {
-        console.log('CHANGE TYPE')
+        console.log('go to type effect')
         if (anno) {
-            drawSegmentations(anno)
+            anno.setAnnotations(annotationsW3CState[props.type])
         }
     }, [props.type])
 
@@ -48,4 +50,4 @@ const Drawer = (props) => {
     );
 }
 
-export default Drawer;
+export default Corrector;
