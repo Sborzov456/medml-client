@@ -24,6 +24,7 @@ const Annotator = (props) => {
             locale: 'auto',
             readOnly: true
         });
+
         const annotationsW3C = getAnnotationsW3C()
         setAnnotationW3CState(getAnnotationsW3C())
         annotateState.setAnnotations(annotationsW3C[0])

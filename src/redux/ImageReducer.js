@@ -15,6 +15,8 @@ const imageReducer = (state=defaultState, action) => {
             return {...state, viewer: action.payload}
         case 'UPDATE_SEGMENTS':
             return {...state, segments: action.payload}
+        case 'SET_ANNOTATOR':
+            return {...state, annotator: action.payload}
         default:
             return state
     }

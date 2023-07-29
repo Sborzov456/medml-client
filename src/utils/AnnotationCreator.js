@@ -1,6 +1,6 @@
 const annotationCreator = (segments, source) => {
     const annotations = []
-    let id = 23
+    let id = 1
     let typeIndex = 0
     for(let segmentation of segments) {
         annotations.push([]) //создание массива, в который будут помещены все полигоны, принадлежащие к одному типу
