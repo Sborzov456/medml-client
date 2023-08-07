@@ -6,18 +6,17 @@ import { useDispatch, useSelector } from 'react-redux';
 
 
 const OpenSeadragonViewer = () => {
-
     const [viewer, setViewer] = useState(null);
-    const image = useSelector(state => state.image)
+    const imageFileName = useSelector(state => state.imageFileName)
+    console.log('IMAGE FILE NAME: ', imageFileName)
     const dispatch = useDispatch()
-
 
     const initializeViewer = () => {
         viewer && viewer.destroy()
         const viewerState = OpenSeaDragon({
                 id: "openseadragon",
                 prefixUrl: "http://localhost:3000/home/openseadragon-images/",
-                tileSources: `http://localhost:8005/api/v1/bid/${image}.dzi`,
+                tileSources: `http://localhost:8005/api/v1/bid/${imageFileName}.dzi`,
                 showNavigator: true,
                 animationTime: 0.5,
                 blendTime: 0.1,
@@ -33,11 +32,10 @@ const OpenSeadragonViewer = () => {
     }
 
     useEffect(() => {
-        if (image) {
-            console.log('INIT VIEWER', image, typeof(image))
+        if (imageFileName) {
             initializeViewer()
         }
-    },[image]);
+    },[imageFileName]);
     
     return (
         <div id="openseadragon"> </div> 

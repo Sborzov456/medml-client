@@ -10,11 +10,12 @@ const Annotator = (props) => {
     const [annotationsW3CState, setAnnotationW3CState] = useState(null)
     
     const viewer = useSelector(state => state.viewer)
-    const image = useSelector(state => state.image)
+    const imageFileName = useSelector(state => state.imageFileName)
+    console.log('Image: ', imageFileName)
     const segments = useSelector(state => state.segments)
 
     const getAnnotationsW3C = () => {
-        return annotationCreator(segments, `api/v4/cytology/upload/${image}`)
+        return annotationCreator(segments, `api/v4/cytology/upload/${imageFileName}`)
     }
 
     const initializeAnnotations = (viewer) => {

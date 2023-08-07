@@ -332,138 +332,57 @@ class ResultsPage extends React.Component {
     handleStartPage = () => {
         console.log('Handle Start Page')
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        axios.get(this.props.url + "/api/v3/uzi/" + this.props.props + "/?format=json")
-            .then((response) => {
-                this.setState({startData: response.data.info})
-                console.log(response.data)
-                var tmpTirads = [];
-                var secondTmpTirads = []
-                secondTmpTirads.push(parseFloat(response.data.info.details.nodule_1), parseFloat(response.data.info.details.nodule_2), parseFloat(response.data.info.details.nodule_3), parseFloat(response.data.info.details.nodule_4), parseFloat(response.data.info.details.nodule_5))
-                secondTmpTirads.sort(function (a, b) {
-                    return a - b;
-                })
-                const indexes = {1: true, 2: true, 3: true, 4: true, 5: true}
-                secondTmpTirads.reverse()
-                for (let a of secondTmpTirads) {
-                    if ((a === parseFloat(response.data.info.details.nodule_1)) && indexes[1]) {
-                        tmpTirads.push(a + '% - EU-TIRADS 1')
-                        indexes[1] = false
-                    } else if ((a === parseFloat(response.data.info.details.nodule_2)) && indexes[2]) {
-                        tmpTirads.push(a + '% - EU-TIRADS 2')
-                        indexes[2] = false
-                    } else if ((a === parseFloat(response.data.info.details.nodule_3)) && indexes[3]) {
-                        tmpTirads.push(a + '% - EU-TIRADS 3')
-                        indexes[3] = false
-                    } else if ((a === parseFloat(response.data.info.details.nodule_4)) && indexes[4]) {
-                        tmpTirads.push(a + '% - EU-TIRADS 4')
-                        indexes[4] = false
-                    } else if ((a === parseFloat(response.data.info.details.nodule_5)) && indexes[5]) {
-                        tmpTirads.push(a + '% - EU-TIRADS 5')
-                        indexes[5] = false
-                    }
-                }
-                axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-                // axios.get(this.props.url + "/api/v3/uzi/devices/?format=json")
-                //     .then((res) => {
-                //         this.setState({devices: res.data.results})
-                //         const tmp = res.data.results
-                //         for (let cur of tmp) {
-                //             if (cur.name === response.data.info.uzi_device_name) {
-                //                 this.setState({
-                //                     uziDevice: cur
-                //                 })
-                //                 console.log(cur)
-                //             }
-                //         }
-                //     })
-                
-                axios.get(`${this.props.url}/api/v4/cytology/segmentation?image_id=${this.props.props}&type=all`)
-                .then(response => {
-                     this.props.updateImage(response.data.image)
-                     this.props.updateSegments(response.data.segmentations)
-                })
-                this.setState({
-                    uziDate: response.data.info.acceptance_datetime,
-                    predictedTypes: tmpTirads,
-                    patientCard: response.data.info.patient.id,
-                    patientPolicy: response.data.info.patient.personal_policy,
-                    patientLastName: response.data.info.patient.last_name,
-                    patientFirstName: response.data.info.patient.first_name,
-                    patientFathersName: response.data.info.patient.fathers_name,
-                    projectionType: response.data.info.details.projection_type,
-                    longResult: response.data.info.echo_descr,
-                    originalImage: response.data.images.original.image,
-                    segmentedImage: response.data.images.segmentation.image,
-                    boxImage: response.data.images.box.image,
-                    tiradsType: response.data.info.details.nodule_type,
-                    shortResult: response.data.info.has_nodules === 'T',
-                    cdk: response.data.info.details.cdk,
-                    diagnosis: response.data.info.diagnosis,
-                    echogenicity: response.data.info.details.echogenicity,
-                    isthmus: response.data.info.details.isthmus,
-                    left_depth: response.data.info.details.left_depth,
-                    left_length: response.data.info.details.left_length,
-                    left_width: response.data.info.details.left_width,
-                    position: response.data.info.details.position,
-                    profile: response.data.info.details.profile,
-                    result: response.data.info.details.result,
-                    right_depth: response.data.info.details.right_depth,
-                    right_length: response.data.info.details.right_length,
-                    right_width: response.data.info.details.right_width,
-                    rln: response.data.info.details.rln,
-                    structure: response.data.info.details.structure,
-                    additional_data: response.data.info.details.additional_data,
-                    right_volume: !isNaN(0.479 * response.data.info.details.right_depth * response.data.info.details.right_length * response.data.info.details.right_width)? (0.479 * response.data.info.details.right_depth * response.data.info.details.right_length * response.data.info.details.right_width) : 0,
-                    left_volume: !isNaN(0.479 * response.data.info.details.left_depth * response.data.info.details.left_length * response.data.info.details.left_width)? (0.479 * response.data.info.details.left_depth * response.data.info.details.left_length * response.data.info.details.left_width) : 0,
-                    volume: !isNaN(0.479 * response.data.info.details.left_depth * response.data.info.details.left_length * response.data.info.details.left_width + 0.479 * response.data.info.details.right_depth * response.data.info.details.right_length * response.data.info.details.right_width)? (0.479 * response.data.info.details.left_depth * response.data.info.details.left_length * response.data.info.details.left_width + 0.479 * response.data.info.details.right_depth * response.data.info.details.right_length * response.data.info.details.right_width):0,
-                })
-            })
-
-
+        axios.get(`${this.props.url}/api/v4/cytology/segmentation?image_id=${this.props.props}&type=all`)
+        .then(response => {
+            console.log('RESULT PAGE RESPONSE: ', response)
+            this.props.updateImageFileName(response.data.image)
+            this.props.updateImageID(this.props.props)
+            this.props.updateSegments(response.data.segmentations)
+        })
     }
 
     handleExport = () => {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
-        console.log(this.state)
-        axios.get(this.props.url + "/api/v3/uzi/" + this.props.props + "/?format=json").then((response) => {
-            console.log(response.data)
-            const formData = {patient_card: {}, details: {}}
-            formData.id = response.data.images.box.image_group
-            formData.patient_card.patient = response.data.info.patient.id
-            formData.acceptance_datetime = this.state.uziDate
-            formData.patient_card.has_nodules = this.state.shortResult ? 'T' : 'F'
-            formData.patient_card.diagnosis = this.state.diagnosis
-            formData.details.projection_type = this.state.projectionType
-            formData.details.nodule_type = this.state.tiradsType
-            formData.uzi_device = this.state.uziDevice.id
-            formData.details.cdk = this.state.cdk
-            formData.details.echogenicity = this.state.echogenicity
-            formData.details.isthmus = this.state.isthmus
-            formData.details.left_depth = this.state.left_depth
-            formData.details.left_length = this.state.left_length
-            formData.details.left_width = this.state.left_width
-            formData.details.position = this.state.position
-            formData.details.profile = this.state.profile
-            formData.details.result = this.state.result
-            formData.details.right_depth = this.state.right_depth
-            formData.details.right_length = this.state.right_length
-            formData.details.right_width = this.state.right_width
-            formData.details.rln = this.state.rln
-            formData.details.structure = this.state.structure
-            formData.details.additional_data = this.state.additional_data
-            console.log(formData)
-            axios.put(this.props.url + "/api/v3/uzi/" + this.props.props + '/update/', formData).then(() => {
-                this.setState({
-                    openSuccess: true,
-                })
-                console.log(this.state.openSuccess)
-            }).catch(() => {
-                this.setState({
-                    openError: true,
-                })
-                console.log(this.state.openError)
-            })
-        })
+        // axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
+        // console.log(this.state)
+        // axios.get(this.props.url + "/api/v3/uzi/" + this.props.props + "/?format=json").then((response) => {
+        //     console.log(response.data)
+        //     const formData = {patient_card: {}, details: {}}
+        //     formData.id = response.data.images.box.image_group
+        //     formData.patient_card.patient = response.data.info.patient.id
+        //     formData.acceptance_datetime = this.state.uziDate
+        //     formData.patient_card.has_nodules = this.state.shortResult ? 'T' : 'F'
+        //     formData.patient_card.diagnosis = this.state.diagnosis
+        //     formData.details.projection_type = this.state.projectionType
+        //     formData.details.nodule_type = this.state.tiradsType
+        //     formData.uzi_device = this.state.uziDevice.id
+        //     formData.details.cdk = this.state.cdk
+        //     formData.details.echogenicity = this.state.echogenicity
+        //     formData.details.isthmus = this.state.isthmus
+        //     formData.details.left_depth = this.state.left_depth
+        //     formData.details.left_length = this.state.left_length
+        //     formData.details.left_width = this.state.left_width
+        //     formData.details.position = this.state.position
+        //     formData.details.profile = this.state.profile
+        //     formData.details.result = this.state.result
+        //     formData.details.right_depth = this.state.right_depth
+        //     formData.details.right_length = this.state.right_length
+        //     formData.details.right_width = this.state.right_width
+        //     formData.details.rln = this.state.rln
+        //     formData.details.structure = this.state.structure
+        //     formData.details.additional_data = this.state.additional_data
+        //     console.log(formData)
+        //     axios.put(this.props.url + "/api/v3/uzi/" + this.props.props + '/update/', formData).then(() => {
+        //         this.setState({
+        //             openSuccess: true,
+        //         })
+        //         console.log(this.state.openSuccess)
+        //     }).catch(() => {
+        //         this.setState({
+        //             openError: true,
+        //         })
+        //         console.log(this.state.openError)
+        //     })
+        // })
 
     };
     handleCdk = (event) => {
@@ -743,7 +662,7 @@ class ResultsPage extends React.Component {
                             {/*<Gallery url={this.props.url} props={this.props.props} link1={this.state.originalImage}*/}
                             {/*         link2={this.state.segmentedImage} link3={this.state.boxImage}*/}
                             {/*         number={this.props.props} type={this.state.tiradsType}></Gallery>*/}
-                            <TabsComponent drawerComponent={Annotator}></TabsComponent>
+                            {this.props.imageFileName && <TabsComponent drawerComponent={Annotator}></TabsComponent>}
                         {/*</Grid>*/}
                         <Box component={""} sx={{display: 'flex', flexDirection: 'row', paddingTop: 2}}>
                             <Box component={""} sx={{flexDirection: 'column', paddingTop: 2, paddingLeft: 2}}>
@@ -1262,14 +1181,15 @@ class ResultsPage extends React.Component {
 
 const mapDispatchToProps = dispatch => {
     return {
-        updateImage: (imageFileName) => dispatch({type: 'UPDATE_IMAGE', payload: imageFileName}),
+        updateImageFileName: (imageFileName) => dispatch({type: 'UPDATE_IMAGE_FILENAME', payload: imageFileName}),
+        updateImageID: (imageID) => dispatch({type: 'UPDATE_IMAGE_ID', payload: imageID}),
         updateSegments: (segments) => dispatch({type: 'UPDATE_SEGMENTS', payload: segments})
     }
 }
 
 const mapStateToProps = state => {
     return {
-        image_id: state.image_id
+        imageFileName: state.imageFileName
     };
 };
 

@@ -1,29 +1,56 @@
-import {React, useState} from 'react';
-import { Box, Grid } from '@mui/material';
+import {React, useState, useEffect, useRef} from 'react';
+import { Box, Button, Grid, Dialog, TextField, FormControl, DialogTitle, DialogActions, DialogContent, IconButton } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import axios from 'axios';
 import TabsComponent from '../TabsComponent';
 import Corrector from '../components/Corrector'
 import ImportExportOutlinedIcon from '@mui/icons-material/ImportExportOutlined';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+
 import { useDispatch, useSelector } from 'react-redux';
+
 
 const CorrectionPage = () => {
     const [importActivateState, setImportActivateState] = useState(false)
+    const [importMenuState, setImportMenuState] = useState(false)
+
     const [exportActivateState, setExportActivateState] = useState(false)
-    const annotator = useSelector(state => state.annotator)
+    const [exportSuccessState, setExportSuccessState] = useState(false)
+    const [exportMenuState, setExportMenuState] = useState(false)
 
+    const fileNameRef = useRef(null)
+    const descriptionRef = useRef(null)
 
-    const handleImportCorrection = (event) => {
-        setImportActivateState(true)
+    const annotations = useSelector(state => state.annotations)
+    const imageID = useSelector(state => state.imageID)
+
+    const handleImportCorrection = async (event) => {
         console.log('in handle')
+
     }
 
-    const handleExportCorrection = () => {
-        if (annotator) {
-            setExportActivateState(true)
-            console.log(annotator.getAnnotations())
+    const handleExportCorrection = async (event) => {
+        setExportActivateState(true)
+        if (annotations) {
+            try {
+                console.log(annotations)
+                console.log(fileNameRef.current.value)
+                await axios.post('http://localhost:8000/api/v4/cytology/correction/', 
+                {
+                    correction: JSON.stringify(annotations), 
+                    image: imageID,
+                    name: fileNameRef.current.value,
+                    description: descriptionRef.current.value,
+                    creation_date: new Date().toJSON().slice(0, 10)
+                })
+                setExportActivateState(false)
+                setExportSuccessState(true)
+            }
+            catch(error) {
+                console.log('ошибка', error)
+                //TODO: что-то выводить в случае ошибки
+            }
         }
-        
     }
 
     return (
@@ -50,30 +77,106 @@ const CorrectionPage = () => {
                 <Grid container={true} direction={'column'} xs={1}>
                     <Grid item={true}>
                         <div style={{marginLeft: "50px", marginTop: "100px"}}>
-                            <LoadingButton 
-                            loading={importActivateState}
-                            loadingIndicator="Loading…" 
+                            <Button 
                             variant="outlined"
                             startIcon={<ImportExportOutlinedIcon/>}
-                            onClick={handleImportCorrection}>
-                            IMPORT
-                            </LoadingButton>
+                            onClick={() => {
+                                setImportMenuState(true)
+                                handleImportCorrection()
+                            }}>
+                                Импорт
+                            </Button>
                         </div>
                     </Grid>
                     <Grid item={true}>
                         <div style={{marginLeft: "50px", marginTop: "10px"}}>
+                            <Button 
+                            variant="outlined"
+                            startIcon={<ImportExportOutlinedIcon/>}
+                            onClick={() => setExportMenuState(true)}> 
+                                Экспорт
+                            </Button>
+                        </div>
+                    </Grid>
+                </Grid>
+            </Grid> 
+
+            {/* Диалог окна экспорта */}
+            <Box sx={{width: "1000px"}}>
+                <Dialog
+                open={exportMenuState} 
+                onClose={() => {
+                    setExportMenuState(false)
+                    setExportSuccessState(false)
+                }}
+                fullWidth={true}>
+                    <DialogTitle>Экспорт коррекции</DialogTitle>
+                    <DialogContent>
+                        <Grid container={true} direction={'column'}>
+                            <Box sx={{width: "300px"}}>
+                                <TextField
+                                    fullWidth={true}
+                                    autoFocus
+                                    margin="dense"
+                                    id="name"
+                                    label="Имя Файла"
+                                    variant="outlined"
+                                    inputRef={fileNameRef}
+                                />
+                            </Box>
+                            <Box>
+                                <TextField
+                                    fullWidth={true}
+                                    margin="dense"
+                                    id="description"
+                                    label="Описание"
+                                    variant="outlined"
+                                    multiline
+                                    maxRows={10}
+                                    rows={7}
+                                    inputRef={descriptionRef}
+                                />
+                            </Box>
+                        </Grid>
+                    </DialogContent>
+                    <DialogActions>
+                        <Box sx={{textAlign: 'center'}}>
                             <LoadingButton 
                             loading={exportActivateState}
                             loadingIndicator="Loading…" 
                             variant="outlined"
-                            startIcon={<ImportExportOutlinedIcon/>}
-                            onClick={handleExportCorrection}> 
-                            EXPORT
+                            startIcon={<FileUploadIcon/>}
+                            color={exportSuccessState ? 'success' : 'primary'}
+                            onClick={handleExportCorrection}>
+                                {exportSuccessState ? 'Успешно' : 'Экспортировать'}
                             </LoadingButton>
-                        </div>
-                    </Grid>
-                </Grid>
-            </Grid>   
+                        </Box>
+                    </DialogActions>
+                </Dialog>  
+            </Box>
+            
+
+            {/* Диалог окна импорта */}
+            <Box sx={{width: "1000px"}}>
+                <Dialog
+                open={importMenuState} 
+                onClose={() => {
+                    setImportMenuState(false)
+                }}
+                fullWidth={true}>
+                    <DialogTitle>Импорт коррекции</DialogTitle>
+                    <DialogContent>
+                        <Grid container={true} direction={'column'}>
+                            
+                        </Grid>
+                    </DialogContent>
+                    <DialogActions>
+                        
+                    </DialogActions>
+                </Dialog>  
+            </Box>
+
+
         </Box>
     );
 }

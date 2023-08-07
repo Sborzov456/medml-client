@@ -15,13 +15,13 @@ const Corrector = (props) => {
     const typeRef = useRef(props.type)
 
     const viewer = useSelector(state => state.viewer)
-    const image = useSelector(state => state.image)
+    const imageFileName = useSelector(state => state.imageFileName)
     const segments = useSelector(state => state.segments)
     
     const dispatch = useDispatch()
 
     const getAnnotationsW3C = () => {
-        return annotationCreator(segments, `api/v4/cytology/upload/${image}`)
+        return annotationCreator(segments, `api/v4/cytology/upload/${imageFileName}`)
     }
 
     const initializeAnnotations = (viewer) => {
@@ -39,12 +39,13 @@ const Corrector = (props) => {
         setAnnotationW3CState(annotationsW3C)
 
         annotateState.on('updateAnnotation', annotation => {
+            console.log(annotationW3CRef.current)
             setAnnotationW3CState(annotationW3CRef.current.map((element, index) => {
                 if (index == typeRef.current) {
                     const subArrayIndex = annotationIndexCaclulator(annotationW3CRef.current, annotation.id, index)
                     return element.map((element, index) => {
                         if (index == subArrayIndex) {
-                            return {...annotation, target: {...annotation.target, source: `api/v4/cytology/upload/${image}`}}
+                            return {...annotation, target: {...annotation.target, source: `api/v4/cytology/upload/${imageFileName}`}}
                         }
                         return element
                     })
@@ -53,12 +54,25 @@ const Corrector = (props) => {
             }))
         })
 
+        annotateState.on('createAnnotation', (annotation, overrideID) => {
+            const newId = annotationW3CRef.current[typeRef.current].length + 1
+            annotation.id = newId
+            //TODO: 2 - это число типов минус 1, надо сделать так, чтоб тут не было хардкода
+            for (let i = typeRef.current.length; i < 2; i++) {
+                for (let j = 0; j < annotationW3CRef.current[i].length; j++)
+                annotationW3CRef.current[i][j].id += 1
+            }
+            annotationW3CRef.current[typeRef.current].push(annotation)
+            setAnnotationW3CState(annotationW3CRef.current)
+        })
+
         setAnno(annotateState)
-        dispatch({type: 'SET_ANNOTATOR', payload: annotateState})
+       
     }
 
     useEffect(() => {
         annotationW3CRef.current = annotationsW3CState
+        dispatch({type: 'SET_ANNOTATIONS', payload: annotationW3CRef.current})
     }, [annotationsW3CState]);
 
     useEffect(() => {

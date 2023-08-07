@@ -4,7 +4,6 @@ import Tab from '@mui/material/Tab';
 import OpenSeadragonViewer from "./components/OpenSeadragonViewer";
 
 const TabsComponent = (props) => {
-    console.log(props.drawerComponent)
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event, newValue) => {

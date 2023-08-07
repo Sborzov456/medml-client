@@ -92,7 +92,8 @@ class UploadPage extends React.Component {
         .then(response => response.json())
         .then(result => {
             console.log('RESULT: ', result)
-            this.props.updateImage(result['image_file_name'])
+            this.props.updateImageFileName(result['image_file_name'])
+            this.props.updateImageID(result['id'])
             this.props.updateSegments(result['segmentations'])
             this.setState({...this.state, resultid: result.id})
         })
@@ -513,16 +514,16 @@ class UploadPage extends React.Component {
 }
 
 const mapDispatchToProps = dispatch => {
-    console.log('DISPATCHIIIIING')
     return {
-        updateImage: (imageFileName) => dispatch({type: 'UPDATE_IMAGE', payload: imageFileName}),
+        updateImageFileName: (imageFileName) => dispatch({type: 'UPDATE_IMAGE_FILENAME', payload: imageFileName}),
+        updateImageID: (imageID) => dispatch({type: 'UPDATE_IMAGE_ID', payload: imageID}),
         updateSegments: (segments) => dispatch({type: 'UPDATE_SEGMENTS', payload: segments})
     }
 }
 
 const mapStateToProps = state => {
     return {
-        image_id: state.image_id
+        imageID: state.imageID
     };
 };
 
