@@ -1,5 +1,6 @@
-import {React, useState, useEffect, useRef} from 'react';
-import { Box, Button, Grid, Dialog, TextField, FormControl, DialogTitle, DialogActions, DialogContent, IconButton } from '@mui/material';
+import {React, useState, useRef} from 'react';
+import { Box, Button, Grid, Dialog, TextField, DialogTitle, DialogActions, DialogContent } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 import { LoadingButton } from '@mui/lab';
 import axios from 'axios';
 import TabsComponent from '../TabsComponent';
@@ -8,7 +9,17 @@ import ImportExportOutlinedIcon from '@mui/icons-material/ImportExportOutlined';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 
 import { useDispatch, useSelector } from 'react-redux';
-
+const columns = [
+    { field: 'id', headerName: 'ID', width: 100},
+    { field: 'date', headerName: 'Дата', width: 200 },
+    { field: 'fileName', headerName: 'Имя Файла', width: 200 },
+    { field: 'description', headerName: 'Описание', width: 200 },
+  ];
+  
+  const rows = [
+    {id: 1, data: '10-09-2020', fileName: 'corr1', description: 'jhdjghfj'}
+  ];
+  
 
 const CorrectionPage = () => {
     const [importActivateState, setImportActivateState] = useState(false)
@@ -157,18 +168,28 @@ const CorrectionPage = () => {
             
 
             {/* Диалог окна импорта */}
-            <Box sx={{width: "1000px"}}>
+            <Box sx={{width: "1500px"}}>
                 <Dialog
                 open={importMenuState} 
                 onClose={() => {
                     setImportMenuState(false)
                 }}
-                fullWidth={true}>
+                fullWidth={true}
+                maxWidth={"100%"}>
                     <DialogTitle>Импорт коррекции</DialogTitle>
                     <DialogContent>
-                        <Grid container={true} direction={'column'}>
-                            
-                        </Grid>
+                        <div style={{ height: 400, width: '100%' }}>
+                            <DataGrid
+                            rows={rows}
+                            columns={columns}
+                            pageSizeOptions={[5, 10]}
+                            initialState={{
+                                pagination: {
+                                paginationModel: { page: 0, pageSize: 5 },
+                                },
+                            }}/>
+                        </div>
+
                     </DialogContent>
                     <DialogActions>
                         
