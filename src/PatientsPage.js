@@ -126,7 +126,6 @@ const MyGrid = (props) => {
         var tmpAr = [];
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         axios.get(props.url + '/api/v3/med_worker/patients/'+localStorage.getItem('id')).then((response) => {
-            console.log(response.data.results)
             for (let cur of response.data.results.cards) {
                 tmpAr.push(createData(cur.id, cur.patient.last_name + " " + cur.patient.first_name + " " + cur.patient.fathers_name, cur.patient.personal_policy, cur.patient.email,  new Date(Date.parse(cur.acceptance_datetime)), cur.has_nodules === "T", cur.patient.is_active))
             }
@@ -176,7 +175,6 @@ class PatientTable extends React.Component {
                     this.setState({
                         mesAm: response.data.count
                     })
-                    console.log(response.data)
                 })
                 }
             )

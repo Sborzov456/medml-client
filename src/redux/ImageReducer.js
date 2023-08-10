@@ -2,7 +2,8 @@ const defaultState = {
     imageFileName: null,
     imageID: null,
     viewer: null, // Хранит объект OpenSeaDragon
-    segments: [] // Хранит массив аннотаций
+    segments: [], // Хранит массив сегментов (в виде, как в базе данных),
+    annotations: [] // Хранит массив сегментов в формате W3C Annotations
 }
 
 const imageReducer = (state=defaultState, action) => {

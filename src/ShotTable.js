@@ -73,7 +73,6 @@ const MyGrid = (props) => {
         var tmpAr = [];
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         axios.get(props.url + "/api/v3/patient/shots/"+ props.number + "/?format=json").then((response) => {
-            console.log(response.data.results)
             for (let cur of response.data.results.shots) {
                 if(cur.id !== null) {
                     tmpAr.push(createData(cur.id, new Date(Date.parse(cur.acceptance_datetime)), cur.nodule_type, 0.479 * cur.left_depth * cur.left_length * cur.left_width + 0.479 * cur.right_depth * cur.right_length * cur.right_width, cur.uzi_device, cur.projection_type === "long" ? "Поперечная" : "Продольная"))
@@ -119,7 +118,6 @@ const MyGrid = (props) => {
         handlePatient = () => {
             axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
             axios.get(this.props.url + "/api/v3/patient/update/"+ this.props.props + "?format=json").then((response) => {
-                console.log(response)
                 this.setState({
                     lastName: response.data.patient.last_name,
                     firstName: response.data.patient.first_name,

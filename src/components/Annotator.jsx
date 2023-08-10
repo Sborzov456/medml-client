@@ -11,7 +11,6 @@ const Annotator = (props) => {
     
     const viewer = useSelector(state => state.viewer)
     const imageFileName = useSelector(state => state.imageFileName)
-    console.log('Image: ', imageFileName)
     const segments = useSelector(state => state.segments)
 
     const getAnnotationsW3C = () => {
@@ -19,7 +18,6 @@ const Annotator = (props) => {
     }
 
     const initializeAnnotations = (viewer) => {
-        console.log('initialize anno')
         anno && anno.destroy()
         const annotateState = Annotorious(viewer, {
             locale: 'auto',
@@ -33,13 +31,11 @@ const Annotator = (props) => {
     }
     useEffect(() => {
         if (viewer) {
-            console.log('go to viewer effect')
             initializeAnnotations(viewer)
         }
     }, [viewer]);
 
     useEffect(() => {
-        console.log('go to type effect')
         if (anno) {
             anno.setAnnotations(annotationsW3CState[props.type])
         }

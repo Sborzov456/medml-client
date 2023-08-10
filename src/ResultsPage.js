@@ -319,7 +319,6 @@ class ResultsPage extends React.Component {
     handleDoctor = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         axios.get(this.props.url+ '/api/v3/med_worker/update/' + localStorage.getItem('id')).then((response) => {
-            console.log(response.data)
             this.setState({
                 doctorName: response.data.last_name+" "+ response.data.first_name+" "+response.data.fathers_name,
                 medOrg: response.data.med_organization+", "+response.data.job
@@ -330,11 +329,9 @@ class ResultsPage extends React.Component {
         this.handleExport()
     };
     handleStartPage = () => {
-        console.log('Handle Start Page')
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         axios.get(`${this.props.url}/api/v4/cytology/segmentation?image_id=${this.props.props}&type=all`)
         .then(response => {
-            console.log('RESULT PAGE RESPONSE: ', response)
             this.props.updateImageFileName(response.data.image)
             this.props.updateImageID(this.props.props)
             this.props.updateSegments(response.data.segmentations)
@@ -503,7 +500,6 @@ class ResultsPage extends React.Component {
         });
     };
     handleChooseDevice = (event) => {
-        console.log(event.target.value)
         this.setState({
             uziDevice: event.target.value,
             deviceChosen: true

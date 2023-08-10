@@ -17,15 +17,14 @@ const Corrector = (props) => {
     const viewer = useSelector(state => state.viewer)
     const imageFileName = useSelector(state => state.imageFileName)
     const segments = useSelector(state => state.segments)
-    
-    const dispatch = useDispatch()
+    const corrections = useSelector(state => state.annotations) 
+
 
     const getAnnotationsW3C = () => {
         return annotationCreator(segments, `api/v4/cytology/upload/${imageFileName}`)
     }
 
     const initializeAnnotations = (viewer) => {
-        console.log('initialize anno')
         anno && anno.destroy()
         const annotateState = Annotorious(viewer, {
             locale: 'auto',
@@ -35,11 +34,9 @@ const Corrector = (props) => {
         annotateState.setAnnotations(annotationsW3C[0])
         annotateState.setDrawingTool('polygon')
 
-        // annotationW3CRef.current = annotationsW3C
         setAnnotationW3CState(annotationsW3C)
 
         annotateState.on('updateAnnotation', annotation => {
-            console.log(annotationW3CRef.current)
             setAnnotationW3CState(annotationW3CRef.current.map((element, index) => {
                 if (index == typeRef.current) {
                     const subArrayIndex = annotationIndexCaclulator(annotationW3CRef.current, annotation.id, index)
@@ -72,7 +69,6 @@ const Corrector = (props) => {
 
     useEffect(() => {
         annotationW3CRef.current = annotationsW3CState
-        dispatch({type: 'SET_ANNOTATIONS', payload: annotationW3CRef.current})
     }, [annotationsW3CState]);
 
     useEffect(() => {
@@ -87,6 +83,13 @@ const Corrector = (props) => {
             anno.setAnnotations(annotationsW3CState[props.type])
         }
     }, [props.type])
+
+    useEffect(() => {
+        if (anno) {
+            anno.setAnnotations(corrections[props.type])
+            setAnnotationW3CState(corrections)
+        }
+    }, [corrections]);
 
     return (
         <div>

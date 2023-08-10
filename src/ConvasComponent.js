@@ -85,13 +85,11 @@ const ConvasComponent = (props) => {
         )
 
         cropped.toBlob().then((response) => {
-            console.log(response)
             const formData = new FormData();
             const imageF = new File([response], 'uploadfile.png')
             formData.append("segmentation_image.image", imageF);
             formData.append("group.nodule_type", type);
             let token = localStorage.getItem('access')
-            console.log(token)
             axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
             axios.put(props.url+"/api/v3/uzi/update/seg_group/" + props.number, formData,).then(() => setSuc(true)).catch(() => {
                 setEr(true)

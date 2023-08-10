@@ -111,7 +111,6 @@ class SignInPage extends React.Component {
                 localStorage.setItem('refresh', response.data.refresh)
                 localStorage.setItem('access', response.data.access)
                 this.props.setSignIn(false)
-                console.log('changed')
                 var link = document.createElement('a');
                 link.href = '/home';
                 link.click();

@@ -79,7 +79,6 @@ class UploadPage extends React.Component {
         //         imageChoosen: true
         //     });
         // }, false)
-        console.log('UPLOADING.......')
         const file = event.target.files[0]
         const formData = new FormData()
         formData.append('image_file', file)
@@ -91,7 +90,6 @@ class UploadPage extends React.Component {
         })
         .then(response => response.json())
         .then(result => {
-            console.log('RESULT: ', result)
             this.props.updateImageFileName(result['image_file_name'])
             this.props.updateImageID(result['id'])
             this.props.updateSegments(result['segmentations'])

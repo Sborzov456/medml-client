@@ -66,7 +66,6 @@ const MyGrid = (props) => {
         const tmpAr = []
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
         axios.get(props.url + "/api/v3/inner_mail/notifications/all/" + localStorage.getItem('id') + "/?status=0").then((response) => {
-            console.log(response)
             for (let cur of response.data.results) {
                 if (!groupsUnread.has(cur.mail.notification_group.id)) {
                     groupsUnread.add(cur.mail.notification_group.id)
@@ -139,7 +138,6 @@ const MyGrid = (props) => {
             }
             arr.push(cur)
         }
-        console.log(arr)
         setData(arr)
     }, [memAr])
 
@@ -219,7 +217,6 @@ const MyGrid = (props) => {
     const text4 = {
         fontSize: 10, fontWeight: 'lighter'
     }
-    console.log(data)
     return (
         <div>
             {data.map((text, index) => (
@@ -319,7 +316,6 @@ class NotificationsPage extends React.Component {
         this.setState({
             openSuccess: true,
         })
-        console.log(this.state.openSuccess)
         this.handleExport()
     };
 

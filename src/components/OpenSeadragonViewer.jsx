@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from 'react-redux';
 const OpenSeadragonViewer = () => {
     const [viewer, setViewer] = useState(null);
     const imageFileName = useSelector(state => state.imageFileName)
-    console.log('IMAGE FILE NAME: ', imageFileName)
     const dispatch = useDispatch()
 
     const initializeViewer = () => {
