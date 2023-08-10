@@ -1,3 +1,6 @@
+//TODO: Если коррекция выбрана, то подсвечивать ее как-то
+
+
 // MUI Компоненты
 import {React, useState, useRef} from 'react';
 import { Box, Button, Grid, Dialog, TextField, DialogTitle, DialogActions, DialogContent, IconButton } from '@mui/material';
@@ -7,6 +10,7 @@ import { LoadingButton } from '@mui/lab';
 //Пользовательские
 import TabsComponent from '../TabsComponent';
 import Corrector from '../components/Corrector'
+import ResultsTable from '../components/ResultsTable';
 
 import axios from 'axios';
 // Иконки
@@ -21,7 +25,6 @@ import { useDispatch, useSelector } from 'react-redux';
 const CorrectionPage = () => {
 
     // Состояния и ссылки для импорта
-    const [importActivateState, setImportActivateState] = useState(false)
     const [importMenuState, setImportMenuState] = useState(false)
     const [importTableRows, setImportTableRows] = useState([])
 
@@ -115,30 +118,35 @@ const CorrectionPage = () => {
                     <TabsComponent drawerComponent={Corrector}> </TabsComponent>
                 </Grid>
                 {/* Контейнер, где содержатся кнопки IMPORT и EXPORT */}
-                <Grid container={true} direction={'column'} xs={1}>
-                    <Grid item={true}>
-                        <div style={{marginLeft: "50px", marginTop: "100px"}}>
-                            <Button 
-                            variant="outlined"
-                            startIcon={<ImportExportOutlinedIcon/>}
-                            onClick={() => {
-                                setImportMenuState(true)
-                                handleImportCorrection()
-                            }}>
-                                Импорт
-                            </Button>
-                        </div>
+                <Grid item={true} xs={1}>
+                    <Grid container={true} direction={'column'}>
+                        <Grid item={true}>
+                            <div style={{marginLeft: "50px", marginTop: "100px"}}>
+                                <Button 
+                                variant="outlined"
+                                startIcon={<ImportExportOutlinedIcon/>}
+                                onClick={() => {
+                                    setImportMenuState(true)
+                                    handleImportCorrection()
+                                }}>
+                                    Импорт
+                                </Button>
+                            </div>
+                        </Grid>
+                        <Grid item={true}>
+                            <div style={{marginLeft: "50px", marginTop: "10px"}}>
+                                <Button 
+                                variant="outlined"
+                                startIcon={<ImportExportOutlinedIcon/>}
+                                onClick={() => setExportMenuState(true)}> 
+                                    Экспорт
+                                </Button>
+                            </div>
+                        </Grid>
                     </Grid>
-                    <Grid item={true}>
-                        <div style={{marginLeft: "50px", marginTop: "10px"}}>
-                            <Button 
-                            variant="outlined"
-                            startIcon={<ImportExportOutlinedIcon/>}
-                            onClick={() => setExportMenuState(true)}> 
-                                Экспорт
-                            </Button>
-                        </div>
-                    </Grid>
+                </Grid>
+                <Grid item={true} xs={5}>
+                    <ResultsTable/>
                 </Grid>
             </Grid> 
 
