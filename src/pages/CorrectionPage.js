@@ -7,24 +7,42 @@ import TabsComponent from '../TabsComponent';
 import Corrector from '../components/Corrector'
 import ImportExportOutlinedIcon from '@mui/icons-material/ImportExportOutlined';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-
 import { useDispatch, useSelector } from 'react-redux';
-const columns = [
-    { field: 'id', headerName: 'ID', width: 100},
-    { field: 'date', headerName: 'Дата', width: 200 },
-    { field: 'fileName', headerName: 'Имя Файла', width: 200 },
-    { field: 'description', headerName: 'Описание', width: 200 },
-  ];
-  
-  const rows = [
-    {id: 1, data: '10-09-2020', fileName: 'corr1', description: 'jhdjghfj'}
-  ];
+
+
+
+
   
 
 const CorrectionPage = () => {
+
+    // Состояния и ссылки для импорта
     const [importActivateState, setImportActivateState] = useState(false)
     const [importMenuState, setImportMenuState] = useState(false)
+    const [importTableRows, setImportTableRows] = useState([])
 
+    const importTableColumns = useRef([
+        { field: 'id', headerName: 'ID', width: 52},
+        { field: 'creation_date', headerName: 'Дата', width: 200 },
+        { field: 'name', headerName: 'Имя Файла', width: 200 },
+        { field: 'description', headerName: 'Описание', width: 300 },
+        { 
+            field: 'importAction', 
+            headerName: '', 
+            width: 100, 
+            sortable: false,
+            renderCell: (params) => {
+                return (
+                  <Button variant="contained" color="primary">
+                    Import
+                  </Button>
+                );
+            },
+        }
+    ]); 
+
+
+    // Состояния и ссылки для экспорта
     const [exportActivateState, setExportActivateState] = useState(false)
     const [exportSuccessState, setExportSuccessState] = useState(false)
     const [exportMenuState, setExportMenuState] = useState(false)
@@ -32,20 +50,25 @@ const CorrectionPage = () => {
     const fileNameRef = useRef(null)
     const descriptionRef = useRef(null)
 
+    // Глобальные состояния из redux-хранилища
     const annotations = useSelector(state => state.annotations)
     const imageID = useSelector(state => state.imageID)
 
+    // Обработчики
     const handleImportCorrection = async (event) => {
-        console.log('in handle')
-
+        const newImportTableRows = []
+        const response = await axios.get(`http://localhost:8000/api/v4/cytology/correction?image_id=${imageID}`)
+        console.log(response)
+        response.data.results.forEach(element => {
+            newImportTableRows.push(element)
+        });
+        setImportTableRows(newImportTableRows)
     }
 
     const handleExportCorrection = async (event) => {
         setExportActivateState(true)
         if (annotations) {
             try {
-                console.log(annotations)
-                console.log(fileNameRef.current.value)
                 await axios.post('http://localhost:8000/api/v4/cytology/correction/', 
                 {
                     correction: JSON.stringify(annotations), 
@@ -175,21 +198,15 @@ const CorrectionPage = () => {
                     setImportMenuState(false)
                 }}
                 fullWidth={true}
-                maxWidth={"100%"}>
+                maxWidth={"md"}>
                     <DialogTitle>Импорт коррекции</DialogTitle>
                     <DialogContent>
-                        <div style={{ height: 400, width: '100%' }}>
+                        <Box sx={{height: "400px"}}>
                             <DataGrid
-                            rows={rows}
-                            columns={columns}
-                            pageSizeOptions={[5, 10]}
-                            initialState={{
-                                pagination: {
-                                paginationModel: { page: 0, pageSize: 5 },
-                                },
-                            }}/>
-                        </div>
-
+                            rows={importTableRows}
+                            columns={importTableColumns.current}
+                           />
+                        </Box>
                     </DialogContent>
                     <DialogActions>
                         
